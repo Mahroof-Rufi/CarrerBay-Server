@@ -4,7 +4,7 @@ import userModel from "../data-base/userModel";
 
 class userRepository implements UserRepo {
 
-    async save(user: user): Promise<user> {
+    async insertOne(user: user): Promise<user> {
         const newUser = new userModel(user)
         await newUser.save()
         return newUser
