@@ -1,13 +1,10 @@
 import { Schema, model } from "mongoose";
-import user from "../../domain/user";
+import employer from "../../domain/employer";
 
-const userSchema: Schema<user> = new Schema({
-    firstName: {
+const employerSchema: Schema<employer> = new Schema({
+    companyName: {
         type: String,
         required: true
-    },
-    lastName: {
-        type: String
     },
     email: {
         type: String,
@@ -17,7 +14,11 @@ const userSchema: Schema<user> = new Schema({
         type: String,
         required: true
     },
-    jobTitle: {
+    city: {
+        type: String,
+        required: true
+    },
+    state: {
         type: String,
         required: true
     },
@@ -25,16 +26,12 @@ const userSchema: Schema<user> = new Schema({
         type: String,
         required: true
     },
-    DOB: {
-        type: Date,
-        required: true
-    },
-    gender: {
-        type: String,
+    is_Verfied: {
+        type: Boolean,
         required: true
     }
 })
 
-const userModel = model<user>('user', userSchema);
+const employerModel = model<employer>('employer', employerSchema);
 
-export default userModel
+export default employerModel

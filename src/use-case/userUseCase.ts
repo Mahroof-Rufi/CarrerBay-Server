@@ -17,19 +17,26 @@ class userUseCase {
 
 
     async sendOTP(email:string) {
-        const OTP = this.generateOTP.generateOTP()
-        console.log('otp generated successfulyy');        
-        const res = await this.sendMail.sendMail(email,parseInt(OTP));
-        this.OtpRepo.insertOTP(email,parseInt(OTP))
-        if (res) {
-            return {
-                status: 200,
-                data: 'OTP send successfully'
+        const OTP = this.generateOTP.generateOTP()   
+        const user = this.userRepo.findByEmail(email) 
+        if (!user) {
+            const res = await this.sendMail.sendMail(email,parseInt(OTP));
+            this.OtpRepo.insertOTP(email,parseInt(OTP))
+            if (res) {
+                return {
+                    status: 200,
+                    data: 'OTP send successfully'
+                }
+            } else {
+                return {
+                    status: 400,
+                    data: 'OTP send failed, try again'
+                }
             }
         } else {
             return {
                 status: 400,
-                data: 'OTP send failed, try again'
+                data: 'Email already exists'
             }
         }
     }
@@ -38,15 +45,23 @@ class userUseCase {
     async signUp(userData: user) {
         const user = await this.userRepo.findByEmail(userData.email)
         if (!user) {
-            await this.userRepo.insertOne(userData)
-            return {
-                status: 200,
-                data: 'user registration successfull'
+            const otp = await this.OtpRepo.getOtpByEmail(userData.email)
+            if (otp?.OTP == userData.OTP) {
+                await this.userRepo.insertOne(userData)
+                return {
+                    status: 200,
+                    data: 'User registration successfull'
+                }
+            } else {
+                return {
+                    status: 400,
+                    data: 'Invalid OTP'
+                }
             }
         } else {
             return {
                 status: 400,
-                data: 'email already exists'
+                data: 'Email already exists'
             }
         }
     }
@@ -58,7 +73,7 @@ class userUseCase {
             if (password !== userData.password) {
                 return {
                     status: 400,
-                    data: 'invalid credentials'
+                    message: 'Invalid credentials'
                 }
             }
             const token = this.jwt.createToken(userData.id, 'Normal-User')
@@ -66,12 +81,12 @@ class userUseCase {
                 status: 200,
                 token: token,
                 userDate: userData,
-                data: 'user found successfully'
+                message: 'Login successfully'
             }
         } else {
             return {
                 status: 400,
-                data: 'user not found'
+                message: 'User not found'
             }
         }
     }

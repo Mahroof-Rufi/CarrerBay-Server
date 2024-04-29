@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
 import OTP from "../../domain/OTP";
 
-const userOTPSchema = new Schema({
+const employerOTPSchema = new Schema({
     email: {
         type: String,
         required: true
@@ -12,6 +12,6 @@ const userOTPSchema = new Schema({
     }
 })
 
-const otpModel = model<OTP>('userOtp', userOTPSchema)
+const employerOTPModel = model<OTP>('employerOTP', employerOTPSchema)
 
-export default otpModel  
+export default employerOTPModel  

@@ -8,6 +8,7 @@ class userController {
     async signUp(req: Request, res: Response) {
         try {
             const userData = req.body
+            
             const user = await this.userCase.signUp(userData)
             res.status(user.status).json(user.data)
         } catch (error) {
@@ -18,7 +19,8 @@ class userController {
 
     async sendOTP(req:Request, res:Response) {
         try {
-            const response = await this.userCase.sendOTP(req.body.email)
+            const email = req.body.email
+            const response = await this.userCase.sendOTP(email)
             res.status(response.status).json(response.data)                    
         } catch (error) {
             console.error(error); 
@@ -26,14 +28,13 @@ class userController {
     }
 
     async logIn(req: Request, res: Response) {
-        console.log('this is the sign up fn');
         
         try {
             const { email, password } = req.body
             const user = await this.userCase.logIn(email,password)
             if (user && user.token) {
                 return res
-                    .cookie("studentToken", user.token, {
+                    .cookie("userToken", user.token, {
                         httpOnly: true,
                         maxAge: 24 * 60 * 60 * 1000,
                     })
