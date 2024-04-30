@@ -19,19 +19,18 @@ const userSchema: Schema<user> = new Schema({
     },
     jobTitle: {
         type: String,
-        required: true
     },
     industry: {
         type: String,
-        required: true
     },
     DOB: {
         type: Date,
-        required: true
     },
     gender: {
         type: String,
-        required: true
+    },
+    google_id: {
+        type:String
     }
 })
 

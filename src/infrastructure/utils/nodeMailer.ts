@@ -26,7 +26,6 @@ class NodeMailer implements mailer {
     
         try {
             this.transporter.sendMail(mailOption);
-            console.log('Email sent successfully');
             return true;
         } catch (err) {
             console.error('Error sending email:', err);

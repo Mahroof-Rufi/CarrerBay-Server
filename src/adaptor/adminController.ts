@@ -12,7 +12,7 @@ class adminController {
             if (admin && admin.token) {
                 return res
                     .cookie("admiToken", admin.token, {
-                        httpOnly: true,
+                        secure: true,
                         maxAge: 24 * 60 * 60 * 1000,
                     })
                     .status(200)

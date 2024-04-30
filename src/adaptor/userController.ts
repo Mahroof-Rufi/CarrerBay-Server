@@ -34,10 +34,6 @@ class userController {
             const user = await this.userCase.logIn(email,password)
             if (user && user.token) {
                 return res
-                    .cookie("userToken", user.token, {
-                        httpOnly: true,
-                        maxAge: 24 * 60 * 60 * 1000,
-                    })
                     .status(200)
                     .json({
                         user,
@@ -51,6 +47,28 @@ class userController {
             }
         } catch (error) {
             console.error();
+        }
+    }
+
+    async gAuth(req:Request, res:Response) {
+        try {
+            const { fullName, email, password, google_id } = req.body
+            const user = await this.userCase.gAuth(fullName,email,password,google_id)
+            if (user && user.token) {
+                return res
+                    .status(200)
+                    .json({
+                        user,
+                });
+            } else {
+                return res
+                    .status(400)
+                    .json({
+                        user,
+                });
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 

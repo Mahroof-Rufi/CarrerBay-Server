@@ -21,5 +21,7 @@ const controller = new userController(useCase);
 router.post('/send-otp', (req, res) => controller.sendOTP(req,res))
 router.post('/login', (req, res) => controller.logIn(req,res))
 router.post('/sign_up', (req, res) => controller.signUp(req,res))
+router.post('/g-auth', (req, res) => controller.gAuth(req, res))
+// router.get('/auth', (req, res) => console.log(req.headers,req.header))
 
 export default router

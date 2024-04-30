@@ -31,10 +31,6 @@ class employerController {
             const employer = await this.useCase.login(email, password)
             if (employer && employer.token) {
                 return res
-                    .cookie("employerToken", employer.token, {
-                        httpOnly: true,
-                        maxAge: 24 * 60 * 60 * 1000,
-                    })
                     .status(200)
                     .json({
                         employer,

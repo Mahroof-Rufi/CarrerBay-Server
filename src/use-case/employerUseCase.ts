@@ -16,8 +16,8 @@ class employerUseCase {
 
     async sendOTP(email:string) {
         const OTP = this.GenerateOTP.generateOTP()
-        const employer = this.employerRepository.findByEmail(email)
-        if (!email) {
+        const employer = await this.employerRepository.findByEmail(email)
+        if (!employer) {
             const res = await this.mailer.sendMail(email,parseInt(OTP))
             this.employerOTPRepo.insertOTP(email,parseInt(OTP))
             if (res) {

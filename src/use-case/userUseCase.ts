@@ -18,7 +18,7 @@ class userUseCase {
 
     async sendOTP(email:string) {
         const OTP = this.generateOTP.generateOTP()   
-        const user = this.userRepo.findByEmail(email) 
+        const user = await this.userRepo.findByEmail(email) 
         if (!user) {
             const res = await this.sendMail.sendMail(email,parseInt(OTP));
             this.OtpRepo.insertOTP(email,parseInt(OTP))
@@ -33,7 +33,7 @@ class userUseCase {
                     data: 'OTP send failed, try again'
                 }
             }
-        } else {
+        } else {            
             return {
                 status: 400,
                 data: 'Email already exists'
@@ -88,6 +88,35 @@ class userUseCase {
                 status: 400,
                 message: 'User not found'
             }
+        }
+    }
+
+    async gAuth(fullName:string, email: string, password: string, google_id:string) {
+        const user = await this.userRepo.findByEmail(email)
+        if (user) {
+            const token = this.jwt.createToken(user.id, 'Normal-User')
+            return {
+                status: 200,
+                token: token,
+                userDate: user,
+                message: 'Login successfully'
+            }
+        } else {
+            const res:user = await this.userRepo.insertOne({firstName:fullName,email:email,password:password,id:google_id})
+            if (res) {
+                const token = this.jwt.createToken(res.id, 'Normal-User')
+                return {
+                    status: 200,
+                    token: token,
+                    userDate: user,
+                    message: 'Login successfully'
+                }
+            }
+            return {
+                status: 400,
+                message: 'Something went wrong'
+            }
+            
         }
     }
 
