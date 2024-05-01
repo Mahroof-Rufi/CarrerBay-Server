@@ -21,6 +21,7 @@ class userUseCase {
         const user = await this.userRepo.findByEmail(email) 
         if (!user) {
             const res = await this.sendMail.sendMail(email,parseInt(OTP));
+            await this.OtpRepo.deleteMany(email)
             this.OtpRepo.insertOTP(email,parseInt(OTP))
             if (res) {
                 return {

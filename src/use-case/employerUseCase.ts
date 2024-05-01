@@ -19,6 +19,7 @@ class employerUseCase {
         const employer = await this.employerRepository.findByEmail(email)
         if (!employer) {
             const res = await this.mailer.sendMail(email,parseInt(OTP))
+            this.employerOTPRepo.deleteMany(email)
             this.employerOTPRepo.insertOTP(email,parseInt(OTP))
             if (res) {
                 return {

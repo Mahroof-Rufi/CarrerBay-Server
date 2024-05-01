@@ -20,7 +20,7 @@ class adminUseCase {
             const token = this.jwt.createToken(admin.id, 'admin')
             return {
                 status: 200,
-                token: token,
+                adminToken: token,
                 userDate: admin,
                 message: 'Login successfully'
             }

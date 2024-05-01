@@ -26,6 +26,16 @@ class OtpRepo implements OTP{
             return null
         }
     }
+
+    async deleteMany(email: string): Promise<boolean | null> {
+        try {
+            await otpModel.deleteMany({email:email})
+            return true
+        } catch (error) {
+            console.error(error);     
+            return null       
+        }
+    }
        
 }
 export default OtpRepo

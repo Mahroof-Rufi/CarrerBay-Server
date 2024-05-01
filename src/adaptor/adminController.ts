@@ -9,13 +9,8 @@ class adminController {
         try {
             const { email, password } = req.body
             const admin = await this.adminUseCase.login(email,password)
-            if (admin && admin.token) {
-                return res
-                    .cookie("admiToken", admin.token, {
-                        secure: true,
-                        maxAge: 24 * 60 * 60 * 1000,
-                    })
-                    .status(200)
+            if (admin && admin.adminToken) {
+                return res.status(200)
                     .json({
                         admin,
                 });
