@@ -3,11 +3,11 @@ import employerUseCase from "../use-case/employerUseCase";
 
 class employerController {
 
-    constructor(private useCase: employerUseCase) { }
+    constructor(private employerUseCase: employerUseCase) { }
 
     async sendOTP(req: Request, res: Response) {
         try {
-            const response = await this.useCase.sendOTP(req.body.email)
+            const response = await this.employerUseCase.sendOTP(req.body.email)
             res.status(response.status).json(response.data)
         } catch (error) {
             console.error(error);
@@ -17,7 +17,7 @@ class employerController {
     async register(req: Request, res: Response) {
         try {
             const employerData = req.body
-            const emplyer = await this.useCase.register(employerData)
+            const emplyer = await this.employerUseCase.register(employerData)
             res.status(emplyer.status).json(emplyer.data)
         } catch (error) {
             console.error(error);
@@ -28,7 +28,7 @@ class employerController {
 
         try {
             const { email, password } = req.body
-            const employer = await this.useCase.login(email, password)
+            const employer = await this.employerUseCase.login(email, password)
             if (employer && employer.token) {
                 return res
                     .status(200)

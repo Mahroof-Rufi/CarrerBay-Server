@@ -8,7 +8,6 @@ import adminRouter from '../routes/adminRouter'
 export const createServer = () => {
 
     try {
-
         const app = express()
         app.use(express.json())
         app.use(cors({
@@ -22,7 +21,6 @@ export const createServer = () => {
         app.use('/admin', adminRouter)
 
         return app
-
     } catch (error) {
 
         console.error(error);

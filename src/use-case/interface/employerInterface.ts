@@ -1,10 +1,10 @@
 import employer from "../../domain/employer";
 
-interface employerRepo {
+interface employerInterface {
 
     insertOne(employer:employer): Promise<employer>,
     findByEmail(email:string): Promise<employer | null>,
 
 }
 
-export default employerRepo
+export default employerInterface

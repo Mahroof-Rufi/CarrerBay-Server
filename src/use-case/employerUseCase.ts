@@ -1,6 +1,6 @@
 import employer from "../domain/employer";
-import employerRepo from "./interface/employerController";
-import employerOTPRepo from "../infrastructure/repository/employerOTPRepo";
+import employerRepository from "../infrastructure/repository/employerRepository";
+import employerOTPRepository from "../infrastructure/repository/employerOTPRepository";
 import GenerateOTP from "../infrastructure/utils/generateOTP";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
 import Jwt from "../infrastructure/utils/jwt";
@@ -8,8 +8,8 @@ import Jwt from "../infrastructure/utils/jwt";
 class employerUseCase {
 
     constructor(
-        private employerRepository:employerRepo,
-        private employerOTPRepo:employerOTPRepo,
+        private employerRepository:employerRepository,
+        private employerOTPRepoitory:employerOTPRepository,
         private GenerateOTP:GenerateOTP,
         private mailer:NodeMailer,
         private jwt:Jwt) {}
@@ -19,8 +19,8 @@ class employerUseCase {
         const employer = await this.employerRepository.findByEmail(email)
         if (!employer) {
             const res = await this.mailer.sendMail(email,parseInt(OTP))
-            this.employerOTPRepo.deleteMany(email)
-            this.employerOTPRepo.insertOTP(email,parseInt(OTP))
+            this.employerOTPRepoitory.deleteMany(email)
+            this.employerOTPRepoitory.insertOTP(email,parseInt(OTP))
             if (res) {
                 return {
                     status: 200,
@@ -43,7 +43,7 @@ class employerUseCase {
     async register(employerData:employer) {
         const employer = await this.employerRepository.findByEmail(employerData.email)
         if(!employer) {
-            const otp = await this.employerOTPRepo.getOtpByEmail(employerData.email)
+            const otp = await this.employerOTPRepoitory.getOtpByEmail(employerData.email)
             if (otp?.OTP == employerData.OTP) {
                 await this.employerRepository.insertOne(employerData)
                 return {

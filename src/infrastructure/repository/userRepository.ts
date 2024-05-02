@@ -1,8 +1,8 @@
 import user from "../../domain/user";
-import UserRepo from "../../use-case/interface/userController";
+import UserInterface from "../../use-case/interface/userInterface";
 import userModel from "../data-base/userModel";
 
-class userRepository implements UserRepo {
+class userRepository implements UserInterface {
 
     async insertOne(user: user): Promise<user> {
         const newUser = new userModel(user)

@@ -3,13 +3,13 @@ import userUseCase from "../use-case/userUseCase";
 
 class userController {
 
-    constructor(private userCase: userUseCase) { }
+    constructor(private userUseCase: userUseCase) { }
 
     async signUp(req: Request, res: Response) {
         try {
             const userData = req.body
             
-            const user = await this.userCase.signUp(userData)
+            const user = await this.userUseCase.signUp(userData)
             res.status(user.status).json(user.data)
         } catch (error) {
             console.error(error);
@@ -20,7 +20,7 @@ class userController {
     async sendOTP(req:Request, res:Response) {
         try {
             const email = req.body.email
-            const response = await this.userCase.sendOTP(email)
+            const response = await this.userUseCase.sendOTP(email)
             res.status(response.status).json(response.data)                    
         } catch (error) {
             console.error(error); 
@@ -31,7 +31,7 @@ class userController {
         
         try {
             const { email, password } = req.body
-            const user = await this.userCase.logIn(email,password)
+            const user = await this.userUseCase.logIn(email,password)
             if (user && user.token) {
                 return res
                     .status(200)
@@ -53,7 +53,7 @@ class userController {
     async gAuth(req:Request, res:Response) {
         try {
             const { fullName, email, password, google_id } = req.body
-            const user = await this.userCase.gAuth(fullName,email,password,google_id)
+            const user = await this.userUseCase.gAuth(fullName,email,password,google_id)
             if (user && user.token) {
                 return res
                     .status(200)

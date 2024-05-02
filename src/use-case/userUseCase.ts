@@ -1,28 +1,28 @@
 import user from "../domain/user";
-import OtpRepo from "../infrastructure/repository/OTPRepo";
+import userOTPRepository from "../infrastructure/repository/userOTPRepository";
+import userRepository from "../infrastructure/repository/userRepository";
 import GenerateOTP from "../infrastructure/utils/generateOTP";
 import Jwt from "../infrastructure/utils/jwt";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
-import UserRepo from "./interface/userController";
 
 
 class userUseCase {
 
     constructor(
-        private userRepo: UserRepo,
+        private userRepository: userRepository,
         private jwt: Jwt,
         private generateOTP: GenerateOTP,
         private sendMail: NodeMailer,
-        private OtpRepo:OtpRepo) { }
+        private userOTPRepo:userOTPRepository) { }
 
 
     async sendOTP(email:string) {
         const OTP = this.generateOTP.generateOTP()   
-        const user = await this.userRepo.findByEmail(email) 
+        const user = await this.userRepository.findByEmail(email) 
         if (!user) {
             const res = await this.sendMail.sendMail(email,parseInt(OTP));
-            await this.OtpRepo.deleteMany(email)
-            this.OtpRepo.insertOTP(email,parseInt(OTP))
+            await this.userOTPRepo.deleteMany(email)
+            this.userOTPRepo.insertOTP(email,parseInt(OTP))
             if (res) {
                 return {
                     status: 200,
@@ -44,11 +44,11 @@ class userUseCase {
 
 
     async signUp(userData: user) {
-        const user = await this.userRepo.findByEmail(userData.email)
+        const user = await this.userRepository.findByEmail(userData.email)
         if (!user) {
-            const otp = await this.OtpRepo.getOtpByEmail(userData.email)
+            const otp = await this.userOTPRepo.getOtpByEmail(userData.email)
             if (otp?.OTP == userData.OTP) {
-                await this.userRepo.insertOne(userData)
+                await this.userRepository.insertOne(userData)
                 return {
                     status: 200,
                     data: 'User registration successfull'
@@ -68,7 +68,7 @@ class userUseCase {
     }
 
     async logIn(email: string, password: string) {
-        const userData = await this.userRepo.findByEmail(email)
+        const userData = await this.userRepository.findByEmail(email)
 
         if (userData) {
             if (password !== userData.password) {
@@ -93,7 +93,7 @@ class userUseCase {
     }
 
     async gAuth(fullName:string, email: string, password: string, google_id:string) {
-        const user = await this.userRepo.findByEmail(email)
+        const user = await this.userRepository.findByEmail(email)
         if (user) {
             const token = this.jwt.createToken(user.id, 'Normal-User')
             return {
@@ -103,7 +103,7 @@ class userUseCase {
                 message: 'Login successfully'
             }
         } else {
-            const res:user = await this.userRepo.insertOne({firstName:fullName,email:email,password:password,id:google_id})
+            const res:user = await this.userRepository.insertOne({firstName:fullName,email:email,password:password,id:google_id})
             if (res) {
                 const token = this.jwt.createToken(res.id, 'Normal-User')
                 return {

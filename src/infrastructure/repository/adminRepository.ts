@@ -1,8 +1,8 @@
 import admin from "../../domain/admin";
-import adminRepo from "../../use-case/interface/adminController";
-import adminModel from "../data-base/admin";
+import adminInterface from "../../use-case/interface/adminInterface";
+import adminModel from "../data-base/adminModel";
 
-class adminRepository implements adminRepo {
+class adminRepository implements adminInterface {
 
     async findByEmail(email: string): Promise<admin | null> {
         const admin = await adminModel.findOne({ email: email })

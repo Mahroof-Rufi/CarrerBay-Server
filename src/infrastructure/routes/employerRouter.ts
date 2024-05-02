@@ -1,9 +1,9 @@
 import express from "express";
 import employerUseCase from "../../use-case/employerUseCase";
-import employerOTPRepo from "../repository/employerOTPRepo";
+import employerOTPRepo from "../repository/employerOTPRepository";
 import GenerateOTP from "../utils/generateOTP";
 import NodeMailer from "../utils/nodeMailer";
-import employerRepository from "../repository/employerRepo";
+import employerRepository from "../repository/employerRepository";
 import Jwt from "../utils/jwt";
 import employerController from "../../adaptor/employerController";
 
@@ -21,4 +21,5 @@ const controller = new employerController(useCase)
 router.post('/send-otp', (req, res) => controller.sendOTP(req,res))
 router.post('/register', (req, res) => controller.register(req,res))
 router.post('/login', (req, res) => controller.logIn(req,res))
+
 export default router

@@ -1,9 +1,9 @@
 import admin from "../../domain/admin";
 
-interface adminRepo {
+interface adminInterface {
 
     findByEmail(email:string): Promise<admin | null>,
 
 }
 
-export default adminRepo
+export default adminInterface

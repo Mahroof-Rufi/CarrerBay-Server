@@ -1,10 +1,10 @@
+import adminRepository from "../infrastructure/repository/adminRepository";
 import Jwt from "../infrastructure/utils/jwt";
-import adminRepo from "./interface/adminController";
 
 class adminUseCase {
 
     constructor(
-        private adminRepo:adminRepo,
+        private adminRepo:adminRepository,
         private jwt:Jwt
         ) {}
 

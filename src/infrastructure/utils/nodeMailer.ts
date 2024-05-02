@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-import mailer from "../../use-case/interface/mailer";
+import mailer from "../../use-case/interface/mailerInterface";
 
 class NodeMailer implements mailer {
 

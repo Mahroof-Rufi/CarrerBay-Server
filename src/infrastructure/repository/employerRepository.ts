@@ -1,8 +1,8 @@
 import employer from "../../domain/employer";
-import employerRepo from "../../use-case/interface/employerController";
+import employerInterface from "../../use-case/interface/employerInterface";
 import employerModel from "../data-base/employerModel";
 
-class employerRepository implements employerRepo{
+class employerRepository implements employerInterface{
 
     async insertOne(employer: employer): Promise<employer> {
         const newEmployer = new employerModel(employer)

@@ -1,12 +1,12 @@
 import express from "express";
-import adminRepository from "../repository/adminRepo";
+import adminRepository from "../repository/adminRepository";
 import adminUseCase from "../../use-case/adminUseCase";
 import Jwt from "../utils/jwt";
 import adminController from "../../adaptor/adminController";
 
-const jwt = new Jwt()
-
 const router = express.Router()
+
+const jwt = new Jwt()
 
 const repository = new adminRepository()
 const useCase = new adminUseCase(repository,jwt)

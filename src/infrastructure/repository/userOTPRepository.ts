@@ -1,12 +1,12 @@
-import OTP from "../../use-case/interface/OTP";
-import employerOTPModel from "../data-base/employerOTPModal";
+import OTPInterface from "../../use-case/interface/OTPInterface";
 import otp from "../../domain/OTP"
+import otpModel from "../data-base/userOTPModel";
 
-class employerOTPRepo implements OTP{
+class userOTPRepository implements OTPInterface{
 
     async insertOTP(email: string, otp: number): Promise<boolean> {
         try {
-            await employerOTPModel.create({
+            await otpModel.create({
                 email: email,
                 OTP: otp
             })
@@ -19,7 +19,7 @@ class employerOTPRepo implements OTP{
 
     async getOtpByEmail(email: string): Promise<otp | null> {
         try {
-            let otp = await employerOTPModel.findOne({email:email})
+            let otp = await otpModel.findOne({email:email})
             return otp;
         } catch (error) {
             console.error(error);
@@ -29,13 +29,13 @@ class employerOTPRepo implements OTP{
 
     async deleteMany(email: string): Promise<boolean | null> {
         try {
-            await employerOTPModel.deleteMany({email:email})
+            await otpModel.deleteMany({email:email})
             return true
         } catch (error) {
-            console.error(error);  
-            return null          
+            console.error(error);     
+            return null       
         }
     }
        
 }
-export default employerOTPRepo
+export default userOTPRepository
