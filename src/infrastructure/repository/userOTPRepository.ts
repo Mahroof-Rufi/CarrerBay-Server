@@ -8,7 +8,8 @@ class userOTPRepository implements OTPInterface{
         try {
             await otpModel.create({
                 email: email,
-                OTP: otp
+                OTP: otp,
+                createdAt: Date.now()
             })
             return true
         } catch (error) {
@@ -24,16 +25,6 @@ class userOTPRepository implements OTPInterface{
         } catch (error) {
             console.error(error);
             return null
-        }
-    }
-
-    async deleteMany(email: string): Promise<boolean | null> {
-        try {
-            await otpModel.deleteMany({email:email})
-            return true
-        } catch (error) {
-            console.error(error);     
-            return null       
         }
     }
        

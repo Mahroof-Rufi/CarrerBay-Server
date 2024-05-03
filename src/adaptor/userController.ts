@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, json } from "express";
 import userUseCase from "../use-case/userUseCase";
 
 class userController {
@@ -8,7 +8,6 @@ class userController {
     async signUp(req: Request, res: Response) {
         try {
             const userData = req.body
-            
             const user = await this.userUseCase.signUp(userData)
             res.status(user.status).json(user.data)
         } catch (error) {
@@ -69,6 +68,26 @@ class userController {
             }
         } catch (error) {
             console.error(error);
+        }
+    }
+
+    async forgotPasswordSendOTP(req:Request, res:Response) {
+        try {
+            const email = req.body.email
+            const user = await this.userUseCase.forgotpasswordSendOTP(email)
+            res.status(user.status).json(user.message)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async resetPassword(req:Request, res:Response) {
+        try {
+            const { email, OTP, password } = req.body
+            const data = await this.userUseCase.resetPassword(email, OTP, password)
+            res.status(data.status).json(data.message)
+        } catch (error) {
+            console.error(error);            
         }
     }
 

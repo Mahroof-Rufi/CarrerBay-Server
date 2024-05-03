@@ -22,5 +22,8 @@ router.post('/send-otp', (req, res) => controller.sendOTP(req,res))
 router.post('/login', (req, res) => controller.logIn(req,res))
 router.post('/sign_up', (req, res) => controller.signUp(req,res))
 router.post('/g-auth', (req, res) => controller.gAuth(req, res))
+router.route('/forgot-password')
+    .post((req, res) => controller.forgotPasswordSendOTP(req, res))
+    .patch((req, res) => controller.resetPassword(req, res))
 
 export default router

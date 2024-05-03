@@ -47,6 +47,26 @@ class employerController {
         }
     }
 
+    async forgotPasswordSendOTP(req:Request, res:Response) {
+        try {
+            const email = req.body.email
+            const reslt = await this.employerUseCase.forgotpasswordSendOTP(email)
+            res.status(reslt.status).json(reslt.message)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async resetPassword(req:Request, res:Response) {
+        try {
+            const { email, OTP, password } = req.body
+            const data = await this.employerUseCase.resetPassword(email, OTP, password)
+            res.status(data.status).json(data.message)
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
 }
 
 export default employerController

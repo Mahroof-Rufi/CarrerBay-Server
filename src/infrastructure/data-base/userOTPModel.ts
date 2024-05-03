@@ -9,6 +9,10 @@ const userOTPSchema = new Schema({
     OTP: {
         type: Number,
         required: true
+    },
+    createdAt: {
+        type: Date,
+        required: true
     }
 })
 

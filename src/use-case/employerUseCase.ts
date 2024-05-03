@@ -19,7 +19,6 @@ class employerUseCase {
         const employer = await this.employerRepository.findByEmail(email)
         if (!employer) {
             const res = await this.mailer.sendMail(email,parseInt(OTP))
-            this.employerOTPRepoitory.deleteMany(email)
             this.employerOTPRepoitory.insertOTP(email,parseInt(OTP))
             if (res) {
                 return {
@@ -85,6 +84,55 @@ class employerUseCase {
             return {
                 status: 400,
                 message: 'Data not found'
+            }
+        }
+    }
+
+    async forgotpasswordSendOTP(email:string) {
+        const company = await this.employerRepository.findByEmail(email)       
+        
+        if(company) {
+            const OTP = this.GenerateOTP.generateOTP()
+            const res = await this.mailer.sendMail(email, parseInt(OTP))
+            this.employerOTPRepoitory.insertOTP(email, parseInt(OTP))
+            if (res) {
+                return {
+                    status: 200,
+                    message: 'OTP send successfully'
+                }
+            } else {
+                return {
+                    status: 400,
+                    message: 'OTP sending failed, try again'
+                }
+            }
+        } else {
+            return {
+                status:400,
+                message: 'Email not exists'
+            }
+        }
+    }
+
+    async resetPassword(email:string, OTP:number, password:string) {
+        const realOTP = await this.employerOTPRepoitory.getOtpByEmail(email)
+        if (realOTP?.OTP == OTP) {
+            const res = await this.employerRepository.updatePassword(email, password)
+            if (res) {
+                return {
+                    status: 200,
+                    message: 'Password updated Successfully'
+                }
+            } else {
+                return {
+                    status: 400,
+                    message: 'Something went wrong'
+                }
+            }
+        } else {
+            return {
+                status: 400,
+                message: 'Invalid OTP'
             }
         }
     }

@@ -18,6 +18,19 @@ class employerRepository implements employerInterface{
             return null
         }
     }
+
+    async updatePassword(email: string, newPassword: string): Promise<employer | null> {
+        const newData = await employerModel.findOneAndUpdate(
+            { email:email },
+            { password: newPassword },
+            { new: true }
+        )
+        if (newData) {
+            return newData
+        } else {
+            return null
+        }
+    }
     
 }
 

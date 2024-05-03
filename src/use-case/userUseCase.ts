@@ -21,7 +21,6 @@ class userUseCase {
         const user = await this.userRepository.findByEmail(email) 
         if (!user) {
             const res = await this.sendMail.sendMail(email,parseInt(OTP));
-            await this.userOTPRepo.deleteMany(email)
             this.userOTPRepo.insertOTP(email,parseInt(OTP))
             if (res) {
                 return {
@@ -118,6 +117,55 @@ class userUseCase {
                 message: 'Something went wrong'
             }
             
+        }
+    }
+
+    async forgotpasswordSendOTP(email:string) {
+        const user = await this.userRepository.findByEmail(email)       
+        
+        if(user) {
+            const OTP = this.generateOTP.generateOTP()
+            const res = await this.sendMail.sendMail(email, parseInt(OTP))
+            this.userOTPRepo.insertOTP(email, parseInt(OTP))
+            if (res) {
+                return {
+                    status: 200,
+                    message: 'OTP send successfully'
+                }
+            } else {
+                return {
+                    status: 400,
+                    message: 'OTP sending failed, try again'
+                }
+            }
+        } else {
+            return {
+                status:400,
+                message: 'Email not exists'
+            }
+        }
+    }
+
+    async resetPassword(email:string, OTP:number, password:string) {
+        const realOTP = await this.userOTPRepo.getOtpByEmail(email)
+        if (realOTP?.OTP == OTP) {
+            const res = await this.userRepository.updatePassword(email, password)
+            if (res) {
+                return {
+                    status: 200,
+                    message: 'Password updated Successfully'
+                }
+            } else {
+                return {
+                    status: 400,
+                    message: 'Something went wrong'
+                }
+            }
+        } else {
+            return {
+                status: 400,
+                message: 'Invalid OTP'
+            }
         }
     }
 

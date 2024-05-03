@@ -18,8 +18,11 @@ const repository = new employerRepository
 const useCase = new employerUseCase(repository,employerotpRepo,generateOTP,mailere,jwt)
 const controller = new employerController(useCase)
 
-router.post('/send-otp', (req, res) => controller.sendOTP(req,res))
+router.post('/send-otp', (req, res) => controller.sendOTP(req,  res))
 router.post('/register', (req, res) => controller.register(req,res))
-router.post('/login', (req, res) => controller.logIn(req,res))
+router.post('/login', (req, res) => controller.logIn(req, res))
+router.route('/forgot-password')
+    .post((req, res) => controller.forgotPasswordSendOTP(req, res))
+    .patch((req, res) => controller.resetPassword(req, res))
 
 export default router

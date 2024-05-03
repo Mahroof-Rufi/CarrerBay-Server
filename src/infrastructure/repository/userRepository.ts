@@ -19,6 +19,19 @@ class userRepository implements UserInterface {
         }
     }
 
+    async updatePassword(email: string, newPassword:string): Promise<user | null> {
+        const newData = await userModel.findOneAndUpdate(
+            { email:email },
+            { password: newPassword },
+            { new: true }
+        )
+        if (newData) {
+            return newData
+        } else {
+            return null
+        }
+    }
+
 }
 
 export default userRepository
