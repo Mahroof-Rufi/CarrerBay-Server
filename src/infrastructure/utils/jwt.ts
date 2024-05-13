@@ -28,6 +28,23 @@ class Jwt {
         }
     }
 
+    verifyToken(token:string): JwtPayload | null {
+        try {
+            const decodedToken = verify(token, this.secretKey) as JwtPayload;
+            return decodedToken
+        } catch (error:any) {
+            if (error.name == 'TokenExpiredError') {
+                return {
+                    status: 401,
+                    message: 'Token expired, login again'
+                }
+            } else {
+                console.error(error);
+            }
+            return null            
+        }
+    }
+
 }
 
 export default Jwt

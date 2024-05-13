@@ -4,12 +4,15 @@ import employerOTPRepository from "../infrastructure/repository/employerOTPRepos
 import GenerateOTP from "../infrastructure/utils/generateOTP";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
 import Jwt from "../infrastructure/utils/jwt";
+import jobsRepository from "../infrastructure/repository/jobsRepository";
+import Job from "../domain/job";
 
 class employerUseCase {
 
     constructor(
         private employerRepository:employerRepository,
         private employerOTPRepoitory:employerOTPRepository,
+        private jobRepository:jobsRepository,
         private GenerateOTP:GenerateOTP,
         private mailer:NodeMailer,
         private jwt:Jwt) {}
@@ -63,27 +66,49 @@ class employerUseCase {
         }
     }
 
-    async login(email:string, password:string) {
+    async login(email:string, employerPassword:string) {
         const employerData = await this.employerRepository.findByEmail(email)
 
-        if (employerData) {
-            if (password !== employerData.password) {
+        if (employerData) {    
+            if (employerPassword !== employerData.password) {
                 return {
                     status: 400,
                     message: 'Invalid credentials'
                 }
             }
-            const token = this.jwt.createToken(employerData.id, 'Normal-employer')
+            console.log('here the employer data');
+            console.log(employerData);
+            
+            
+            const token = this.jwt.createToken(employerData._id, 'Normal-employer')
+            const { password, ...employerDataWithoutPassword } = employerData;
             return {
                 status: 200,
                 token: token,
-                userDate: employerData,
+                employerData: employerDataWithoutPassword,
                 message: 'Login successfully'
             }
         } else {
             return {
                 status: 400,
                 message: 'Data not found'
+            }
+        }
+    }
+
+    async fetchEmployerData(token:string) {
+        const decode = this.jwt.verifyToken(token)
+        const res = await this.employerRepository.findById(decode?.id)
+        if (res) {
+            return {
+                status:200,
+                employerData:res,
+                message:'Operation success'
+            }
+        } else {
+            return {
+                status:401,
+                message:'Unauthorized Access'
             }
         }
     }
@@ -133,6 +158,103 @@ class employerUseCase {
             return {
                 status: 400,
                 message: 'Invalid OTP'
+            }
+        }
+    }
+
+    async updateProfile(newData:employer) {
+        const data = await this.employerRepository.updateProfile(newData.email, newData)
+        if (data) {
+            const updatedData = await this.employerRepository.findByEmail(data.email)
+            return {
+                status: 200,
+                oldProfileUrl: data.profile_url,
+                updatedData:updatedData,
+                message: 'Profile updated successfully'
+            }
+        } else {
+            return {
+                status: 400,
+                message: 'Something went wrong'
+            }
+        }
+    }
+
+
+    async updateEmailWithOTP(email:string, OTP:number, newMail:string) {
+        const otp = await this.employerOTPRepoitory.getOtpByEmail(email)
+        if (otp?.OTP == OTP) {
+            const updatedData = await this.employerRepository.updateEmail(email,newMail)
+            return {
+                status: 200,
+                message: 'Email updated Successfully',
+                updatedData: updatedData
+            }
+        } else {
+            return {
+                status: 400,
+                message: 'Invalid OTP',
+            }
+        }
+    }
+
+    async fetchJobs(token:string, title?:string | undefined) {
+        const decode = this.jwt.verifyToken(token)
+        const jobs = await this.jobRepository.fetch8Jobs(decode?.id, title)
+        return {
+            status: 200,
+            jobs: jobs
+        }        
+    }
+
+    async addNewJobPost(jobData:Job, token:string) {
+        const decode = this.jwt.verifyToken(token)
+        jobData.company_id = decode?.id
+        const currentDate = new Date()
+        jobData.postedAt = currentDate
+        jobData.active = true
+        const job = await this.jobRepository.insertOneJob(jobData)
+        if (job) {
+            return {
+                status: 200,
+                message: 'Job Post Successfull',
+                job: job
+            }
+        } else {
+            return {
+                status: 400,
+                message: 'Something went wrong'
+            }
+        }
+    }
+
+    async editJobPost(jobId:string, jobData:Job) {
+        const updatedJob = await this.jobRepository.updateJobByID(jobId, jobData)
+        if (updatedJob) {
+            return {
+                status: 200,
+                message: 'Job Post updated succesfully',
+                updatedJob: updatedJob
+            }
+        } else {
+            return {
+                status: 400,
+                message: 'Something went wrong update job'
+            }
+        }
+    }
+
+    async deleteJob(jobId:string) {
+        const res = await this.jobRepository.deleteJobById(jobId)
+        if (res) {
+            return {
+                status:200,
+                message:'Job deleted successfully'
+            }
+        } else {
+            return {
+                status:401,
+                message:'Something went wrong'
             }
         }
     }

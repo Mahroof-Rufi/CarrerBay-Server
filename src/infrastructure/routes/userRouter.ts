@@ -6,16 +6,18 @@ import Jwt from "../utils/jwt";
 import GenerateOTP from "../utils/generateOTP";
 import NodeMailer from "../utils/nodeMailer";
 import OtpRepo from "../repository/userOTPRepository";
+import jobsRepository from "../repository/jobsRepository";
 
 const jwt = new Jwt()
 const OTP = new GenerateOTP()
 const mailer = new NodeMailer()
 const OTPRepo = new OtpRepo()
+const jobsRepo = new jobsRepository()
 
 const router = express.Router()
 
 const repository = new userRepository()
-const useCase = new userUseCase(repository,jwt,OTP,mailer,OTPRepo)
+const useCase = new userUseCase(repository,jwt,OTP,mailer,OTPRepo,jobsRepo)
 const controller = new userController(useCase);
 
 router.post('/send-otp', (req, res) => controller.sendOTP(req,res))
@@ -26,4 +28,7 @@ router.route('/forgot-password')
     .post((req, res) => controller.forgotPasswordSendOTP(req, res))
     .patch((req, res) => controller.resetPassword(req, res))
 
+router.route('/jobs')
+    .get((req, res) => controller.fetchJobs(req, res))
+ 
 export default router

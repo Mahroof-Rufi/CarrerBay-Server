@@ -91,6 +91,15 @@ class userController {
         }
     }
 
+    async fetchJobs(req:Request, res:Response) {
+        try {
+            const data = await this.userUseCase.fetchJobs()
+            res.status(data.status).json({data:data.jobs})
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
 }
 
 export default userController

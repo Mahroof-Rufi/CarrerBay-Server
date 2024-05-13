@@ -6,9 +6,16 @@ const employerSchema: Schema<employer> = new Schema({
         type: String,
         required: true
     },
+    profile_url: {
+        type: String,
+        required: true
+    },
     email: {
         type: String,
         required: true
+    },
+    phone: {
+        type: String
     },
     password: {
         type: String,
@@ -26,9 +33,20 @@ const employerSchema: Schema<employer> = new Schema({
         type: String,
         required: true
     },
-    is_Verfied: {
-        type: Boolean,
-        required: true
+    noOfWorkersRange: {
+        type: String,
+    },
+    web_url: {
+        type: String,
+    },
+    instagram_url: {
+        type: String,
+    },
+    X_url: {
+        type: String
+    },
+    about: {
+        type: String
     }
 })
 

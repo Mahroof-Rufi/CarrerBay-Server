@@ -1,13 +1,19 @@
 interface employer {
-    id: string,
+    _id: string,
     companyName: string,
+    profile_url: string,
     email: string,
+    phone: string
     password: string,
     industry: string,
     city: string,
     state: string,
+    noOfWorkersRange?: string,
     OTP?: number,
-    is_Verfied: boolean
+    web_url?: string,
+    instagram_url?: string,
+    X_url?: string,
+    about?: string,
 }
 
 export default employer

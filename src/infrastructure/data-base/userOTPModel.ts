@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
 import OTP from "../../domain/OTP";
 
-const userOTPSchema = new Schema({
+const userOTPSchema = new Schema<OTP>({
     email: {
         type: String,
         required: true

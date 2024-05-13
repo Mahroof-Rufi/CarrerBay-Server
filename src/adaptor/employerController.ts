@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import employerUseCase from "../use-case/employerUseCase";
+import cloudinary from "../infrastructure/utils/cloudinary";
 
 class employerController {
 
@@ -17,6 +18,10 @@ class employerController {
     async register(req: Request, res: Response) {
         try {
             const employerData = req.body
+            console.log('data in ctrl');
+            console.log(employerData);
+            
+            
             const emplyer = await this.employerUseCase.register(employerData)
             res.status(emplyer.status).json(emplyer.data)
         } catch (error) {
@@ -25,7 +30,6 @@ class employerController {
     }
 
     async logIn(req: Request, res: Response) {
-
         try {
             const { email, password } = req.body
             const employer = await this.employerUseCase.login(email, password)
@@ -47,6 +51,18 @@ class employerController {
         }
     }
 
+    async fetchEmployerData(req:Request, res:Response) {
+        try {
+            const token = req.header('Employer-Token');
+            if (token) {
+                const result = await this.employerUseCase.fetchEmployerData(token)
+                res.status(result?.status).json({data:result?.employerData, message:result.message})
+            }
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
     async forgotPasswordSendOTP(req:Request, res:Response) {
         try {
             const email = req.body.email
@@ -62,6 +78,90 @@ class employerController {
             const { email, OTP, password } = req.body
             const data = await this.employerUseCase.resetPassword(email, OTP, password)
             res.status(data.status).json(data.message)
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async updateProfile(req:Request, res:Response) {
+        try {
+            if (req.file) {                
+                const data = await cloudinary.uploader.upload(req.file?.path)
+                if (data.url) {
+                    const newData = { ...req.body, profile_url: data.url };
+                    const result = await this.employerUseCase.updateProfile(newData)
+                    
+                    if (result.oldProfileUrl) {
+                        await cloudinary.uploader.destroy(result.oldProfileUrl)
+                    }
+                    res.status(result.status).json({ updatedData: data.updatedData, message: data.message });           
+                } else {                    
+                    throw new Error('Unable to get Cloudinary URL');
+                }
+            } else {
+                const newData = {...req.body}                
+                const data = await this.employerUseCase.updateProfile(newData)
+                console.log(data.updatedData);
+                
+                res.status(data.status).json({ updatedData: data.updatedData, message: data.message });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async updateEmailWithOTP(req:Request, res:Response) {
+        try {
+            const { email, OTP, newEmail } = req.body
+            const result = await this.employerUseCase.updateEmailWithOTP(email, OTP, newEmail)
+            res.status(result.status).json({message:result.message, data:result?.updatedData})
+        } catch (error) {
+            console.error(error); 
+        }
+    }
+
+    async fetchJobs(req:Request, res:Response) {
+        try {
+            const token = req.header('Employer-Token');
+            if(token) {
+                const query = req.query.title
+                const result = await this.employerUseCase.fetchJobs(token, query as string)
+                res.status(result.status).json({jobs:result.jobs})
+            }
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async postNewJob(req:Request, res:Response) {
+        try {
+            const jobData = {...req.body}
+            const token = req.header('Employer-Token');
+            if (token) {
+                const response = await this.employerUseCase.addNewJobPost(jobData, token)
+                res.status(response.status).json({message:response.message, data:response.job})
+            }
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async editJob(req:Request, res:Response) {
+        try {
+            const jobData = { ...req.body };
+            const jobId = req.params.id
+            const response = await this.employerUseCase.editJobPost(jobId,jobData);
+            res.status(response.status).json({message:response.message,updateJob:response.updatedJob})                  
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async deleteJob(req:Request, res:Response) {
+        try {
+            const jobId:string = req.params.id
+            const response = await this.employerUseCase.deleteJob(jobId)
+            res.status(response.status).json({message:response.message})
         } catch (error) {
             console.error(error);            
         }

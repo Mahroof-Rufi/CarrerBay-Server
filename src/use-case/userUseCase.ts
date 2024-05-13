@@ -1,4 +1,5 @@
 import user from "../domain/user";
+import jobsRepository from "../infrastructure/repository/jobsRepository";
 import userOTPRepository from "../infrastructure/repository/userOTPRepository";
 import userRepository from "../infrastructure/repository/userRepository";
 import GenerateOTP from "../infrastructure/utils/generateOTP";
@@ -13,7 +14,9 @@ class userUseCase {
         private jwt: Jwt,
         private generateOTP: GenerateOTP,
         private sendMail: NodeMailer,
-        private userOTPRepo:userOTPRepository) { }
+        private userOTPRepo:userOTPRepository,
+        private jobsRepository: jobsRepository
+    ) { }
 
 
     async sendOTP(email:string) {
@@ -166,6 +169,14 @@ class userUseCase {
                 status: 400,
                 message: 'Invalid OTP'
             }
+        }
+    }
+
+    async fetchJobs() {
+        const jobs = await this.jobsRepository.fetchAll6Jobs()
+        return {
+            status: 200,
+            jobs: jobs
         }
     }
 
