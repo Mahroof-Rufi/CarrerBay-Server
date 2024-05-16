@@ -1,4 +1,4 @@
-import { user, EditUser } from "../domain/user";
+import { user, EditUser, experience } from "../domain/user";
 import jobsRepository from "../infrastructure/repository/jobsRepository";
 import userOTPRepository from "../infrastructure/repository/userOTPRepository";
 import userRepository from "../infrastructure/repository/userRepository";
@@ -244,6 +244,38 @@ class userUseCase {
         }
     }
 
+    async updateUserExperience(user_id:string, experience:experience, exp_id?:string,) {
+        if (exp_id) {
+            
+            const res = await this.userRepository.updateUserExperience(user_id, exp_id, experience)
+            if (res) {
+                return {
+                    status:201,
+                    updatedData:res,
+                    message:'User added updated'
+                }
+            } else {
+                return {
+                    status:404,
+                    message:'User not found 1'
+                }
+            }
+        } else {
+            const res = await this.userRepository.addUserExperience(user_id, experience)
+            if (res) {
+                return {
+                    status:201,
+                    updatedData:res,
+                    message:'User experience updated'
+                }
+            } else {
+                return {
+                    status:404,
+                    message:'User not found 2'
+                }
+            }
+        }
+    }
 }
 
 export default userUseCase

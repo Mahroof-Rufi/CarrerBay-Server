@@ -1,5 +1,50 @@
-import { Schema, model } from "mongoose";
-import { user } from "../../domain/user";
+import mongoose, { Schema, model } from "mongoose";
+import { experience, user } from "../../domain/user";
+
+
+const experienceSchema = new Schema<experience>({
+    jobTitle: {
+        type: String, 
+        required: true 
+    },
+    companyName: { 
+        type: String, 
+        required: true 
+    },
+    jobType: { 
+        type: String, 
+        required: true 
+    },
+    startDate: { 
+        type: Date, 
+        required: true 
+    },
+    endDate: { 
+        type: Date 
+    },
+    present: { 
+        type: Boolean, 
+        required: true 
+    },
+    city: { 
+        type: String 
+    },
+    state: { 
+        type: String 
+    },
+    remort: { 
+        type: Boolean, 
+        required: true 
+    },
+    overView: { 
+        type: String, 
+        required: true 
+    },
+    technologies: { 
+        type: [String], 
+        required: true 
+    }
+});
 
 const userSchema: Schema<user> = new Schema({
     firstName: {
@@ -53,7 +98,9 @@ const userSchema: Schema<user> = new Schema({
     resume_url: {
         type:String
     },
-    
+    experiences: {
+        type: [experienceSchema]
+    }
 })
 
 const userModel = model<user>('user', userSchema);

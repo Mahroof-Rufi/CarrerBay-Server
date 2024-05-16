@@ -25,11 +25,17 @@ const controller = new userController(useCase);
 const handleFiles = upload.fields([ { name:'resume-file' }, { name:'profile-file' } ])
 
 router.route('/:user_id')
-      .patch(userAuth, handleFiles, (req, res) => controller.updateUserProfile(req, res));
+    .patch(userAuth, handleFiles, (req, res) => controller.updateUserProfile(req, res));
+
 router.route('/jobs')
-    .get(userAuth, (req, res) => controller.fetchJobs(req, res))
+    .get(userAuth, (req, res) => controller.fetchJobs(req, res));
+    
 router.route('/user')
-    .get(userAuth,(req, res) => controller.fetchUserdata(req, res))
+    .get(userAuth,(req, res) => controller.fetchUserdata(req, res));
+
+router.route('/update-experience/:user_id')
+    .patch(userAuth, (req, res) => controller.updateUserExperience(req, res));
+
 router.post('/send-otp', (req, res) => controller.sendOTP(req,res))
 router.post('/login', (req, res) => controller.logIn(req,res))
 router.post('/sign_up', (req, res) => controller.signUp(req,res))

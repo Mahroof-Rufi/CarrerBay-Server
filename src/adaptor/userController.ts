@@ -155,7 +155,27 @@ class userController {
     convertTuiDayToDate(dateString:string):Date {
         const [day, month, year] = dateString.split('.').map(Number);
         return new Date(year, month - 1, day);
-      }
+    }
+
+    async updateUserExperience(req:Request, res:Response) {
+        try {
+            const user_id = req.params.user_id
+            const exp_id = req.body.exp_id
+            const experience = req.body.exp
+
+            console.log(user_id);
+            console.log(exp_id);
+            console.log(experience);
+            
+            
+            
+
+            const result = await this.userUseCase.updateUserExperience(user_id, experience, exp_id)
+            res.status(result.status).json({ updatdData:result.updatedData, message: result.message })           
+        } catch (error) {
+            console.error(error);            
+        }
+    }
 
 }
 
