@@ -1,5 +1,7 @@
 import { Request, Response, json } from "express";
 import userUseCase from "../use-case/userUseCase";
+import { EditUser } from "../domain/user";
+import cloudinary from "../infrastructure/utils/cloudinary";
 
 class userController {
 
@@ -8,6 +10,8 @@ class userController {
     async signUp(req: Request, res: Response) {
         try {
             const userData = req.body
+            console.log(userData);
+            
             const user = await this.userUseCase.signUp(userData)
             res.status(user.status).json(user.data)
         } catch (error) {
@@ -91,6 +95,18 @@ class userController {
         }
     }
 
+    async fetchUserdata(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            if (token) {
+                const result = await this.userUseCase.fetchUserDataWithToken(token)
+                res.status(result.status).json({message:result?.message, userData:result?.userData})
+            }
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
     async fetchJobs(req:Request, res:Response) {
         try {
             const data = await this.userUseCase.fetchJobs()
@@ -99,6 +115,47 @@ class userController {
             console.error(error);            
         }
     }
+
+    async updateUserProfile(req:Request, res:Response) {
+        try {
+            const newData:EditUser = req.body as Partial<EditUser>
+            if (typeof newData.DOB == "string") {
+                newData.DOB = this.convertTuiDayToDate(newData.DOB)
+            }
+
+            if (req.files) {
+                const profile_pic = (req.files as { [fieldname: string]: Express.Multer.File[] })['profile-file']?.[0]
+                const resume = (req.files as { [fieldname: string]: Express.Multer.File[] })['resume-file']?.[0]
+
+                if (profile_pic) {
+                    console.log('before profile upload')
+                    const profileUpload = await cloudinary.uploader.upload(profile_pic.path);
+                    newData.profile_url = profileUpload.secure_url;
+                    console.log('after profile upload')
+                }
+
+                if (resume) {
+                    console.log('before resume upload')
+                    const resumeUpload = await cloudinary.uploader.upload(resume.path);
+                    newData.resume_url = resumeUpload.secure_url;
+                    console.log('after resume upload')
+                }
+
+            } 
+
+            const userID:string = req.params.user_id
+
+            const result = await this.userUseCase.updateUserProfile(newData, userID)
+            res.status(result.status).json({ updatedData:result.updatedData, message:result.message })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    convertTuiDayToDate(dateString:string):Date {
+        const [day, month, year] = dateString.split('.').map(Number);
+        return new Date(year, month - 1, day);
+      }
 
 }
 

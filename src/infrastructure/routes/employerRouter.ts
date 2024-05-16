@@ -32,7 +32,7 @@ router.route('/forgot-password')
     .patch((req, res) => controller.resetPassword(req, res))
 
 router.route('/update-profile')
-    .put(upload.single("profile-img"), (req, res) => controller.updateProfile(req, res))
+    .put(employerAuth,upload.single("profile-img"), (req, res) => controller.updateProfile(req, res))
 
 router.route('/job')
     .get(employerAuth, (req, res) => controller.fetchJobs(req, res))

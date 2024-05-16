@@ -1,4 +1,4 @@
-import user from "../domain/user";
+import { user, EditUser } from "../domain/user";
 import jobsRepository from "../infrastructure/repository/jobsRepository";
 import userOTPRepository from "../infrastructure/repository/userOTPRepository";
 import userRepository from "../infrastructure/repository/userRepository";
@@ -50,6 +50,10 @@ class userUseCase {
         if (!user) {
             const otp = await this.userOTPRepo.getOtpByEmail(userData.email)
             if (otp?.OTP == userData.OTP) {
+                console.log('before inserting');
+                console.log(userData);
+                
+                
                 await this.userRepository.insertOne(userData)
                 return {
                     status: 200,
@@ -79,7 +83,7 @@ class userUseCase {
                     message: 'Invalid credentials'
                 }
             }
-            const token = this.jwt.createToken(userData.id, 'Normal-User')
+            const token = this.jwt.createToken(userData._id, 'Normal-User')
             return {
                 status: 200,
                 token: token,
@@ -97,7 +101,7 @@ class userUseCase {
     async gAuth(fullName:string, email: string, password: string, google_id:string) {
         const user = await this.userRepository.findByEmail(email)
         if (user) {
-            const token = this.jwt.createToken(user.id, 'Normal-User')
+            const token = this.jwt.createToken(user._id, 'Normal-User')
             return {
                 status: 200,
                 token: token,
@@ -105,9 +109,9 @@ class userUseCase {
                 message: 'Login successfully'
             }
         } else {
-            const res:user = await this.userRepository.insertOne({firstName:fullName,email:email,password:password,id:google_id})
+            const res:user = await this.userRepository.insertOne({firstName:fullName,email:email,g_id:google_id})
             if (res) {
-                const token = this.jwt.createToken(res.id, 'Normal-User')
+                const token = this.jwt.createToken(res._id, 'Normal-User')
                 return {
                     status: 200,
                     token: token,
@@ -172,11 +176,71 @@ class userUseCase {
         }
     }
 
+    async fetchUserDataWithToken(token:string) {
+        const decode = this.jwt.verifyToken(token)
+        const res = await this.userRepository.findById(decode?.id)
+        if (res) {
+            return {
+                status: 200,
+                userData: res,
+                message: 'Operation success'
+            }
+        } else {
+            return {
+                status: 401,
+                userData: res
+            }
+        }
+    }
+
     async fetchJobs() {
         const jobs = await this.jobsRepository.fetchAll6Jobs()
         return {
             status: 200,
             jobs: jobs
+        }
+    }
+
+    async updateUserProfile(newData:EditUser, user_id:string) {
+
+        const allowedUpdates = [
+            'firstName', 'lastName', 'profile_url', 'jobTitle', 'industry', 'DOB', 'gender', 'city', 'state',
+            'remort', 'resume_url', 'portfolio_url', 'gitHub_url', 'about', 'experiences', 'educations', 'skills'
+        ];
+        console.log('kkkk');
+        
+        console.log(newData);
+        
+        const updateValidator = Object.keys(newData).every((update) => allowedUpdates.includes(update));
+
+        if (!updateValidator) {
+            return {
+                status:405,
+                message:'disallowed fields found'
+            }
+        }
+
+        const userdata:user | null = await this.userRepository.findById(user_id)
+
+        if (!userdata) {
+            return {
+                status:404,
+                message:'User not found'
+            }
+        }
+
+        const res = await this.userRepository.findByIdAndUpdate(user_id, newData)
+        if (res) {
+            return {
+                status:201,
+                updatedData:res,
+                message:'User profile update succesfull'
+            }
+        } else {
+            return {
+                status:404,
+                message:'User not found'
+            }
         }
     }
 

@@ -1,10 +1,10 @@
-import user from "../../domain/user";
+import { EditUser, g_Auth_User, user } from "../../domain/user";
 import UserInterface from "../../use-case/interface/userInterface";
 import userModel from "../data-base/userModel";
 
 class userRepository implements UserInterface {
 
-    async insertOne(user: user): Promise<user> {
+    async insertOne(user: user | g_Auth_User): Promise<user> {
         const newUser = new userModel(user)
         await newUser.save()
         return newUser
@@ -30,6 +30,24 @@ class userRepository implements UserInterface {
         } else {
             return null
         }
+    }
+
+    async findById(id: string): Promise<user | null> {
+        const userData = await userModel.findById(id)
+        if (userData) {
+            return userData
+        } else {
+            return null
+        }
+    }
+
+    async findByIdAndUpdate(id:string, newData:EditUser): Promise <user | null> {
+        const userData = await userModel.findByIdAndUpdate(
+            id,
+            { $set:newData },
+            { new:true }
+        )
+        return userData ? userData : null
     }
 
 }

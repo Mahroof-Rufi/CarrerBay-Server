@@ -7,6 +7,8 @@ import GenerateOTP from "../utils/generateOTP";
 import NodeMailer from "../utils/nodeMailer";
 import OtpRepo from "../repository/userOTPRepository";
 import jobsRepository from "../repository/jobsRepository";
+import userAuth from "../middleware/userAuth";
+import upload from "../middleware/multer";
 
 const jwt = new Jwt()
 const OTP = new GenerateOTP()
@@ -20,15 +22,20 @@ const repository = new userRepository()
 const useCase = new userUseCase(repository,jwt,OTP,mailer,OTPRepo,jobsRepo)
 const controller = new userController(useCase);
 
+const handleFiles = upload.fields([ { name:'resume-file' }, { name:'profile-file' } ])
+
+router.route('/:user_id')
+      .patch(userAuth, handleFiles, (req, res) => controller.updateUserProfile(req, res));
+router.route('/jobs')
+    .get(userAuth, (req, res) => controller.fetchJobs(req, res))
+router.route('/user')
+    .get(userAuth,(req, res) => controller.fetchUserdata(req, res))
 router.post('/send-otp', (req, res) => controller.sendOTP(req,res))
 router.post('/login', (req, res) => controller.logIn(req,res))
 router.post('/sign_up', (req, res) => controller.signUp(req,res))
 router.post('/g-auth', (req, res) => controller.gAuth(req, res))
-router.route('/forgot-password')
+router.route('/forgot-password',)
     .post((req, res) => controller.forgotPasswordSendOTP(req, res))
     .patch((req, res) => controller.resetPassword(req, res))
-
-router.route('/jobs')
-    .get((req, res) => controller.fetchJobs(req, res))
  
 export default router

@@ -20,7 +20,7 @@ class jobsRepository implements jobsInterface {
     }
 
     async fetchAll6Jobs(): Promise<Job[] | null> {
-        const jobs = await jobModel.find().limit(6).populate('company_id')
+        const jobs = await jobModel.find().populate('company_id')
         console.log('here the hot data');
         console.log(jobs);
         

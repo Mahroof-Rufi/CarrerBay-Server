@@ -85,16 +85,31 @@ class employerController {
 
     async updateProfile(req:Request, res:Response) {
         try {
-            if (req.file) {                
+            if (req.file) {        
+                console.log('brfore cloud');
                 const data = await cloudinary.uploader.upload(req.file?.path)
+                console.log('after cloud');
+                
                 if (data.url) {
                     const newData = { ...req.body, profile_url: data.url };
+                    console.log('data');
+                    console.log(newData);
+                    
+                    
                     const result = await this.employerUseCase.updateProfile(newData)
+                    console.log('result');
+                    console.log(result);
+                    
+                    
                     
                     if (result.oldProfileUrl) {
+                        console.log('before distroy');
+                        
                         await cloudinary.uploader.destroy(result.oldProfileUrl)
+                        console.log('after destroy');
+                        
                     }
-                    res.status(result.status).json({ updatedData: data.updatedData, message: data.message });           
+                    res.status(result.status).json({ updatedData: result.updatedData, message: result.message });           
                 } else {                    
                     throw new Error('Unable to get Cloudinary URL');
                 }
