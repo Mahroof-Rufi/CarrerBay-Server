@@ -36,6 +36,9 @@ router.route('/user')
 router.route('/update-experience/:user_id')
     .patch(userAuth, (req, res) => controller.updateUserExperience(req, res));
 
+router.route('/update-education/:user_id')
+    .patch(userAuth, (req, res) => controller.updateUserEducation(req, res));
+
 router.post('/send-otp', (req, res) => controller.sendOTP(req,res))
 router.post('/login', (req, res) => controller.logIn(req,res))
 router.post('/sign_up', (req, res) => controller.signUp(req,res))

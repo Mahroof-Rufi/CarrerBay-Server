@@ -1,4 +1,4 @@
-import { experience,user } from "../../domain/user";
+import { education, experience,user } from "../../domain/user";
 
 interface UserInterface {
 
@@ -7,7 +7,9 @@ interface UserInterface {
     updatePassword(email:string, password:string): Promise<user | null>
     findById(id:string): Promise<user | null>
     addUserExperience(user_id:string, experience:experience): Promise<user | null>
-    updateUserExperience(user_id:string, exp_id:string, experience:experience): any
+    updateUserExperience(user_id:string, exp_id:string, experience:experience): Promise<user | null>
+    addUserEducation(user_id:string, education:education): Promise<user | null>
+    updateUserEducation(user_id:string, education:education, edct_id:string): Promise<user | null>
 }
 
 export default UserInterface

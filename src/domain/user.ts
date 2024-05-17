@@ -46,12 +46,13 @@ export interface experience {
 
 export interface education {
     universityName: string,
-    city: string,
-    state: string,
-    distance: string,
+    city?: string,
+    state?: string,
+    distance: boolean,
     subject: string,
     startDate: Date,
-    endDate: Date | string
+    endDate?: Date,
+    present: boolean
 }
 
 export interface EditUser {

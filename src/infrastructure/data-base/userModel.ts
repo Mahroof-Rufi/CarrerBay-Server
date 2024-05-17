@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
-import { experience, user } from "../../domain/user";
+import { education, experience, user } from "../../domain/user";
 
 
 const experienceSchema = new Schema<experience>({
@@ -45,6 +45,40 @@ const experienceSchema = new Schema<experience>({
         required: true 
     }
 });
+
+
+const educationSchema = new Schema<education>({
+    universityName: {
+        type:String,
+        required:true
+    },
+    subject: {
+        type:String,
+        required:true
+    },
+    startDate: {
+        type:Date,
+        required:true
+    },
+    endDate: {
+        type:Date
+    },
+    present: {
+        type:Boolean,
+        required:true
+    },
+    city: {
+        type:String,
+    },
+    state: {
+        type:String
+    },
+    distance: {
+        type:Boolean,
+        required:true
+    }
+});
+
 
 const userSchema: Schema<user> = new Schema({
     firstName: {
@@ -100,6 +134,9 @@ const userSchema: Schema<user> = new Schema({
     },
     experiences: {
         type: [experienceSchema]
+    },
+    educations: {
+        type: [educationSchema]
     }
 })
 

@@ -1,4 +1,4 @@
-import { EditUser, experience, g_Auth_User, user } from "../../domain/user";
+import { EditUser, education, experience, g_Auth_User, user } from "../../domain/user";
 import UserInterface from "../../use-case/interface/userInterface";
 import userModel from "../data-base/userModel";
 
@@ -64,6 +64,24 @@ class userRepository implements UserInterface {
         const updatedData = await userModel.findOneAndUpdate(
             { _id: user_id, 'experiences._id': exp_id },
             { $set: { 'experiences.$': experience } },
+            { new:true }
+        );        
+    
+        return updatedData ? updatedData : null;
+    }
+
+    async addUserEducation(user_id: string, education: education): Promise<user | null> {
+        const updatedData = await userModel.findByIdAndUpdate(
+            user_id,
+            { $push: { educations: education } },
+            { upsert:true, new:true }
+        )
+        return updatedData ? updatedData : null
+    }
+    async updateUserEducation(user_id: string, education: education, edct_id: string): Promise<user | null> {
+        const updatedData = await userModel.findOneAndUpdate(
+            { _id: user_id, 'educations._id': edct_id },
+            { $set: { 'educations.$': education } },
             { new:true }
         );        
     

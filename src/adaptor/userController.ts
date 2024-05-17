@@ -1,3 +1,4 @@
+import { education } from './../domain/user';
 import { Request, Response, json } from "express";
 import userUseCase from "../use-case/userUseCase";
 import { EditUser } from "../domain/user";
@@ -162,15 +163,22 @@ class userController {
             const user_id = req.params.user_id
             const exp_id = req.body.exp_id
             const experience = req.body.exp
-
-            console.log(user_id);
-            console.log(exp_id);
-            console.log(experience);
-            
-            
-            
-
             const result = await this.userUseCase.updateUserExperience(user_id, experience, exp_id)
+            res.status(result.status).json({ updatdData:result.updatedData, message: result.message })           
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async updateUserEducation(req:Request, res:Response) {
+        try {
+            const user_id = req.params.user_id
+            const edcn_id = req.body.edcn_id
+            const education = req.body.edctn
+            console.log(education);
+            
+            
+            const result = await this.userUseCase.updateUserEducation(user_id, education, edcn_id)
             res.status(result.status).json({ updatdData:result.updatedData, message: result.message })           
         } catch (error) {
             console.error(error);            

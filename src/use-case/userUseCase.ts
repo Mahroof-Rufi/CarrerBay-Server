@@ -1,3 +1,4 @@
+import { education } from './../domain/user';
 import { user, EditUser, experience } from "../domain/user";
 import jobsRepository from "../infrastructure/repository/jobsRepository";
 import userOTPRepository from "../infrastructure/repository/userOTPRepository";
@@ -272,6 +273,38 @@ class userUseCase {
                 return {
                     status:404,
                     message:'User not found 2'
+                }
+            }
+        }
+    }
+
+    async updateUserEducation(user_id:string, education:education, edcn_id?:string,) {
+        if (edcn_id) {
+            const res = await this.userRepository.updateUserEducation(user_id, education, edcn_id)
+            if (res) {
+                return {
+                    status:201,
+                    updatedData:res,
+                    message:'User added updated'
+                }
+            } else {
+                return {
+                    status:404,
+                    message:'User not found 1'
+                }
+            }
+        } else {
+            const res = await this.userRepository.addUserEducation(user_id, education)
+            if (res) {
+                return {
+                    status:201,
+                    updatedData:res,
+                    message:'User education added successfully'
+                }
+            } else {
+                return {
+                    status:404,
+                    message:'User not found'
                 }
             }
         }
