@@ -185,6 +185,20 @@ class userController {
         }
     }
 
+    async updateUserSkills(req:Request, res:Response) {
+        try {
+            const user_id = req.params.user_id
+            const skills = req.body.skills
+            console.log(skills);
+            
+            
+            const result = await this.userUseCase.updateUserSkills(user_id, skills)
+            res.status(result.status).json({ updatdData:result.updatedData, message: result.message })           
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
 }
 
 export default userController

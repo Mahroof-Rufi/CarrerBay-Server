@@ -78,6 +78,7 @@ class userRepository implements UserInterface {
         )
         return updatedData ? updatedData : null
     }
+
     async updateUserEducation(user_id: string, education: education, edct_id: string): Promise<user | null> {
         const updatedData = await userModel.findOneAndUpdate(
             { _id: user_id, 'educations._id': edct_id },
@@ -86,6 +87,16 @@ class userRepository implements UserInterface {
         );        
     
         return updatedData ? updatedData : null;
+    }
+
+    async updateUserSkills(user_id: string, skills: string[]): Promise<user | null> {
+        const updatdData = await userModel.findOneAndUpdate(
+            { _id:user_id },
+            { $set: { 'skills':skills } },
+            { new:true }
+        );
+
+        return updatdData ? updatdData : null
     }
 
 }

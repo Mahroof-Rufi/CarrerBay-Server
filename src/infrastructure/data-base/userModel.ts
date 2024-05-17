@@ -137,6 +137,9 @@ const userSchema: Schema<user> = new Schema({
     },
     educations: {
         type: [educationSchema]
+    },
+    skills: {
+        type: [String],
     }
 })
 

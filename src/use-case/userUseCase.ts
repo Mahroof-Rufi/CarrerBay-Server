@@ -309,6 +309,22 @@ class userUseCase {
             }
         }
     }
+
+    async updateUserSkills(user_id:string, skills:string[]) {
+        const res = await this.userRepository.updateUserSkills(user_id, skills)
+        if (res) {
+            return {
+                status:201,
+                updatedData:res,
+                message:'User skill updated successfully'
+            }
+        } else {
+            return {
+                status:404,
+                message:'User not found'
+            }
+        }
+    }
 }
 
 export default userUseCase
