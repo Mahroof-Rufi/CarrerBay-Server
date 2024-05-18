@@ -9,17 +9,21 @@ import OtpRepo from "../repository/userOTPRepository";
 import jobsRepository from "../repository/jobsRepository";
 import userAuth from "../middleware/userAuth";
 import upload from "../middleware/multer";
+import appliedJobsRepository from "../repository/appliedJobsRepository";
+import jobApplicantsRepository from "../repository/jobApplicantsRepository";
 
 const jwt = new Jwt()
 const OTP = new GenerateOTP()
 const mailer = new NodeMailer()
 const OTPRepo = new OtpRepo()
 const jobsRepo = new jobsRepository()
+const appliedJobsRepo = new appliedJobsRepository()
+const jobApplicantsRepo = new jobApplicantsRepository()
 
 const router = express.Router()
 
 const repository = new userRepository()
-const useCase = new userUseCase(repository,jwt,OTP,mailer,OTPRepo,jobsRepo)
+const useCase = new userUseCase(repository,jwt,OTP,mailer,OTPRepo,jobsRepo,appliedJobsRepo,jobApplicantsRepo)
 const controller = new userController(useCase);
 
 const handleFiles = upload.fields([ { name:'resume-file' }, { name:'profile-file' } ])
@@ -40,7 +44,14 @@ router.route('/update-education/:user_id')
     .patch(userAuth, (req, res) => controller.updateUserEducation(req, res));
 
 router.route('/update-skills/:user_id')
-    .patch(userAuth, (req, res) => controller.updateUserSkills(req, res))
+    .patch(userAuth, (req, res) => controller.updateUserSkills(req, res));
+
+router.route('/apply-job/:user_id')
+    .get(userAuth, (req, res) => controller.fetchAppliedJobs(req, res))
+    .patch(userAuth, (req, res) => controller.applyJob(req, res));
+
+router.route('/verify-application/:user_id')
+    .post(userAuth, (req, res) => controller.verifyUserApplication(req, res))
 
 router.post('/send-otp', (req, res) => controller.sendOTP(req,res))
 router.post('/login', (req, res) => controller.logIn(req,res))

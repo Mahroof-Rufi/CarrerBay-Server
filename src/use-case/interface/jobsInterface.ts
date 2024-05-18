@@ -7,6 +7,7 @@ interface jobsInterface {
     fetchAll6Jobs(): Promise<Job[] | null>
     updateJobByID(job_id:string, jobData:Job): Promise<Job | null>
     deleteJobById(jobId:string): Promise<Job | null>
+    addApplicantid(job_id:string, user_id:string): Promise<Job | null>
 
 }
 

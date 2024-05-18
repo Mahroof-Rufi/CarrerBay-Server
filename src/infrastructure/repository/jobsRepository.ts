@@ -50,6 +50,14 @@ class jobsRepository implements jobsInterface {
         }
     }
 
+    async addApplicantid(job_id: string, user_id: string): Promise<Job | null> {
+        const updatdJob = await jobModel.findByIdAndUpdate(
+            job_id,
+            { $addToSet: { applicants:user_id } }
+        )
+        return updatdJob ? updatdJob : null
+    }
+
 }
 
 export default jobsRepository

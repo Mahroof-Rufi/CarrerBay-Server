@@ -16,7 +16,8 @@ interface Job {
     skills: string[],
     qualifications: string[],
     active: boolean,
-    postedAt: Date
+    postedAt: Date,
+    applicants?: string[]
 }
 
 export default Job

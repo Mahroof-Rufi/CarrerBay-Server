@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import Job from "../../domain/job";
 import employerModel from "./employerModel";
 
@@ -65,7 +65,8 @@ const jobSchema = new Schema<Job>({
     active: {
         type: Boolean,
         required: true
-    }
+    },
+    applicants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }]
 })
 
 const jobModel = model<Job>('job', jobSchema);

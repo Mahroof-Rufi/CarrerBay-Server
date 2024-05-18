@@ -6,6 +6,8 @@ import userRepository from "../infrastructure/repository/userRepository";
 import GenerateOTP from "../infrastructure/utils/generateOTP";
 import Jwt from "../infrastructure/utils/jwt";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
+import appliedJobsRepository from '../infrastructure/repository/appliedJobsRepository';
+import jobApplicantsRepository from '../infrastructure/repository/jobApplicantsRepository';
 
 
 class userUseCase {
@@ -16,7 +18,9 @@ class userUseCase {
         private generateOTP: GenerateOTP,
         private sendMail: NodeMailer,
         private userOTPRepo:userOTPRepository,
-        private jobsRepository: jobsRepository
+        private jobsRepository: jobsRepository,
+        private appliedJobsRepository: appliedJobsRepository,
+        private jobApplicantsRepository: jobApplicantsRepository
     ) { }
 
 
@@ -325,6 +329,72 @@ class userUseCase {
             }
         }
     }
+
+    async applyJobs(user_id:string, jobId:string) {
+        const res = await this.appliedJobsRepository.addAppliedJob(user_id, jobId)
+        if (!res) {
+            return {
+                status:404,
+                message:'User not found'
+            }
+        } else {
+            const job = await this.jobApplicantsRepository.addAppliedUser(jobId, user_id)
+            
+            if (!job) {
+                return {
+                    status:404,
+                    message:'Job not found'
+                }
+            }
+            return {
+                status:201,
+                message:'Job application succesfull',
+                updatedJob:job,
+                updatedUser:res
+            }
+        }
+    }
+
+    async verifyUserApplication(user_id:string, jobId:string) {
+        const jobApplicants = await this.jobApplicantsRepository.findOne(jobId)
+        if (jobApplicants) {
+            const userExists = jobApplicants.appliedUsers.some((appliedUser:any) => appliedUser.user_id.toString() === user_id);
+            if (userExists) {
+                return {
+                    status:200,
+                    isApplied:true,
+                    message:'user application exists'
+                }
+            } else {
+                return {
+                    status:200,
+                    isApplied:false,
+                    message:'user application not found'
+                }
+            }      
+        }
+        return {
+            status:200,
+            isApplied:false,
+            message:'Job not found'
+        }
+    }
+
+    async fetchAppliedJobs(user_id:string) {
+        const appliedJobs = await this.appliedJobsRepository.findOneById(user_id)
+        if (!appliedJobs) {
+            return {
+                status:200,
+                message:'Applied jobs not found'
+            }
+        }
+        return {
+            status:200,
+            appliedJobs: appliedJobs,
+            message:'Applied jobs found'
+        }
+    }
+    
 }
 
 export default userUseCase

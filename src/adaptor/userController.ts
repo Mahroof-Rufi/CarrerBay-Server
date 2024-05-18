@@ -189,11 +189,46 @@ class userController {
         try {
             const user_id = req.params.user_id
             const skills = req.body.skills
-            console.log(skills);
-            
             
             const result = await this.userUseCase.updateUserSkills(user_id, skills)
             res.status(result.status).json({ updatdData:result.updatedData, message: result.message })           
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async applyJob(req:Request, res:Response) {
+        try {
+            const user_id:string = req.params.user_id
+            const job_id:string = req.body.jobId
+            const result = await this.userUseCase.applyJobs(user_id,job_id)
+            res.status(result.status).json({ message:result.message, updatedUserData:result.updatedUser, updatedJobData:result.updatedJob })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async verifyUserApplication(req:Request, res:Response) {
+        try {
+            const user_id:string = req.params.user_id
+            const job_id:string = req.body.job_id
+            console.log(user_id);
+            console.log(job_id);
+            
+            const result = await this.userUseCase.verifyUserApplication(user_id, job_id)
+            res.status(result.status).json({ message:result.message,isApplied:result.isApplied })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async fetchAppliedJobs(req:Request, res:Response) {
+        try {
+            const user_id:string = req.params.user_id
+            console.log('userid',user_id);
+            
+            const result = await this.userUseCase.fetchAppliedJobs(user_id)
+            res.status(result.status).json({ message:result.message,appliedJobs:result.appliedJobs })
         } catch (error) {
             console.error(error);            
         }
