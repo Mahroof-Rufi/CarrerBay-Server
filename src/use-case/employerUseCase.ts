@@ -6,6 +6,7 @@ import NodeMailer from "../infrastructure/utils/nodeMailer";
 import Jwt from "../infrastructure/utils/jwt";
 import jobsRepository from "../infrastructure/repository/jobsRepository";
 import Job from "../domain/job";
+import jobApplicantsRepository from "../infrastructure/repository/jobApplicantsRepository";
 
 class employerUseCase {
 
@@ -15,7 +16,9 @@ class employerUseCase {
         private jobRepository:jobsRepository,
         private GenerateOTP:GenerateOTP,
         private mailer:NodeMailer,
-        private jwt:Jwt) {}
+        private jwt:Jwt,
+        private jobApplicantsRepository:jobApplicantsRepository
+    ) {}
 
     async sendOTP(email:string) {
         const OTP = this.GenerateOTP.generateOTP()
@@ -257,6 +260,38 @@ class employerUseCase {
                 message:'Something went wrong'
             }
         }
+    }
+
+    async fetchJobApplicants(jobId:string) {
+        const res = await this.jobApplicantsRepository.findOne(jobId)
+        if (res) {
+            return {
+                status:200,
+                appliedUsers:res,
+                message:'applied users found successfully'
+            }
+        } else {
+            return {
+                status:200,
+                message:'applied users not found'
+            }
+        } 
+    }
+
+    async updateCandidateStatus(jobId:string, user_id:string, newStatus:string) {
+        const res = await this.jobApplicantsRepository.updateCandidateStatus(jobId,user_id,newStatus)
+        if (res) {
+            return {
+                status:200,
+                updatedCandidateData:res,
+                message:'Candidate status update successfull'
+            }
+        } else {
+            return {
+                status:404,
+                message:'Candidate not found'
+            }
+        } 
     }
 }
 

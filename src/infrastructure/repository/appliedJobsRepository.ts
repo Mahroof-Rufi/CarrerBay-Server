@@ -6,7 +6,7 @@ class appliedJobsRepository implements appliedJobsInterface {
     async addAppliedJob(user_id: string, job_id: string): Promise<any> {
         const appliedJob = await appliedJobsModel.findOneAndUpdate(
             { user_id: user_id },
-            { $addToSet: { appliedJobs: { job_id: job_id, status: "Apply" } } },
+            { $addToSet: { appliedJobs: { job_id: job_id, status: "under-review" } } },
             { upsert: true, new: true }
         );
         return appliedJob ? appliedJob : null

@@ -9,20 +9,27 @@ import employerController from "../../adaptor/employerController";
 import upload from "../middleware/multer";
 import jobsRepository from "../repository/jobsRepository";
 import employerAuth from "../middleware/employerAuth";
+import jobApplicantsRepository from "../repository/jobApplicantsRepository";
 
 const router = express.Router()
 
 const employerotpRepo = new employerOTPRepo()
 const jobRepo = new jobsRepository()
+const jobApplicantsRepo = new jobApplicantsRepository()
 const generateOTP = new GenerateOTP()
 const mailere = new NodeMailer
 const jwt = new Jwt()
 
 const repository = new employerRepository()
-const useCase = new employerUseCase(repository,employerotpRepo,jobRepo,generateOTP,mailere,jwt)
+const useCase = new employerUseCase(repository,employerotpRepo,jobRepo,generateOTP,mailere,jwt,jobApplicantsRepo)
 const controller = new employerController(useCase)
 
 router.get('/', (req, res) => controller.fetchEmployerData(req, res))
+
+router.route('/:employer_id')
+    .post((req, res) => controller.fetchJobApplicants(req, res))
+    .patch((req, res) => controller.updateCandidateStatus(req, res))
+
 router.post('/send-otp', (req, res) => controller.sendOTP(req,  res))
 router.post('/register', (req, res) => controller.register(req,res))
 router.post('/login', (req, res) => controller.logIn(req, res))

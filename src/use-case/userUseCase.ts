@@ -356,10 +356,9 @@ class userUseCase {
     }
 
     async verifyUserApplication(user_id:string, jobId:string) {
-        const jobApplicants = await this.jobApplicantsRepository.findOne(jobId)
+        const jobApplicants = await this.jobApplicantsRepository.findOneCandidate(jobId,user_id)
         if (jobApplicants) {
-            const userExists = jobApplicants.appliedUsers.some((appliedUser:any) => appliedUser.user_id.toString() === user_id);
-            if (userExists) {
+            if (jobApplicants) {
                 return {
                     status:200,
                     isApplied:true,

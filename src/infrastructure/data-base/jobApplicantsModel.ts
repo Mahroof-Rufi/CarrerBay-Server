@@ -3,7 +3,8 @@ import mongoose, { Schema, model } from "mongoose";
 const appliedUsersSchema: Schema = new Schema({
     user_id: {
         type: mongoose.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
+        required: true
     },
     status: {
         type: String,

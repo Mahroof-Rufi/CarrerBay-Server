@@ -182,6 +182,29 @@ class employerController {
         }
     }
 
+    async fetchJobApplicants(req:Request, res:Response) {
+        try {
+            const employer_id:string = req.params.employer_id
+            const job_id:string = req.body.job_id
+            const result = await this.employerUseCase.fetchJobApplicants(job_id)
+            res.status(result.status).json({ message:result.message,appliedusers:result.appliedUsers })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async updateCandidateStatus(req:Request, res:Response) {
+        try {
+            const job_id = req.body.job_id;
+            const user_id = req.body.user_id;
+            const newStatus = req.body.newStatus;
+            const result = await this.employerUseCase.updateCandidateStatus(job_id,user_id,newStatus)
+            res.status(result.status).json({ message:result.message, updatedData:result.updatedCandidateData })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
 }
 
 export default employerController
