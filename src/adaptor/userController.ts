@@ -234,6 +234,15 @@ class userController {
         }
     }
 
+    async fetchPosts(req:Request, res:Response) {
+        try {
+            const result = await this.userUseCase.fetchPosts()
+            res.status(result.status).json({ message:result.message, posts:result.posts })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
 }
 
 export default userController

@@ -30,6 +30,15 @@ class PostsRepository implements PostsInterface {
         }
     }
 
+    async fetchAllPosts(): Promise<any> {
+        const result = await postsModel.find()
+        if (result) {
+            return result
+        } else {
+            return null
+        }
+    }
+
 }
 
 export default PostsRepository

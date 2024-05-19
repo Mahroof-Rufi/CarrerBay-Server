@@ -11,6 +11,7 @@ import userAuth from "../middleware/userAuth";
 import upload from "../middleware/multer";
 import appliedJobsRepository from "../repository/appliedJobsRepository";
 import jobApplicantsRepository from "../repository/jobApplicantsRepository";
+import PostsRepository from "../repository/postsRepository";
 
 const jwt = new Jwt()
 const OTP = new GenerateOTP()
@@ -19,11 +20,12 @@ const OTPRepo = new OtpRepo()
 const jobsRepo = new jobsRepository()
 const appliedJobsRepo = new appliedJobsRepository()
 const jobApplicantsRepo = new jobApplicantsRepository()
+const postsRepo = new PostsRepository()
 
 const router = express.Router()
 
 const repository = new userRepository()
-const useCase = new userUseCase(repository,jwt,OTP,mailer,OTPRepo,jobsRepo,appliedJobsRepo,jobApplicantsRepo)
+const useCase = new userUseCase(repository,jwt,OTP,mailer,OTPRepo,jobsRepo,appliedJobsRepo,jobApplicantsRepo,postsRepo)
 const controller = new userController(useCase);
 
 const handleFiles = upload.fields([ { name:'resume-file' }, { name:'profile-file' } ])
@@ -33,6 +35,9 @@ router.route('/:user_id')
 
 router.route('/jobs')
     .get(userAuth, (req, res) => controller.fetchJobs(req, res));
+
+router.route('/posts')
+    .get(userAuth, (req, res) => controller.fetchPosts(req, res))
     
 router.route('/user')
     .get(userAuth,(req, res) => controller.fetchUserdata(req, res));

@@ -8,6 +8,7 @@ import Jwt from "../infrastructure/utils/jwt";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
 import appliedJobsRepository from '../infrastructure/repository/appliedJobsRepository';
 import jobApplicantsRepository from '../infrastructure/repository/jobApplicantsRepository';
+import PostsRepository from '../infrastructure/repository/postsRepository';
 
 
 class userUseCase {
@@ -20,7 +21,8 @@ class userUseCase {
         private userOTPRepo:userOTPRepository,
         private jobsRepository: jobsRepository,
         private appliedJobsRepository: appliedJobsRepository,
-        private jobApplicantsRepository: jobApplicantsRepository
+        private jobApplicantsRepository: jobApplicantsRepository,
+        private postsRepository: PostsRepository
     ) { }
 
 
@@ -394,6 +396,14 @@ class userUseCase {
         }
     }
     
+    async fetchPosts() {
+        const posts = await this.postsRepository.fetchAllPosts()
+        return {
+            status:200,
+            posts: posts,
+            message:'Posts found'
+        }
+    }
 }
 
 export default userUseCase
