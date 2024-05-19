@@ -7,6 +7,8 @@ import Jwt from "../infrastructure/utils/jwt";
 import jobsRepository from "../infrastructure/repository/jobsRepository";
 import Job from "../domain/job";
 import jobApplicantsRepository from "../infrastructure/repository/jobApplicantsRepository";
+import appliedJobsRepository from "../infrastructure/repository/appliedJobsRepository";
+import PostsRepository from "../infrastructure/repository/postsRepository";
 
 class employerUseCase {
 
@@ -17,7 +19,9 @@ class employerUseCase {
         private GenerateOTP:GenerateOTP,
         private mailer:NodeMailer,
         private jwt:Jwt,
-        private jobApplicantsRepository:jobApplicantsRepository
+        private jobApplicantsRepository:jobApplicantsRepository,
+        private usersAppliedJobs:appliedJobsRepository,
+        private postsRepository:PostsRepository
     ) {}
 
     async sendOTP(email:string) {
@@ -280,7 +284,8 @@ class employerUseCase {
 
     async updateCandidateStatus(jobId:string, user_id:string, newStatus:string) {
         const res = await this.jobApplicantsRepository.updateCandidateStatus(jobId,user_id,newStatus)
-        if (res) {
+        const updateUserSide = await this.usersAppliedJobs.updateJobStatusById(user_id, jobId, newStatus)
+        if (res && updateUserSide) {
             return {
                 status:200,
                 updatedCandidateData:res,
@@ -292,6 +297,37 @@ class employerUseCase {
                 message:'Candidate not found'
             }
         } 
+    }
+
+    async fetchPosts(token:string) {
+        const decode = this.jwt.verifyToken(token)
+        const posts = await this.postsRepository.fetchPostsById(decode?.id)
+        if (posts) {
+            return {
+                status:200,
+                posts:posts,
+                message:'Posts found successfully'
+            }
+        }
+        return {
+            status: 404,
+            message: 'Posts not found'
+        }
+    }
+
+    async addPost(description:string,token:string, urls?:string[]) {
+        const decode = this.jwt.verifyToken(token)
+        const res = await this.postsRepository.addPost(description,decode?.id, urls)
+        if (res) {
+            return {
+                status:201,
+                message:'Post uploaded succesfully'
+            }
+        }
+        return {
+            status:400,
+            message:'post upload failed'
+        }
     }
 }
 

@@ -31,15 +31,23 @@ class employerController {
 
     async logIn(req: Request, res: Response) {
         try {
+            console.log('emp login');
+            
             const { email, password } = req.body
             const employer = await this.employerUseCase.login(email, password)
+            console.log(employer);
+            
             if (employer && employer.token) {
+                console.log('if');
+                
                 return res
                     .status(200)
                     .json({
                         employer,
                     });
             } else {
+                console.log('else');
+                
                 return res
                     .status(400)
                     .json({
@@ -184,6 +192,8 @@ class employerController {
 
     async fetchJobApplicants(req:Request, res:Response) {
         try {
+            console.log('itsssss');
+            
             const employer_id:string = req.params.employer_id
             const job_id:string = req.body.job_id
             const result = await this.employerUseCase.fetchJobApplicants(job_id)
@@ -200,6 +210,44 @@ class employerController {
             const newStatus = req.body.newStatus;
             const result = await this.employerUseCase.updateCandidateStatus(job_id,user_id,newStatus)
             res.status(result.status).json({ message:result.message, updatedData:result.updatedCandidateData })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async fetchPosts(req:Request, res:Response) {
+        try {
+            const token = req.header('Employer-Token');
+            if (token) {
+                const result = await this.employerUseCase.fetchPosts(token)
+                res.status(result.status).json({ message:result.message, posts:result.posts })
+            }
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async addPost(req:Request, res:Response) {
+        try {
+            const description = req.body.description;
+            const urls = []
+            for (let i = 1; i <= 6; i++) {
+                const image = (req.files as any)[`image${i}`];
+                if (image) {
+                    try {
+                        console.log('upload'+i);
+                        const result = await cloudinary.uploader.upload(image[0].path);
+                        urls.push(result.secure_url);
+                    } catch (error) {
+                        console.error(`Error uploading image ${i}:`, error);
+                    }
+                }
+            } 
+            const token = req.header('Employer-Token');
+            if (token) {
+                const result = await this.employerUseCase.addPost(description, token,urls)
+                res.status(result.status).json({ message:result.message })
+            }
         } catch (error) {
             console.error(error);            
         }

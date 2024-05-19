@@ -29,6 +29,20 @@ class appliedJobsRepository implements appliedJobsInterface {
         }
     }
 
+    async updateJobStatusById(user_id: string, job_id: string, newStatus: string): Promise<any> {
+        const updatedUserAppliedJob = await appliedJobsModel.findOneAndUpdate(
+            {   user_id: user_id, 'appliedJobs.job_id': job_id  },
+            {   $set: { 'appliedJobs.$.status': newStatus } },
+            {   new: true }
+        )
+
+        if (updatedUserAppliedJob) {
+            return updatedUserAppliedJob
+        } else {
+            return null
+        }
+    }
+
 }
 
 export default appliedJobsRepository
