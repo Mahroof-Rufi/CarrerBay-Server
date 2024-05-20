@@ -68,6 +68,28 @@ class employerRepository implements employerInterface{
             return null
         }
     }
+
+    async fetchAllEmployers(): Promise<any> {
+        const employers = await employerModel.find()
+        if (employers) {
+            return employers
+        } else {
+            return null
+        }
+    }
+
+    async changeStatusById(employer_id: string): Promise<employer | null> {
+        const updatedEmployer = await employerModel.findOneAndUpdate(
+            { _id: employer_id },
+            [ { $set: { isActive: { $not: "$isActive" } } } ],
+            { new:true }
+        )
+        if (updatedEmployer) {
+            return updatedEmployer
+        } else {
+            return null
+        }
+    }
     
 }
 

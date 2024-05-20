@@ -21,7 +21,8 @@ export interface user {
     educations?: education[],
     skills?: string[],
     OTP?: number,
-    appliedJobs?: string[]
+    appliedJobs?: string[],
+    isActive:boolean
 }
 
 export interface g_Auth_User {

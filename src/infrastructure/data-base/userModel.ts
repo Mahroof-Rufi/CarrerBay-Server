@@ -141,7 +141,10 @@ const userSchema: Schema<user> = new Schema({
     skills: {
         type: [String],
     },
-    appliedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'job' }]
+    isActive: {
+        type: Boolean,
+        default: true
+    }
 })
 
 const userModel = model<user>('user', userSchema);

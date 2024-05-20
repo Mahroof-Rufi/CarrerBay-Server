@@ -14,6 +14,7 @@ interface employer {
     instagram_url?: string,
     X_url?: string,
     about?: string,
+    isActive: boolean,
 }
 
 export default employer

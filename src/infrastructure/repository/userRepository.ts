@@ -113,6 +113,28 @@ class userRepository implements UserInterface {
         }
     }
 
+    async fetchAllUsers(): Promise<any> {
+        const users = await userModel.find()
+        if (users) {
+            return users
+        } else {
+            return null
+        }
+    }
+
+    async changeStatusById(user_id: string): Promise<user | null> {
+        const updatedUser = await userModel.findOneAndUpdate(
+            { _id: user_id },
+            [ { $set: { isActive: { $not: "$isActive" } } } ],
+            { new:true }
+        )
+        if (updatedUser) {
+            return updatedUser
+        } else {
+            return null
+        }
+    }
+
 }
 
 export default userRepository

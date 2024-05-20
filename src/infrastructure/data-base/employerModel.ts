@@ -47,6 +47,10 @@ const employerSchema: Schema<employer> = new Schema({
     },
     about: {
         type: String
+    },
+    isActive: {
+        type: Boolean,
+        default:true
     }
 })
 
