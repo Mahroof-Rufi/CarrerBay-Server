@@ -13,5 +13,7 @@ const useCase = new adminUseCase(repository,jwt)
 const controller = new adminController(useCase)
 
 router.post('/login', (req, res) => controller.login(req, res))
+// router.route('/users')
+//     .get((req, res) => )
 
 export default router

@@ -3,7 +3,9 @@ import adminUseCase from "../use-case/adminUseCase";
 
 class adminController {
 
-    constructor(private adminUseCase:adminUseCase) {}
+    constructor(
+        private adminUseCase:adminUseCase
+    ) {}
 
     async login(req:Request, res:Response) {
         try {
@@ -21,6 +23,14 @@ class adminController {
                         admin,
                 });
             }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async loadUsers(req:Request, res:Response) {
+        try {
+            // const result = await this.adminUseCase.login(email,password)
         } catch (error) {
             console.error(error);
         }

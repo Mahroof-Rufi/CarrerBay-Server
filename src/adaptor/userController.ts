@@ -243,6 +243,30 @@ class userController {
         }
     }
 
+    async changeEmailSendOTP(req:Request, res:Response) {
+        try {
+            const currentEmail = req.body.currentEmail
+            const result = await this.userUseCase.sendOTPToCurrentEmail(currentEmail)
+            res.status(result.status).json({ message:result.message })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async updateEmail(req:Request, res:Response) {
+        try {
+            const currentEmail = req.body.currentEmail
+            const currentEmailOTP = req.body.currentEmailOTP
+            const newEmail = req.body.newEmail
+            const newEmailOTP = req.body.newEmailOTP            
+            
+            const result = await this.userUseCase.updateCurrentEmail(currentEmail, currentEmailOTP, newEmail, newEmailOTP)
+            res.status(result.status).json({ message:result.message })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
 }
 
 export default userController

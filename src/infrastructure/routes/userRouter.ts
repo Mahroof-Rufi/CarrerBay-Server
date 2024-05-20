@@ -30,6 +30,10 @@ const controller = new userController(useCase);
 
 const handleFiles = upload.fields([ { name:'resume-file' }, { name:'profile-file' } ])
 
+router.route('/changeEmail')
+    .post(userAuth, (req, res) => controller.changeEmailSendOTP(req, res))
+    .patch(userAuth, (req, res) => controller.updateEmail(req, res))
+
 router.route('/:user_id')
     .patch(userAuth, handleFiles, (req, res) => controller.updateUserProfile(req, res));
 
@@ -57,6 +61,7 @@ router.route('/apply-job/:user_id')
 
 router.route('/verify-application/:user_id')
     .post(userAuth, (req, res) => controller.verifyUserApplication(req, res))
+    
 
 router.post('/send-otp', (req, res) => controller.sendOTP(req,res))
 router.post('/login', (req, res) => controller.logIn(req,res))

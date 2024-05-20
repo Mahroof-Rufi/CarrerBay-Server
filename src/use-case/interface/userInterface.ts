@@ -11,6 +11,7 @@ interface UserInterface {
     addUserEducation(user_id:string, education:education): Promise<user | null>
     updateUserEducation(user_id:string, education:education, edct_id:string): Promise<user | null>
     updateUserSkills(user_id:string, skills:string[]): Promise<user | null>
+    changeEmailByEmail(currentEmail:string,newEmail:string):Promise<user | null>
 }
 
 export default UserInterface

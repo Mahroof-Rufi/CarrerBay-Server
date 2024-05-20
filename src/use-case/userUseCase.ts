@@ -9,6 +9,7 @@ import NodeMailer from "../infrastructure/utils/nodeMailer";
 import appliedJobsRepository from '../infrastructure/repository/appliedJobsRepository';
 import jobApplicantsRepository from '../infrastructure/repository/jobApplicantsRepository';
 import PostsRepository from '../infrastructure/repository/postsRepository';
+import OTPModel from '../domain/OTP';
 
 
 class userUseCase {
@@ -402,6 +403,66 @@ class userUseCase {
             status:200,
             posts: posts,
             message:'Posts found'
+        }
+    }
+
+    async sendOTPToCurrentEmail(currentEmail:string) {
+        const user = await this.userRepository.findByEmail(currentEmail)
+        if (!user) {
+            return {
+                status:400,
+                message:'Email not exists'
+            }
+        }
+        const OTP = this.generateOTP.generateOTP()
+        const res = await this.sendMail.sendMail(currentEmail,parseInt(OTP));
+        this.userOTPRepo.insertOTP(currentEmail,parseInt(OTP))
+        if (res) {
+            return {
+                status: 200,
+                message: 'OTP successfully send to current registered main'
+            }
+        } else {
+            return {
+                status: 400,
+                message: 'OTP send failed, try again'
+            }
+        }
+    }
+
+    async updateCurrentEmail(currentEmail:string,currentMailOTP:string,newEmail:string,newMailOTP:string) {
+        const currentMail = await this.userOTPRepo.getOtpByEmail(currentEmail)
+        const newMail = await this.userOTPRepo.getOtpByEmail(newEmail)
+        
+        if (!currentMail || !newMail) {
+            return {
+                status:400,
+                message:'OTP not found, try again'
+            }
+        }
+        if (currentMail.OTP != parseInt(currentMailOTP)) {
+            return {
+                status:400,
+                message:'Current email OTP mismatch'
+            }
+        } else {
+            if (newMail.OTP != parseInt(newMailOTP)) {
+                return {
+                    status:400,
+                    message:'New mail OTP mismatch'
+                }
+            }
+            const newData = await this.userRepository.changeEmailByEmail(currentEmail,newEmail)
+            if (!newData) {
+                return {
+                    status:400,
+                    message:'User not found'
+                }
+            }
+            return {
+                status:200,
+                message:'Email updated succesfully'
+            }
         }
     }
 }

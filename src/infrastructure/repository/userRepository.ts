@@ -99,6 +99,20 @@ class userRepository implements UserInterface {
         return updatdData ? updatdData : null
     }
 
+    async changeEmailByEmail(currentEmail: string, newEmail: string): Promise<user | null> {
+        const updatedData = await userModel.findOneAndUpdate(
+            { email:currentEmail },
+            { $set: { email:newEmail } },
+            { new:true }
+        )
+
+        if (updatedData) {
+            return updatedData
+        } else {
+            return null
+        }
+    }
+
 }
 
 export default userRepository
