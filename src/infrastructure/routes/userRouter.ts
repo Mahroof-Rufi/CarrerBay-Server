@@ -49,6 +49,12 @@ router.route('/user')
 router.route('/update-experience/:user_id')
     .patch(userAuth, (req, res) => controller.updateUserExperience(req, res));
 
+router.route('/delete-experience/:exp_id')
+    .delete(userAuth, (req, res) => controller.deleteUserExperience(req, res));
+    
+router.route('/delete-education/:edu_id')
+    .delete(userAuth, (req, res) => controller.deleteUserEducation(req, res));
+
 router.route('/update-education/:user_id')
     .patch(userAuth, (req, res) => controller.updateUserEducation(req, res));
 

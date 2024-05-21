@@ -90,6 +90,11 @@ class userUseCase {
                     status: 400,
                     message: 'Invalid credentials'
                 }
+            } else if (!userData.isActive) {
+                return{
+                    status:400,
+                    message: 'This account blocked by Admin'
+                }
             }
             const token = this.jwt.createToken(userData._id, 'Normal-User')
             return {
@@ -285,6 +290,22 @@ class userUseCase {
         }
     }
 
+    async deleteUserExperience(token:string, exp_id:string) {
+        const decode = this.jwt.verifyToken(token)
+        const updatedUserExperience = await this.userRepository.deleteUserExperience(decode?.id, exp_id)
+        if (!updatedUserExperience) {
+            return {
+                status:400,
+                message:'User not found',
+            }
+        }
+        return {
+            status:200,
+            message:'User experience delete succesfull',
+            newData:updatedUserExperience
+        }
+    }
+
     async updateUserEducation(user_id:string, education:education, edcn_id?:string,) {
         if (edcn_id) {
             const res = await this.userRepository.updateUserEducation(user_id, education, edcn_id)
@@ -314,6 +335,22 @@ class userUseCase {
                     message:'User not found'
                 }
             }
+        }
+    }
+
+    async deleteUserEducation(token:string, edu_id:string) {
+        const decode = this.jwt.verifyToken(token)
+        const updatedUserEducation = await this.userRepository.deleteUserEducation(decode?.id, edu_id)
+        if (!updatedUserEducation) {
+            return {
+                status:400,
+                message:'User not found',
+            }
+        }
+        return {
+            status:200,
+            message:'User education delete succesfull',
+            newData:updatedUserEducation
         }
     }
 

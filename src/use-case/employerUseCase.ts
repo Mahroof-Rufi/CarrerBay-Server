@@ -82,9 +82,12 @@ class employerUseCase {
                     status: 400,
                     message: 'Invalid credentials'
                 }
+            } else if (!employerData.isActive) {
+                return {
+                    status:400,
+                    message: 'This account blocked by Admin'
+                }
             }
-            console.log('here the employer data');
-            console.log(employerData);
             
             
             const token = this.jwt.createToken(employerData._id, 'Normal-employer')

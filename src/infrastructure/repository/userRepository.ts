@@ -70,6 +70,20 @@ class userRepository implements UserInterface {
         return updatedData ? updatedData : null;
     }
 
+    async deleteUserExperience(user_id: string, exp_id: string): Promise<user | null> {
+        const updatedUserData = await userModel.findOneAndUpdate(
+            { _id: user_id },
+            { $pull: { experiences: { _id: exp_id } } },
+            { new: true }
+        );
+
+        if (updatedUserData) {
+            return updatedUserData
+        } else {
+            return null
+        }
+    }
+
     async addUserEducation(user_id: string, education: education): Promise<user | null> {
         const updatedData = await userModel.findByIdAndUpdate(
             user_id,
@@ -87,6 +101,20 @@ class userRepository implements UserInterface {
         );        
     
         return updatedData ? updatedData : null;
+    }
+    
+    async deleteUserEducation(user_id: string, edu_id: string): Promise<user | null> {
+        const updatedUserData = await userModel.findOneAndUpdate(
+            { _id: user_id },
+            { $pull: { educations: { _id: edu_id } } },
+            { new: true }
+        );
+
+        if (updatedUserData) {
+            return updatedUserData
+        } else {
+            return null
+        }
     }
 
     async updateUserSkills(user_id: string, skills: string[]): Promise<user | null> {

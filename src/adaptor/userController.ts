@@ -170,6 +170,21 @@ class userController {
         }
     }
 
+    async deleteUserExperience(req:Request, res:Response) {
+        try {
+            const exp_id = req.params.exp_id
+            const token = req.header('User-Token');
+            if (token) {
+                const result = await this.userUseCase.deleteUserExperience(token, exp_id)
+                res.status(result.status).json({ message:result.message, updatedData:result.newData })
+            } else {
+                res.status(400).json({ message:'Unauthorized user' })
+            }
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
     async updateUserEducation(req:Request, res:Response) {
         try {
             const user_id = req.params.user_id
@@ -180,6 +195,21 @@ class userController {
             
             const result = await this.userUseCase.updateUserEducation(user_id, education, edcn_id)
             res.status(result.status).json({ updatdData:result.updatedData, message: result.message })           
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async deleteUserEducation(req:Request, res:Response) {
+        try {
+            const edu_id = req.params.edu_id
+            const token = req.header('User-Token');
+            if (token) {
+                const result = await this.userUseCase.deleteUserEducation(token, edu_id)
+                res.status(result.status).json({ message:result.message, updatedData:result.newData })
+            } else {
+                res.status(400).json({ message:'Unauthorized user' })
+            }
         } catch (error) {
             console.error(error);            
         }
