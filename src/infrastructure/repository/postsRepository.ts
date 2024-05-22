@@ -39,6 +39,21 @@ class PostsRepository implements PostsInterface {
         }
     }
 
+    async fetchSearchedPosts(company_id:string, query:string): Promise<any> {
+        const searchedPosts = await postsModel.find(
+            { employer_id: company_id,
+              "posts.description": { $regex: query , $options: 'i' }
+            },
+            { "posts.$": 1 } 
+        )
+
+        if (searchedPosts) {
+            return searchedPosts
+        } else {
+            return null
+        }
+    }
+
 }
 
 export default PostsRepository

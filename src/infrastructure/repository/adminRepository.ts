@@ -13,6 +13,15 @@ class adminRepository implements adminInterface {
         }
     }
 
+    async findById(id: string): Promise<admin | null> {
+        const admin = await adminModel.findById(id)
+        if (admin) {
+            return admin
+        } else {
+            return null
+        }
+    }
+
 }
 
 export default adminRepository

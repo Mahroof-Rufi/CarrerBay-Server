@@ -110,8 +110,14 @@ class userController {
 
     async fetchJobs(req:Request, res:Response) {
         try {
-            const data = await this.userUseCase.fetchJobs()
-            res.status(data.status).json({data:data.jobs})
+            const searchQuery = req.query.search
+            if (searchQuery && searchQuery != ' ' && typeof searchQuery == 'string') {                
+                const searchedJobs = await this.userUseCase.searchJobs(searchQuery)
+                res.status(searchedJobs.status).json({ data:searchedJobs.jobs })
+            } else {
+                const data = await this.userUseCase.fetchJobs()
+                res.status(data.status).json({data:data.jobs})
+            }
         } catch (error) {
             console.error(error);            
         }

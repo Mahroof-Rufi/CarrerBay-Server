@@ -217,6 +217,24 @@ class employerUseCase {
         }        
     }
 
+    async fetchSearchedJobs(token:string, searchQuery:string) {
+        const decode = this.jwt.verifyToken(token)
+        const searchedJobs = await this.jobRepository.fetchSearchedJobsByCompanyId(decode?.id, searchQuery)
+        return {
+            status: 200,
+            jobs: searchedJobs
+        }
+    }
+
+    async fetchSearchedPosts(token:string, searchQuery:string) {
+        const decode = this.jwt.verifyToken(token)
+        const searchedJobs = await this.postsRepository.fetchSearchedPosts(decode?.id, searchQuery)
+        return {
+            status: 200,
+            posts: searchedJobs
+        }
+    }
+
     async addNewJobPost(jobData:Job, token:string) {
         const decode = this.jwt.verifyToken(token)
         jobData.company_id = decode?.id
@@ -324,7 +342,8 @@ class employerUseCase {
         if (res) {
             return {
                 status:201,
-                message:'Post uploaded succesfully'
+                message:'Post uploaded succesfully',
+                newData:res
             }
         }
         return {

@@ -214,6 +214,15 @@ class userUseCase {
         }
     }
 
+    async searchJobs(query:string) {
+        const searchedJobs = await this.jobsRepository.fetchSearchedJobs(query)
+        
+        return {
+            status:200,
+            jobs:searchedJobs
+        }
+    }
+
     async updateUserProfile(newData:EditUser, user_id:string) {
 
         const allowedUpdates = [

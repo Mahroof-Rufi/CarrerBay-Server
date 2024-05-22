@@ -144,13 +144,21 @@ class employerController {
     }
 
     async fetchJobs(req:Request, res:Response) {
-        try {
+        try {            
             const token = req.header('Employer-Token');
-            if(token) {
-                const query = req.query.title
-                const result = await this.employerUseCase.fetchJobs(token, query as string)
-                res.status(result.status).json({jobs:result.jobs})
-            }
+            const searchQuery = req.query.search
+            if (searchQuery && token && searchQuery != ' ' && typeof searchQuery == 'string') {
+                
+                const searchedJobs = await this.employerUseCase.fetchSearchedJobs(token, searchQuery)
+                res.status(searchedJobs.status).json({ jobs:searchedJobs.jobs })
+            } else {
+                
+                if(token) {
+                    const query = req.query.title
+                    const result = await this.employerUseCase.fetchJobs(token, query as string)
+                    res.status(result.status).json({jobs:result.jobs})
+                }
+            }            
         } catch (error) {
             console.error(error);            
         }
@@ -192,8 +200,6 @@ class employerController {
 
     async fetchJobApplicants(req:Request, res:Response) {
         try {
-            console.log('itsssss');
-            
             const employer_id:string = req.params.employer_id
             const job_id:string = req.body.job_id
             const result = await this.employerUseCase.fetchJobApplicants(job_id)
@@ -218,10 +224,17 @@ class employerController {
     async fetchPosts(req:Request, res:Response) {
         try {
             const token = req.header('Employer-Token');
-            if (token) {
-                const result = await this.employerUseCase.fetchPosts(token)
-                res.status(result.status).json({ message:result.message, posts:result.posts })
+            const searchQuery = req.query.search
+            if (searchQuery && token && searchQuery != ' ' && typeof searchQuery == 'string') {
+                const searchedPosts = await this.employerUseCase.fetchSearchedPosts(token, searchQuery)
+                res.status(searchedPosts.status).json({ posts:searchedPosts.posts })
+            } else {
+                if (token) {
+                    const result = await this.employerUseCase.fetchPosts(token)
+                    res.status(result.status).json({ message:result.message, posts:result.posts })
+                }
             }
+            
         } catch (error) {
             console.error(error);            
         }
@@ -237,6 +250,8 @@ class employerController {
                     try {
                         console.log('upload'+i);
                         const result = await cloudinary.uploader.upload(image[0].path);
+                        console.log('upload'+i+'done');
+                        
                         urls.push(result.secure_url);
                     } catch (error) {
                         console.error(`Error uploading image ${i}:`, error);
@@ -246,7 +261,7 @@ class employerController {
             const token = req.header('Employer-Token');
             if (token) {
                 const result = await this.employerUseCase.addPost(description, token,urls)
-                res.status(result.status).json({ message:result.message })
+                res.status(result.status).json({ message:result.message,updatedData:result.newData })
             }
         } catch (error) {
             console.error(error);            

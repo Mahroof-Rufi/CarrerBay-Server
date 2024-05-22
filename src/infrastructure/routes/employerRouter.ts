@@ -56,7 +56,7 @@ router.route('/post')
     .post(employerAuth, handleFiles, (req, res) => controller.addPost(req, res))
 
 router.route('/applicants/:employer_id')
-    .post((req, res) => controller.fetchJobApplicants(req, res))
-    .patch((req, res) => controller.updateCandidateStatus(req, res))
+    .post(employerAuth, (req, res) => controller.fetchJobApplicants(req, res))
+    .patch(employerAuth, (req, res) => controller.updateCandidateStatus(req, res))
 
 export default router

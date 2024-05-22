@@ -29,6 +29,28 @@ class jobsRepository implements jobsInterface {
         }
     }
 
+    async fetchSearchedJobs(query: string): Promise<Job[] | null> {
+        const searchedJobs = jobModel.find(
+            { jobTitle: { $regex: query, $options: 'i' } }
+        ).populate('company_id');
+        if (searchedJobs) {
+            return searchedJobs
+        } else {
+            return null
+        }
+    }
+
+    async fetchSearchedJobsByCompanyId(company_id: string, query: string): Promise<Job[] | null> {
+        const searchedJobs = jobModel.find(
+            { company_id:company_id, jobTitle: { $regex: query, $options: 'i' } }
+        )
+        if (searchedJobs) {
+            return searchedJobs
+        } else {
+            return null
+        }
+    }
+
     async updateJobByID(job_id: string, jobData:Job): Promise<Job | null> {
         const updatedJob = await jobModel.findByIdAndUpdate(
             { _id:job_id },
