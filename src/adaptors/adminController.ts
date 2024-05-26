@@ -28,12 +28,29 @@ class AdminController {
         }
     }
 
+    async fetchAllUsers(req:Request, res:Response) {
+        try {
+            const result = await this._adminUseCase.fetchAllUsers()
+            res.status(result.status).json({ message:result.message, users:result.users })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
     async userAction(req:Request, res:Response) {
         try {
             const userId = req.body.user_id
-            
             const result = await this._adminUseCase.userAction(userId)
             res.status(result.status).json({ message:result.message, updatedUser:result.updatedUser })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async fetchAllEmployers(req:Request, res:Response) {
+        try {
+            const result = await this._adminUseCase.fetchAllEmployers()
+            res.status(result.status).json({ message:result.message, employers:result.employers })
         } catch (error) {
             console.error(error);            
         }

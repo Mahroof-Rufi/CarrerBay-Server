@@ -127,13 +127,12 @@ class UserUseCase {
         }
     }
 
-    async forgotpasswordSendOTP(email:string) {
+    async forgotPasswordSendOTP(email:string) {
         const user = await this._userRepository.findByEmail(email)       
-        
         if(user) {
             const OTP = this._OTPgenerator.generateOTP()
             const res = await this._mailer.sendMail(email, parseInt(OTP))
-            this._userOTPRepo.insertOTP(email, parseInt(OTP))
+            await this._userOTPRepo.insertOTP(email, parseInt(OTP))
             if (res) {
                 return {
                     status: 200,

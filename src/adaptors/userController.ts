@@ -81,7 +81,7 @@ class UserController {
     async forgotPasswordSendOTP(req:Request, res:Response) {
         try {
             const email = req.body.email
-            const user = await this._userUseCase.forgotpasswordSendOTP(email)
+            const user = await this._userUseCase.forgotPasswordSendOTP(email)
             res.status(user.status).json(user.message)
         } catch (error) {
             console.error(error);

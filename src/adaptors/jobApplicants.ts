@@ -9,10 +9,9 @@ class JobApplicantsController {
 
     async fetchJobApplicants(req:Request, res:Response) {
         try {
-            const employer_id:string = req.params.employer_id
             const job_id:string = req.body.job_id
             const result = await this._jobApplicantsUseCase.fetchJobApplicants(job_id)
-            res.status(result.status).json({ message:result.message,appliedusers:result.appliedUsers })
+            res.status(result.status).json({ message:result.message,appliedUsers:result.appliedUsers })
         } catch (error) {
             console.error(error);            
         }

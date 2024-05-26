@@ -45,7 +45,7 @@ class JobsUseCase {
         if (job) {
             return {
                 status: 200,
-                message: 'Job Post Successfull',
+                message: 'Job Post added successful',
                 job: job
             }
         } else {
@@ -61,7 +61,7 @@ class JobsUseCase {
         if (updatedJob) {
             return {
                 status: 200,
-                message: 'Job Post updated succesfully',
+                message: 'Job Post updated successfully',
                 updatedJob: updatedJob
             }
         } else {

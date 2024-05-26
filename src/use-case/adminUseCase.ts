@@ -36,6 +36,15 @@ class AdminUseCase {
         }
     }
 
+    async fetchAllUsers() {
+        const users = await this._userRepo.fetchAllUsers()
+        return {
+            status:200,
+            message:'Users found successfully',
+            users:users
+        }
+    }
+
     async userAction(user_id:string) {
         const updatedUser = await this._userRepo.changeStatusById(user_id)
         if (!updatedUser) {
@@ -46,8 +55,17 @@ class AdminUseCase {
         }
         return {
             status:200,
-            message:'User action succesfull',
+            message:'User action successful',
             updatedUser:updatedUser
+        }
+    }
+
+    async fetchAllEmployers() {
+        const employers = await this._employerRepo.fetchAllEmployers()
+        return {
+            status:200,
+            message:'Employers found successfully',
+            employers:employers
         }
     }
 

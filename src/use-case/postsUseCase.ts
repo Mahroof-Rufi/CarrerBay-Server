@@ -36,10 +36,11 @@ class PostsUseCase {
     async addPost(description:string,token:string, urls?:string[]) {
         const decode = this._jwt.verifyToken(token)
         const res = await this._postsRepository.addPost(description,decode?.id, urls)
+        
         if (res) {
             return {
                 status:201,
-                message:'Post uploaded succesfully',
+                message:'Post uploaded successfully',
                 newData:res
             }
         }

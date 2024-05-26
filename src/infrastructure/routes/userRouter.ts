@@ -17,16 +17,8 @@ router.route('/update-education')
     .patch(userAuth, (req, res) => userController.updateUserEducation(req, res));
 router.route('/delete-education/:edu_id').delete(userAuth, (req, res) => userController.deleteUserEducation(req, res));
 router.route('/update-skills').patch(userAuth, (req, res) => userController.updateUserSkills(req, res));
-
-
-
-
-
-
-router.route('/changeEmail')
+router.route('/change-email')
     .post(userAuth, (req, res) => userController.changeEmailSendOTP(req, res))
     .patch(userAuth, (req, res) => userController.updateEmail(req, res))
-router.route('/users')
-    .get((req, res) => userController.loadUsers(req, res))
  
 export default router

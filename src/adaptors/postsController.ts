@@ -38,6 +38,7 @@ class PostsController {
 
     async addPost(req:Request, res:Response) {
         try {
+            const token = req.header('Employer-Token');
             const description = req.body.description;
             const urls = []
             for (let i = 1; i <= 6; i++) {
@@ -54,10 +55,10 @@ class PostsController {
                     }
                 }
             } 
-            const token = req.header('Employer-Token');
+            
             if (token) {
                 const result = await this._postsUseCase.addPost(description, token,urls)
-                res.status(result.status).json({ message:result.message,updatedData:result.newData })
+                res.status(result.status).json({ message:result.message,updatedPosts:result.newData })
             }
         } catch (error) {
             console.error(error);            

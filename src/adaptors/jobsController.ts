@@ -47,7 +47,7 @@ class JobsController {
             const token = req.header('Employer-Token');
             if (token) {
                 const response = await this._jobsUseCase.addNewJobPost(jobData, token)
-                res.status(response.status).json({message:response.message, data:response.job})
+                res.status(response.status).json({ message:response.message, job:response.job })
             }
         } catch (error) {
             console.error(error);            
@@ -56,10 +56,10 @@ class JobsController {
 
     async editJob(req:Request, res:Response) {
         try {
-            const jobData = { ...req.body };
-            const jobId = req.params.id
+            const jobData = req.body.newJobData
+            const jobId = req.body.jobId
             const response = await this._jobsUseCase.editJobPost(jobId,jobData);
-            res.status(response.status).json({message:response.message,updateJob:response.updatedJob})                  
+            res.status(response.status).json({ message:response.message, updatedJob:response.updatedJob })                  
         } catch (error) {
             console.error(error);            
         }
