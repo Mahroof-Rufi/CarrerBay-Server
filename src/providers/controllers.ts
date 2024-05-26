@@ -1,0 +1,56 @@
+import AdminController from "../adaptors/adminController";
+import EmployerController from "../adaptors/employerController";
+import JobApplicantsController from "../adaptors/jobApplicants";
+import JobsController from "../adaptors/jobsController";
+import PostsController from "../adaptors/postsController";
+import UserController from "../adaptors/userController";
+import AdminRepository from "../infrastructure/repositories/adminRepository";
+import AppliedJobsRepository from "../infrastructure/repositories/appliedJobsRepository";
+import EmployerOTPRepository from "../infrastructure/repositories/employerOTPRepository";
+import EmployerRepository from "../infrastructure/repositories/employerRepository";
+import JobApplicantsRepository from "../infrastructure/repositories/jobApplicantsRepository";
+import JobsRepository from "../infrastructure/repositories/jobsRepository";
+import PostsRepository from "../infrastructure/repositories/postsRepository";
+import UserOTPRepository from "../infrastructure/repositories/userOTPRepository";
+import UserRepository from "../infrastructure/repositories/userRepository";
+import AdminUseCase from "../use-case/adminUseCase";
+import EmployerUseCase from "../use-case/employerUseCase";
+import JobApplicantsUseCase from "../use-case/jobApplicantsUseCase";
+import JobsUseCase from "../use-case/jobsUseCase";
+import PostsUseCase from "../use-case/postsUseCase";
+import UserUseCase from "../use-case/userUseCase";
+import GenerateOTP from "./generateOTP";
+import Jwt from "./jwt";
+import NodeMailer from "./nodeMailer";
+
+// Providers
+const jwt = new Jwt()
+const OTPGenerator = new GenerateOTP()
+const mailer = new NodeMailer()
+
+// Repositories
+const adminRepository = new AdminRepository()
+const appliedJobsRepository = new AppliedJobsRepository()
+const employerRepository = new EmployerRepository()
+const employerOTPRepository = new EmployerOTPRepository()
+const jobApplicantsRepository = new JobApplicantsRepository()
+const jobsRepository = new JobsRepository()
+const postsRepository = new PostsRepository()
+const userRepository = new UserRepository()
+const userOTPRepository = new UserOTPRepository()
+
+// UseCases
+const adminUseCase = new AdminUseCase(adminRepository,userRepository,employerRepository,jwt);
+const employerUseCase = new EmployerUseCase(employerRepository,employerOTPRepository,OTPGenerator,mailer,jwt);
+const jobApplicantsUseCase = new JobApplicantsUseCase(jobApplicantsRepository,appliedJobsRepository,jwt);
+const jobsUseCase = new JobsUseCase(jwt,jobsRepository);
+const postsUseCase = new PostsUseCase(jwt,postsRepository);
+const userUseCase = new UserUseCase(userRepository,jwt,OTPGenerator,mailer,userOTPRepository);
+
+// Controllers
+export const adminController = new AdminController(adminUseCase);
+export const employerController = new EmployerController(employerUseCase);
+export const jobApplicantsController = new JobApplicantsController(jobApplicantsUseCase);
+export const jobsController = new JobsController(jobsUseCase);
+export const postsController = new PostsController(postsUseCase);
+export const userController = new UserController(userUseCase);

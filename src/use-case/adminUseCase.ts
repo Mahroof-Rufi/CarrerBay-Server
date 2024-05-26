@@ -1,19 +1,19 @@
-import adminRepository from "../infrastructure/repository/adminRepository";
-import employerRepository from "../infrastructure/repository/employerRepository";
-import userRepository from "../infrastructure/repository/userRepository";
-import Jwt from "../infrastructure/utils/jwt";
+import adminRepository from "../infrastructure/repositories/adminRepository";
+import employerRepository from "../infrastructure/repositories/employerRepository";
+import userRepository from "../infrastructure/repositories/userRepository";
+import Jwt from "../providers/jwt";
 
-class adminUseCase {
+class AdminUseCase {
 
     constructor(
-        private adminRepo:adminRepository,
-        private userRepo:userRepository,
-        private employerRepo:employerRepository,
-        private jwt:Jwt
+        private readonly _adminRepo:adminRepository,
+        private readonly _userRepo:userRepository,
+        private readonly _employerRepo:employerRepository,
+        private readonly _jwt:Jwt
         ) {}
 
     async login(email:string, password:string) {
-        const admin = await this.adminRepo.findByEmail(email)
+        const admin = await this._adminRepo.findByEmail(email)
         if (admin) {
             if (password !== admin.password) {
                 return {
@@ -21,7 +21,7 @@ class adminUseCase {
                     message: 'Invalid credentials'
                 }
             }
-            const token = this.jwt.createToken(admin.id, 'admin')
+            const token = this._jwt.createToken(admin.id, 'admin')
             return {
                 status: 200,
                 adminToken: token,
@@ -36,17 +36,8 @@ class adminUseCase {
         }
     }
 
-    async loadUsers() {
-        const users = await this.userRepo.fetchAllUsers()
-        return {
-            status:200,
-            message:'Users found successfully',
-            users:users
-        }
-    }
-
     async userAction(user_id:string) {
-        const updatedUser = await this.userRepo.changeStatusById(user_id)
+        const updatedUser = await this._userRepo.changeStatusById(user_id)
         if (!updatedUser) {
             return {
                 status:400,
@@ -60,23 +51,8 @@ class adminUseCase {
         }
     }
 
-    async loadCompanies() {
-        const employers = await this.employerRepo.fetchAllEmployers()
-        if (!employers) {
-            return {
-                status:400,
-                message:'Employers not found'
-            }
-        }
-        return {
-            status:200,
-            message:'Employers found successfully',
-            employers:employers
-        }
-    }
-
     async employerAction(employer_id:string) {
-        const updatedEmployer = await this.employerRepo.changeStatusById(employer_id)
+        const updatedEmployer = await this._employerRepo.changeStatusById(employer_id)
         if (!updatedEmployer) {
             return {
                 status:400,
@@ -92,4 +68,4 @@ class adminUseCase {
 
 }
 
-export default adminUseCase
+export default AdminUseCase

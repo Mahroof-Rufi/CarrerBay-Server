@@ -1,88 +1,76 @@
-import { education } from './../domain/user';
-import { user, EditUser, experience } from "../domain/user";
-import jobsRepository from "../infrastructure/repository/jobsRepository";
-import userOTPRepository from "../infrastructure/repository/userOTPRepository";
-import userRepository from "../infrastructure/repository/userRepository";
-import GenerateOTP from "../infrastructure/utils/generateOTP";
-import Jwt from "../infrastructure/utils/jwt";
-import NodeMailer from "../infrastructure/utils/nodeMailer";
-import appliedJobsRepository from '../infrastructure/repository/appliedJobsRepository';
-import jobApplicantsRepository from '../infrastructure/repository/jobApplicantsRepository';
-import PostsRepository from '../infrastructure/repository/postsRepository';
-import OTPModel from '../domain/OTP';
+import { Education } from "../interfaces/models/subModels/education";
+import { Experience } from "../interfaces/models/subModels/experience";
+import { User, EditUser } from "../interfaces/models/user";
+import userOTPRepository from "../infrastructure/repositories/userOTPRepository";
+import userRepository from "../infrastructure/repositories/userRepository";
+import GenerateOTP from "../providers/generateOTP";
+import Jwt from "../providers/jwt";
+import NodeMailer from "../providers/nodeMailer";
 
 
-class userUseCase {
+class UserUseCase {
 
     constructor(
-        private userRepository: userRepository,
-        private jwt: Jwt,
-        private generateOTP: GenerateOTP,
-        private sendMail: NodeMailer,
-        private userOTPRepo:userOTPRepository,
-        private jobsRepository: jobsRepository,
-        private appliedJobsRepository: appliedJobsRepository,
-        private jobApplicantsRepository: jobApplicantsRepository,
-        private postsRepository: PostsRepository
+        private _userRepository: userRepository,
+        private _jwt: Jwt,
+        private _OTPgenerator: GenerateOTP,
+        private _mailer: NodeMailer,
+        private _userOTPRepo:userOTPRepository,
     ) { }
 
 
     async sendOTP(email:string) {
-        const OTP = this.generateOTP.generateOTP()   
-        const user = await this.userRepository.findByEmail(email) 
+        const OTP = this._OTPgenerator.generateOTP()   
+        const user = await this._userRepository.findByEmail(email) 
         if (!user) {
-            const res = await this.sendMail.sendMail(email,parseInt(OTP));
-            this.userOTPRepo.insertOTP(email,parseInt(OTP))
+            const res = await this._mailer.sendMail(email,parseInt(OTP));
+            this._userOTPRepo.insertOTP(email,parseInt(OTP))
             if (res) {
                 return {
                     status: 200,
-                    data: 'OTP send successfully'
+                    message: 'OTP send successfully'
                 }
             } else {
                 return {
                     status: 400,
-                    data: 'OTP send failed, try again'
+                    message: 'OTP send failed, try again'
                 }
             }
         } else {            
             return {
                 status: 400,
-                data: 'Email already exists'
+                message: 'Email already exists'
             }
         }
     }
 
 
-    async signUp(userData: user) {
-        const user = await this.userRepository.findByEmail(userData.email)
+    async signUp(userData: User) {
+        const user = await this._userRepository.findByEmail(userData.email)
         if (!user) {
-            const otp = await this.userOTPRepo.getOtpByEmail(userData.email)
+            const otp = await this._userOTPRepo.getOtpByEmail(userData.email)
             if (otp?.OTP == userData.OTP) {
-                console.log('before inserting');
-                console.log(userData);
-                
-                
-                await this.userRepository.insertOne(userData)
+                await this._userRepository.insertOne(userData)
                 return {
                     status: 200,
-                    data: 'User registration successfull'
+                    message: 'User registration successful'
                 }
             } else {
                 return {
                     status: 400,
-                    data: 'Invalid OTP'
+                    message: 'Invalid OTP'
                 }
             }
         } else {
             return {
                 status: 400,
-                data: 'Email already exists'
+                message: 'Email already exists'
             }
         }
     }
 
     async logIn(email: string, password: string) {
-        const userData = await this.userRepository.findByEmail(email)
+        const userData = await this._userRepository.findByEmail(email)
 
         if (userData) {
             if (password !== userData.password) {
@@ -96,11 +84,10 @@ class userUseCase {
                     message: 'This account blocked by Admin'
                 }
             }
-            const token = this.jwt.createToken(userData._id, 'Normal-User')
+            const token = this._jwt.createToken(userData._id, 'Normal-User')
             return {
                 status: 200,
                 token: token,
-                userDate: userData,
                 message: 'Login successfully'
             }
         } else {
@@ -112,9 +99,9 @@ class userUseCase {
     }
 
     async gAuth(fullName:string, email: string, password: string, google_id:string) {
-        const user = await this.userRepository.findByEmail(email)
+        const user = await this._userRepository.findByEmail(email)
         if (user) {
-            const token = this.jwt.createToken(user._id, 'Normal-User')
+            const token = this._jwt.createToken(user._id, 'Normal-User')
             return {
                 status: 200,
                 token: token,
@@ -122,9 +109,9 @@ class userUseCase {
                 message: 'Login successfully'
             }
         } else {
-            const res:user = await this.userRepository.insertOne({firstName:fullName,email:email,g_id:google_id})
+            const res:User = await this._userRepository.insertOne({firstName:fullName,email:email,g_id:google_id})
             if (res) {
-                const token = this.jwt.createToken(res._id, 'Normal-User')
+                const token = this._jwt.createToken(res._id, 'Normal-User')
                 return {
                     status: 200,
                     token: token,
@@ -141,12 +128,12 @@ class userUseCase {
     }
 
     async forgotpasswordSendOTP(email:string) {
-        const user = await this.userRepository.findByEmail(email)       
+        const user = await this._userRepository.findByEmail(email)       
         
         if(user) {
-            const OTP = this.generateOTP.generateOTP()
-            const res = await this.sendMail.sendMail(email, parseInt(OTP))
-            this.userOTPRepo.insertOTP(email, parseInt(OTP))
+            const OTP = this._OTPgenerator.generateOTP()
+            const res = await this._mailer.sendMail(email, parseInt(OTP))
+            this._userOTPRepo.insertOTP(email, parseInt(OTP))
             if (res) {
                 return {
                     status: 200,
@@ -167,9 +154,9 @@ class userUseCase {
     }
 
     async resetPassword(email:string, OTP:number, password:string) {
-        const realOTP = await this.userOTPRepo.getOtpByEmail(email)
+        const realOTP = await this._userOTPRepo.getOtpByEmail(email)
         if (realOTP?.OTP == OTP) {
-            const res = await this.userRepository.updatePassword(email, password)
+            const res = await this._userRepository.updatePassword(email, password)
             if (res) {
                 return {
                     status: 200,
@@ -190,8 +177,8 @@ class userUseCase {
     }
 
     async fetchUserDataWithToken(token:string) {
-        const decode = this.jwt.verifyToken(token)
-        const res = await this.userRepository.findById(decode?.id)
+        const decode = this._jwt.verifyToken(token)
+        const res = await this._userRepository.findById(decode?.id)
         if (res) {
             return {
                 status: 200,
@@ -206,32 +193,23 @@ class userUseCase {
         }
     }
 
-    async fetchJobs() {
-        const jobs = await this.jobsRepository.fetchAll6Jobs()
-        return {
-            status: 200,
-            jobs: jobs
-        }
-    }
-
-    async searchJobs(query:string) {
-        const searchedJobs = await this.jobsRepository.fetchSearchedJobs(query)
-        
+    async loadUsers() {
+        const users = await this._userRepository.fetchAllUsers()
         return {
             status:200,
-            jobs:searchedJobs
+            message:'Users found successfully',
+            users:users
         }
     }
 
-    async updateUserProfile(newData:EditUser, user_id:string) {
+    async updateUserProfile(newData:EditUser, token:string) {
+
+        const decodedToken = this._jwt.verifyToken(token)
 
         const allowedUpdates = [
             'firstName', 'lastName', 'profile_url', 'jobTitle', 'industry', 'DOB', 'gender', 'city', 'state',
             'remort', 'resume_url', 'portfolio_url', 'gitHub_url', 'about', 'experiences', 'educations', 'skills'
         ];
-        console.log('kkkk');
-        
-        console.log(newData);
         
         const updateValidator = Object.keys(newData).every((update) => allowedUpdates.includes(update));
 
@@ -242,21 +220,21 @@ class userUseCase {
             }
         }
 
-        const userdata:user | null = await this.userRepository.findById(user_id)
+        const userData:User | null = await this._userRepository.findById(decodedToken?.id)
 
-        if (!userdata) {
+        if (!userData) {
             return {
                 status:404,
                 message:'User not found'
             }
         }
 
-        const res = await this.userRepository.findByIdAndUpdate(user_id, newData)
+        const res = await this._userRepository.findByIdAndUpdate(decodedToken?.id, newData)
         if (res) {
             return {
                 status:201,
                 updatedData:res,
-                message:'User profile update succesfull'
+                message:'User profile update successfully'
             }
         } else {
             return {
@@ -266,42 +244,71 @@ class userUseCase {
         }
     }
 
-    async updateUserExperience(user_id:string, experience:experience, exp_id?:string,) {
+    async updateUserAbout(token:string, about:string) {
+        const decodedToken = this._jwt.verifyToken(token);
+
+        const userData:User | null = await this._userRepository.findById(decodedToken?.id)
+
+        if (!userData) {
+            return {
+                status:404,
+                message:'User not found'
+            }
+        }
+
+        const res = await this._userRepository.updateUserAbout(decodedToken?.id, about)
+        if (res) {
+            return {
+                status:201,
+                updatedData:res,
+                message:'User about update successfully'
+            }
+        } else {
+            return {
+                status:404,
+                message:'User not found'
+            }
+        }
+
+    }
+
+    async updateUserExperience(token:string, experience:Experience, exp_id?:string,) {
+        const decodedToken = this._jwt.verifyToken(token)
         if (exp_id) {
             
-            const res = await this.userRepository.updateUserExperience(user_id, exp_id, experience)
+            const res = await this._userRepository.updateUserExperience(decodedToken?.id, exp_id, experience)
             if (res) {
                 return {
                     status:201,
                     updatedData:res,
-                    message:'User added updated'
+                    message:'User experience updated successfully'
                 }
             } else {
                 return {
                     status:404,
-                    message:'User not found 1'
+                    message:'User not found'
                 }
             }
         } else {
-            const res = await this.userRepository.addUserExperience(user_id, experience)
+            const res = await this._userRepository.addUserExperience(decodedToken?.id, experience)
             if (res) {
                 return {
                     status:201,
                     updatedData:res,
-                    message:'User experience updated'
+                    message:'User experience updated successfully'
                 }
             } else {
                 return {
                     status:404,
-                    message:'User not found 2'
+                    message:'User not found'
                 }
             }
         }
     }
 
     async deleteUserExperience(token:string, exp_id:string) {
-        const decode = this.jwt.verifyToken(token)
-        const updatedUserExperience = await this.userRepository.deleteUserExperience(decode?.id, exp_id)
+        const decode = this._jwt.verifyToken(token)
+        const updatedUserExperience = await this._userRepository.deleteUserExperience(decode?.id, exp_id)
         if (!updatedUserExperience) {
             return {
                 status:400,
@@ -310,33 +317,34 @@ class userUseCase {
         }
         return {
             status:200,
-            message:'User experience delete succesfull',
+            message:'User experience delete successful',
             newData:updatedUserExperience
         }
     }
 
-    async updateUserEducation(user_id:string, education:education, edcn_id?:string,) {
-        if (edcn_id) {
-            const res = await this.userRepository.updateUserEducation(user_id, education, edcn_id)
+    async updateUserEducation(token:string, education:Education, education_id?:string,) {
+        const decodedToken = this._jwt.verifyToken(token);
+        if (education_id) {
+            const res = await this._userRepository.updateUserEducation(decodedToken?.id, education, education_id);
             if (res) {
                 return {
                     status:201,
                     updatedData:res,
-                    message:'User added updated'
+                    message:'User education updated successfully'
                 }
             } else {
                 return {
                     status:404,
-                    message:'User not found 1'
+                    message:'User not found'
                 }
             }
         } else {
-            const res = await this.userRepository.addUserEducation(user_id, education)
+            const res = await this._userRepository.addUserEducation(decodedToken?.id, education)
             if (res) {
                 return {
                     status:201,
                     updatedData:res,
-                    message:'User education added successfully'
+                    message:'User education updated successfully'
                 }
             } else {
                 return {
@@ -348,8 +356,8 @@ class userUseCase {
     }
 
     async deleteUserEducation(token:string, edu_id:string) {
-        const decode = this.jwt.verifyToken(token)
-        const updatedUserEducation = await this.userRepository.deleteUserEducation(decode?.id, edu_id)
+        const decode = this._jwt.verifyToken(token)
+        const updatedUserEducation = await this._userRepository.deleteUserEducation(decode?.id, edu_id)
         if (!updatedUserEducation) {
             return {
                 status:400,
@@ -358,111 +366,39 @@ class userUseCase {
         }
         return {
             status:200,
-            message:'User education delete succesfull',
+            message:'User education delete successful',
             newData:updatedUserEducation
         }
     }
 
-    async updateUserSkills(user_id:string, skills:string[]) {
-        const res = await this.userRepository.updateUserSkills(user_id, skills)
+    async updateUserSkills(token:string, skills:string[]) {
+        const decodedToken = this._jwt.verifyToken(token)
+        const res = await this._userRepository.updateUserSkills(decodedToken?.id, skills)
         if (res) {
             return {
                 status:201,
                 updatedData:res,
-                message:'User skill updated successfully'
+                message:'User skills updated successfully'
             }
         } else {
             return {
                 status:404,
                 message:'User not found'
             }
-        }
-    }
-
-    async applyJobs(user_id:string, jobId:string) {
-        const res = await this.appliedJobsRepository.addAppliedJob(user_id, jobId)
-        if (!res) {
-            return {
-                status:404,
-                message:'User not found'
-            }
-        } else {
-            const job = await this.jobApplicantsRepository.addAppliedUser(jobId, user_id)
-            
-            if (!job) {
-                return {
-                    status:404,
-                    message:'Job not found'
-                }
-            }
-            return {
-                status:201,
-                message:'Job application succesfull',
-                updatedJob:job,
-                updatedUser:res
-            }
-        }
-    }
-
-    async verifyUserApplication(user_id:string, jobId:string) {
-        const jobApplicants = await this.jobApplicantsRepository.findOneCandidate(jobId,user_id)
-        if (jobApplicants) {
-            if (jobApplicants) {
-                return {
-                    status:200,
-                    isApplied:true,
-                    message:'user application exists'
-                }
-            } else {
-                return {
-                    status:200,
-                    isApplied:false,
-                    message:'user application not found'
-                }
-            }      
-        }
-        return {
-            status:200,
-            isApplied:false,
-            message:'Job not found'
-        }
-    }
-
-    async fetchAppliedJobs(user_id:string) {
-        const appliedJobs = await this.appliedJobsRepository.findOneById(user_id)
-        if (!appliedJobs) {
-            return {
-                status:200,
-                message:'Applied jobs not found'
-            }
-        }
-        return {
-            status:200,
-            appliedJobs: appliedJobs,
-            message:'Applied jobs found'
-        }
-    }
-    
-    async fetchPosts() {
-        const posts = await this.postsRepository.fetchAllPosts()
-        return {
-            status:200,
-            posts: posts,
-            message:'Posts found'
         }
     }
 
     async sendOTPToCurrentEmail(currentEmail:string) {
-        const user = await this.userRepository.findByEmail(currentEmail)
+        const user = await this._userRepository.findByEmail(currentEmail)
         if (!user) {
             return {
                 status:400,
                 message:'Email not exists'
             }
         }
-        const OTP = this.generateOTP.generateOTP()
-        const res = await this.sendMail.sendMail(currentEmail,parseInt(OTP));
-        this.userOTPRepo.insertOTP(currentEmail,parseInt(OTP))
+        const OTP = this._OTPgenerator.generateOTP()
+        const res = await this._mailer.sendMail(currentEmail,parseInt(OTP));
+        this._userOTPRepo.insertOTP(currentEmail,parseInt(OTP))
         if (res) {
             return {
                 status: 200,
@@ -477,8 +413,8 @@ class userUseCase {
     }
 
     async updateCurrentEmail(currentEmail:string,currentMailOTP:string,newEmail:string,newMailOTP:string) {
-        const currentMail = await this.userOTPRepo.getOtpByEmail(currentEmail)
-        const newMail = await this.userOTPRepo.getOtpByEmail(newEmail)
+        const currentMail = await this._userOTPRepo.getOtpByEmail(currentEmail)
+        const newMail = await this._userOTPRepo.getOtpByEmail(newEmail)
         
         if (!currentMail || !newMail) {
             return {
@@ -498,7 +434,7 @@ class userUseCase {
                     message:'New mail OTP mismatch'
                 }
             }
-            const newData = await this.userRepository.changeEmailByEmail(currentEmail,newEmail)
+            const newData = await this._userRepository.changeEmailByEmail(currentEmail,newEmail)
             if (!newData) {
                 return {
                     status:400,
@@ -513,4 +449,4 @@ class userUseCase {
     }
 }
 
-export default userUseCase
+export default UserUseCase
