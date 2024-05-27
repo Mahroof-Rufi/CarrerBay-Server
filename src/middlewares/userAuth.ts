@@ -9,23 +9,25 @@ export const userAuth = async (req:Request, res:Response, next:NextFunction) => 
     try {
         const token = req.header('User-Token');
         if(!token) {
-            res.status(401).json({message:'Unauthorized access denied 1'})
+            res.status(403).json({message:'Unauthorized access denied 1'})
             return
         }     
 
         const decodedToken = jwt.verifyToken(token)
-        if(decodedToken?.status && decodedToken.status == 401) {
+        if(decodedToken?.status && decodedToken.status == 403) {
             res.status(decodedToken.status).json({ message:decodedToken.message })
             return
         } else if ( decodedToken?.role != 'Normal-User') {
-            res.status(401).json({ message:'Unauthorized access' })
+            res.status(403).json({ message:'Unauthorized access' })
             return
         }
 
-        const userData = userRepo.findById(decodedToken.id)
+        const userData = await userRepo.findById(decodedToken.id)
 
         if (!userData) {
-            res.status(401).json({ message:'Unauthorized access' })
+            res.status(403).json({ message:'Unauthorized access' })
+        } else if (!userData.isActive) {
+            res.status(403).json({ message:'Your account is blocked by admin' })
         } else {
             next();
         } 

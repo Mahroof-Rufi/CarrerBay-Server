@@ -12,6 +12,7 @@ interface IUserUseCase {
     forgotPasswordSendOTP(email:string): Promise<UserOutput>
     resetPassword(email:string, OTP:number, password:string): Promise<UserOutput>
     fetchUserDataWithToken(token:string): Promise<UserOutput>
+    isUserBlockedOrNot(token:string): Promise<UserOutput>
     loadUsers(): Promise<UserOutput>
     updateUserProfile(newData:EditUser, token:string): Promise<UserOutput>
     updateUserAbout(token:string, about:string): Promise<UserOutput>

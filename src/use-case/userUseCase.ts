@@ -194,6 +194,21 @@ class UserUseCase implements IUserUseCase{
         }
     }
 
+    async isUserBlockedOrNot(token:string) {
+        const decodedToken = this._jwt.verifyToken(token)
+        const res = await this._userRepository.findById(decodedToken?.id)
+        if (res?.isActive) {
+            return {
+                status:200,
+                message:'User is not blocked'
+            }
+        }
+        return {
+            status:403,
+            message:'User account block by admin'
+        }
+    }
+
     async loadUsers() {
         const users = await this._userRepository.fetchAllUsers()
         return {

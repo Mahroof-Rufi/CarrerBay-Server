@@ -119,6 +119,18 @@ class UserController {
         }
     }
 
+    async isUserBlocked(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            if (token) {
+                const result = await this._userUseCase.isUserBlockedOrNot(token)
+                res.status(result.status).json({message:result?.message,})
+            }
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
     async updateUserProfile(req:Request, res:Response) {
         try {
             const token = req.header('User-Token');
