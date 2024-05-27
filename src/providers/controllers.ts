@@ -11,6 +11,7 @@ import EmployerRepository from "../infrastructure/repositories/employerRepositor
 import JobApplicantsRepository from "../infrastructure/repositories/jobApplicantsRepository";
 import JobsRepository from "../infrastructure/repositories/jobsRepository";
 import PostsRepository from "../infrastructure/repositories/postsRepository";
+import SavedJobsAndPostsRepository from "../infrastructure/repositories/savedJobsAndPostsRepository";
 import UserOTPRepository from "../infrastructure/repositories/userOTPRepository";
 import UserRepository from "../infrastructure/repositories/userRepository";
 import AdminUseCase from "../use-case/adminUseCase";
@@ -38,12 +39,13 @@ const jobsRepository = new JobsRepository()
 const postsRepository = new PostsRepository()
 const userRepository = new UserRepository()
 const userOTPRepository = new UserOTPRepository()
+const savedJobsAndPostsRepository = new SavedJobsAndPostsRepository()
 
 // UseCases
 const adminUseCase = new AdminUseCase(adminRepository,userRepository,employerRepository,jwt);
 const employerUseCase = new EmployerUseCase(employerRepository,employerOTPRepository,OTPGenerator,mailer,jwt);
 const jobApplicantsUseCase = new JobApplicantsUseCase(jobApplicantsRepository,appliedJobsRepository,jwt);
-const jobsUseCase = new JobsUseCase(jwt,jobsRepository);
+const jobsUseCase = new JobsUseCase(jwt,jobsRepository,savedJobsAndPostsRepository);
 const postsUseCase = new PostsUseCase(jwt,postsRepository);
 const userUseCase = new UserUseCase(userRepository,jwt,OTPGenerator,mailer,userOTPRepository);
 

@@ -6,6 +6,7 @@ import userRepository from "../infrastructure/repositories/userRepository";
 import GenerateOTP from "../providers/generateOTP";
 import Jwt from "../providers/jwt";
 import NodeMailer from "../providers/nodeMailer";
+import SavedJobsAndPostsRepository from "../infrastructure/repositories/savedJobsAndPostsRepository";
 
 
 class UserUseCase {
@@ -442,10 +443,11 @@ class UserUseCase {
             }
             return {
                 status:200,
-                message:'Email updated succesfully'
+                message:'Email updated successfully'
             }
         }
     }
+
 }
 
 export default UserUseCase

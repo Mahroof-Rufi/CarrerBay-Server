@@ -1,12 +1,14 @@
 import JobsRepository from "../infrastructure/repositories/jobsRepository"
 import Jwt from "../providers/jwt"
 import Job from "../interfaces/models/job"
+import SavedJobsAndPostsRepository from "../infrastructure/repositories/savedJobsAndPostsRepository"
 
 class JobsUseCase {
 
     constructor(
         private readonly _jwt:Jwt,
-        private readonly _jobRepository:JobsRepository
+        private readonly _jobRepository:JobsRepository,
+        private readonly _savedJobsAndPostsRepository:SavedJobsAndPostsRepository
     ) {}
 
     async fetchJobs() {
@@ -93,6 +95,60 @@ class JobsUseCase {
         return {
             status:200,
             jobs:searchedJobs
+        }
+    }
+
+    async saveJobPost(token:string, jobId:string) {
+        const decodedToken = this._jwt.verifyToken(token)
+        const res = await this._savedJobsAndPostsRepository.insertJob(decodedToken?.id, jobId)
+        console.log('res',res);
+        
+        if (res) {
+            return {
+                status:200,
+                message:'Job saved successfully',
+                savedJobsAndPosts: res
+            }
+        } else {
+            return {
+                status:400,
+                message:'save job failed, try again'
+            }
+        }
+    }
+
+    async isJobSaved(token:string, jobId:string) {
+        const decodedToken = this._jwt.verifyToken(token)
+        const res = await this._savedJobsAndPostsRepository.isJobSaved(decodedToken?.id, jobId)
+        if (res) {
+            return {
+                status:200,
+                message:'Job is saved',
+                isSaved: true
+            }
+        } else {            
+            return {
+                status:200,
+                message:'Job is not saved yet',
+                isSaved: false
+            }
+        }
+    }
+
+    async unSaveJobPost(token:string, jobId:string) {
+        const decodedToken = this._jwt.verifyToken(token)
+        const res = await this._savedJobsAndPostsRepository.removeJob(decodedToken?.id, jobId)
+        if (res) {
+            return {
+                status:200,
+                message:'Job unsaved successfully',
+                updatedSavedJobsAndPosts: res
+            }
+        } else {
+            return {
+                status:400,
+                message:'unsave job failed, try again'
+            }
         }
     }
 }

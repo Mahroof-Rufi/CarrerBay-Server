@@ -74,6 +74,48 @@ class JobsController {
             console.error(error);            
         }
     }
+
+    async saveJob(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            const jobId = req.body.job_id
+
+            if (token) {
+                const result = await this._jobsUseCase.saveJobPost(token, jobId);
+                res.status(result.status).json({ message:result.message, saved:result.savedJobsAndPosts })
+            }
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async isJobSaved(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            const jobId = req.body.job_id
+
+            if (token) {
+                const result = await this._jobsUseCase.isJobSaved(token, jobId);
+                res.status(result.status).json({ message:result.message, isSaved:result.isSaved })
+            }
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async unSaveJob(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            const jobId = req.body.job_id
+
+            if (token) {
+                const result = await this._jobsUseCase.unSaveJobPost(token, jobId);
+                res.status(result.status).json({ message:result.message, updatedSavedJobAndPosts:result.updatedSavedJobsAndPosts })
+            }
+        } catch (error) {
+            console.error(error);            
+        }
+    }
 }
 
 export default JobsController
