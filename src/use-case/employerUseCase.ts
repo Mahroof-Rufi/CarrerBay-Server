@@ -4,8 +4,9 @@ import employerOTPRepository from "../infrastructure/repositories/employerOTPRep
 import GenerateOTP from "../providers/generateOTP";
 import NodeMailer from "../providers/nodeMailer";
 import Jwt from "../providers/jwt";
+import IEmployerUseCase from "../interfaces/iUseCases/iEmployerUseCase";
 
-class EmployerUseCase {
+class EmployerUseCase implements IEmployerUseCase{
 
     constructor(
         private readonly _employerRepository:employerRepository,
@@ -24,18 +25,18 @@ class EmployerUseCase {
             if (res) {
                 return {
                     status: 200,
-                    data: 'OTP send successfully'
+                    message: 'OTP send successfully'
                 }
             } else {
                 return {
                     status: 400,
-                    data: 'OTP send failed, try again'
+                    message: 'OTP send failed, try again'
                 }
             }
         } else {
             return {
                 status: 400,
-                data: 'Email already exists'
+                message: 'Email already exists'
             }
         }
     }
@@ -48,18 +49,18 @@ class EmployerUseCase {
                 await this._employerRepository.insertOne(employerData)
                 return {
                     status: 200,
-                    data: 'Registration successful'
+                    message: 'Registration successful'
                 }
             } else {
                 return {
                     status: 400,
-                    data: 'Invalid OTP'
+                    message: 'Invalid OTP'
                 }
             }
         } else {
             return {
                 status: 400,
-                data: 'Email already exists'
+                message: 'Email already exists'
             }
         }
     }
@@ -114,7 +115,7 @@ class EmployerUseCase {
         }
     }
 
-    async forgotpasswordSendOTP(email:string) {
+    async forgotPasswordSendOTP(email:string) {
         const company = await this._employerRepository.findByEmail(email)       
         
         if(company) {
@@ -185,7 +186,7 @@ class EmployerUseCase {
             return {
                 status: 200,
                 oldProfileUrl: data.profile_url,
-                updatedData:updatedData,
+                employerData:updatedData,
                 message: 'Profile updated successfully'
             }
         } else {
@@ -204,7 +205,7 @@ class EmployerUseCase {
             return {
                 status: 200,
                 message: 'Email updated Successfully',
-                updatedData: updatedData
+                EmployerData: updatedData
             }
         } else {
             return {

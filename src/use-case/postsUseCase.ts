@@ -1,7 +1,8 @@
 import PostsRepository from "../infrastructure/repositories/postsRepository"
+import IPostsUseCase from "../interfaces/iUseCases/iPostsUseCase"
 import Jwt from "../providers/jwt"
 
-class PostsUseCase {
+class PostsUseCase implements IPostsUseCase{
 
     constructor(
         private readonly _jwt:Jwt,
@@ -19,11 +20,11 @@ class PostsUseCase {
 
     async fetchPostsByEmployerId(token:string) {
         const decode = this._jwt.verifyToken(token)
-        const posts = await this._postsRepository.fetchPostsById(decode?.id)
-        if (posts) {
+        const post = await this._postsRepository.fetchPostsById(decode?.id)
+        if (post) {
             return {
                 status:200,
-                posts:posts,
+                post:post,
                 message:'Posts found successfully'
             }
         }
@@ -41,7 +42,7 @@ class PostsUseCase {
             return {
                 status:201,
                 message:'Post uploaded successfully',
-                newData:res
+                post:res
             }
         }
         return {
@@ -52,10 +53,11 @@ class PostsUseCase {
 
     async fetchSearchedPosts(token:string, searchQuery:string) {
         const decode = this._jwt.verifyToken(token)
-        const searchedJobs = await this._postsRepository.fetchSearchedPosts(decode?.id, searchQuery)
+        const searchedPosts = await this._postsRepository.fetchSearchedPosts(decode?.id, searchQuery)
         return {
             status: 200,
-            posts: searchedJobs
+            message: 'Searched posts found successfully',
+            posts: searchedPosts
         }
     }
     

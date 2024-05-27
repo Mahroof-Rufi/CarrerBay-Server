@@ -2,8 +2,9 @@ import JobsRepository from "../infrastructure/repositories/jobsRepository"
 import Jwt from "../providers/jwt"
 import Job from "../interfaces/models/job"
 import SavedJobsAndPostsRepository from "../infrastructure/repositories/savedJobsAndPostsRepository"
+import IJobsUseCase from "../interfaces/iUseCases/iJobsUseCase"
 
-class JobsUseCase {
+class JobsUseCase implements IJobsUseCase{
 
     constructor(
         private readonly _jwt:Jwt,
@@ -15,6 +16,7 @@ class JobsUseCase {
         const jobs = await this._jobRepository.fetchAll6Jobs()
         return {
             status: 200,
+            message: 'Jobs found successfully',
             jobs: jobs
         }
     }
@@ -24,6 +26,7 @@ class JobsUseCase {
         const jobs = await this._jobRepository.fetch8Jobs(decode?.id, title)
         return {
             status: 200,
+            message: 'Jobs found successfully',
             jobs: jobs
         }        
     }
@@ -33,6 +36,7 @@ class JobsUseCase {
         const searchedJobs = await this._jobRepository.fetchSearchedJobsByCompanyId(decode?.id, searchQuery)
         return {
             status: 200,
+            message: 'Searched jobs found successfully',
             jobs: searchedJobs
         }
     }
@@ -64,7 +68,7 @@ class JobsUseCase {
             return {
                 status: 200,
                 message: 'Job Post updated successfully',
-                updatedJob: updatedJob
+                job: updatedJob
             }
         } else {
             return {
@@ -94,6 +98,7 @@ class JobsUseCase {
         
         return {
             status:200,
+            message:'Searched Jobs found successfully',
             jobs:searchedJobs
         }
     }

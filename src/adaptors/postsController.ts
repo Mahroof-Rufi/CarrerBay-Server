@@ -27,7 +27,7 @@ class PostsController {
             } else {
                 if (token) {
                     const result = await this._postsUseCase.fetchPostsByEmployerId(token)
-                    res.status(result.status).json({ message:result.message, posts:result.posts })
+                    res.status(result.status).json({ message:result.message, posts:result.post })
                 }
             }
             
@@ -58,7 +58,7 @@ class PostsController {
             
             if (token) {
                 const result = await this._postsUseCase.addPost(description, token,urls)
-                res.status(result.status).json({ message:result.message,updatedPosts:result.newData })
+                res.status(result.status).json({ message:result.message,updatedPosts:result.post })
             }
         } catch (error) {
             console.error(error);            

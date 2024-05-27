@@ -45,6 +45,20 @@ class JobApplicantsRepository implements IJobApplicantsRepository {
         }
     }
 
+    async rejectCandidateStatus(job_id: string, user_id: string): Promise<any> {
+        const updatedJobApplicant = await jobApplicantsModel.findOneAndUpdate(
+            { job_id: job_id, 'appliedUsers.user_id': user_id },
+            { $set: { 'appliedUsers.$.rejected': true } },
+            {  new: true }
+        ).populate('appliedUsers.user_id');
+
+        if (updatedJobApplicant) {
+            return updatedJobApplicant
+        } else {
+            return null
+        }
+    }
+
     async findOneCandidate(job_id: string, user_id: string): Promise<any> {
         const jobApplication = await jobApplicantsModel.findOne(
             { job_id: job_id, 'appliedUsers.user_id': user_id }

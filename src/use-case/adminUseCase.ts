@@ -1,9 +1,10 @@
 import adminRepository from "../infrastructure/repositories/adminRepository";
 import employerRepository from "../infrastructure/repositories/employerRepository";
 import userRepository from "../infrastructure/repositories/userRepository";
+import IAdminUseCase from "../interfaces/iUseCases/iAdminUseCase";
 import Jwt from "../providers/jwt";
 
-class AdminUseCase {
+class AdminUseCase implements IAdminUseCase {
 
     constructor(
         private readonly _adminRepo:adminRepository,
@@ -25,7 +26,6 @@ class AdminUseCase {
             return {
                 status: 200,
                 adminToken: token,
-                userDate: admin,
                 message: 'Login successfully'
             }
         } else {
@@ -79,7 +79,7 @@ class AdminUseCase {
         }
         return {
             status:200,
-            message:'Employer action succesfull',
+            message:'Employer action successful',
             updatedEmployer:updatedEmployer
         }
     }

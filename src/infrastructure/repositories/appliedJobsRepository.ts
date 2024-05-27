@@ -1,12 +1,13 @@
 import IAppliedJobsRepository from "../../interfaces/iRepositories/iAppliedJobsRepository";
 import appliedJobsModel from "../../entities_models/appliedJobsModel";
+import mongoose from "mongoose";
 
 class AppliedJobsRepository implements IAppliedJobsRepository {
     
-    async addAppliedJob(user_id: string, job_id: string): Promise<any> {
+    async addAppliedJob(user_id: string, job_id: string): Promise<any> {            
         const appliedJob = await appliedJobsModel.findOneAndUpdate(
-            { user_id: user_id },
-            { $addToSet: { appliedJobs: { job_id: job_id, status: "under-review" } } },
+            { user_id: new mongoose.Types.ObjectId(user_id) },
+            { $addToSet: { appliedJobs: { job_id: job_id, status: "under-review", } } },
             { upsert: true, new: true }
         );
         return appliedJob ? appliedJob : null
@@ -34,6 +35,20 @@ class AppliedJobsRepository implements IAppliedJobsRepository {
             {   user_id: user_id, 'appliedJobs.job_id': job_id  },
             {   $set: { 'appliedJobs.$.status': newStatus } },
             {   new: true }
+        )
+
+        if (updatedUserAppliedJob) {
+            return updatedUserAppliedJob
+        } else {
+            return null
+        }
+    }
+
+    async rejectApplication(user_id: string, job_id: string): Promise<any> {
+        const updatedUserAppliedJob = await appliedJobsModel.findOneAndUpdate(
+            { user_id: user_id, 'appliedJobs.job_id': job_id },
+            { $set: { 'appliedJobs.$.rejected': true } },
+            { new: true }
         )
 
         if (updatedUserAppliedJob) {

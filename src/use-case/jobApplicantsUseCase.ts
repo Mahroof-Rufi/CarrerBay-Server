@@ -1,8 +1,10 @@
 import AppliedJobsRepository from "../infrastructure/repositories/appliedJobsRepository"
 import JobApplicantsRepository from "../infrastructure/repositories/jobApplicantsRepository"
+import IJobApplicantsUseCase from "../interfaces/iUseCases/iJobApplicantsUseCase"
+import { JobApplicantsOutput } from "../interfaces/models/jobApplicantsOutput"
 import Jwt from "../providers/jwt"
 
-class JobApplicantsUseCase {
+class JobApplicantsUseCase implements IJobApplicantsUseCase{
 
     constructor(
         private readonly _jobApplicantsRepository:JobApplicantsRepository,
@@ -32,8 +34,25 @@ class JobApplicantsUseCase {
         if (res && updateUserSide) {
             return {
                 status:200,
-                updatedCandidateData:res,
-                message:'Candidate status update successfull'
+                message:'Candidate status update successful',
+                appliedUsers:res
+            }
+        } else {
+            return {
+                status:404,
+                message:'Candidate not found'
+            }
+        } 
+    }
+
+    async rejectCandidate(job_id: string, user_id: string): Promise<JobApplicantsOutput> {
+        const res = await this._jobApplicantsRepository.rejectCandidateStatus(job_id,user_id)
+        const updateUserSide = await this._userAppliedJobs.rejectApplication(user_id,job_id)
+        if (res && updateUserSide) {
+            return {
+                status:200,
+                message:'Candidate application rejected successful',
+                appliedUsers:res
             }
         } else {
             return {
@@ -44,6 +63,7 @@ class JobApplicantsUseCase {
     }
 
     async applyJobs(token:string, jobId:string) {
+        
         const decodedToken = this._jwt.verifyToken(token)
         const res = await this._userAppliedJobs.addAppliedJob(decodedToken?.id, jobId)
         if (!res) {

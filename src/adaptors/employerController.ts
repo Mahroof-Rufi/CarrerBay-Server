@@ -12,7 +12,7 @@ class EmployerController {
         try {
             const email = req.body.email
             const response = await this._employerUseCase.sendOTP(email)
-            res.status(response.status).json(response.data)
+            res.status(response.status).json(response.message)
         } catch (error) {
             console.error(error);
         }
@@ -23,7 +23,7 @@ class EmployerController {
             const employerData = req.body            
             
             const result = await this._employerUseCase.register(employerData)
-            res.status(result.status).json(result.data)
+            res.status(result.status).json(result.message)
         } catch (error) {
             console.error(error);
         }
@@ -83,8 +83,8 @@ class EmployerController {
     async forgotPasswordSendOTP(req:Request, res:Response) {
         try {
             const email = req.body.email
-            const reslt = await this._employerUseCase.forgotpasswordSendOTP(email)
-            res.status(reslt.status).json(reslt.message)
+            const result = await this._employerUseCase.forgotPasswordSendOTP(email)
+            res.status(result.status).json(result.message)
         } catch (error) {
             console.error(error);
         }
@@ -117,16 +117,15 @@ class EmployerController {
                         await cloudinary.uploader.destroy(result.oldProfileUrl)
                         console.log('after destroy');
                     }
-                    res.status(result.status).json({ message: result.message, updatedData: result.updatedData });           
+                    res.status(result.status).json({ message: result.message, updatedData: result.employerData });           
                 } else {                    
                     throw new Error('Unable to get Cloudinary URL');
                 }
             } else {
                 const newData = {...req.body}                
                 const data = await this._employerUseCase.updateProfile(newData)
-                console.log(data.updatedData);
                 
-                res.status(data.status).json({ updatedData: data.updatedData, message: data.message });
+                res.status(data.status).json({ updatedData: data.employerData, message: data.message });
             }
         } catch (error) {
             console.error(error);
@@ -137,7 +136,7 @@ class EmployerController {
         try {
             const { email, OTP, newEmail } = req.body
             const result = await this._employerUseCase.updateEmailWithOTP(email, OTP, newEmail)
-            res.status(result.status).json({message:result.message, data:result?.updatedData})
+            res.status(result.status).json({message:result.message, data:result?.EmployerData})
         } catch (error) {
             console.error(error); 
         }

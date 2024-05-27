@@ -7,9 +7,10 @@ import GenerateOTP from "../providers/generateOTP";
 import Jwt from "../providers/jwt";
 import NodeMailer from "../providers/nodeMailer";
 import SavedJobsAndPostsRepository from "../infrastructure/repositories/savedJobsAndPostsRepository";
+import IUserUseCase from "../interfaces/iUseCases/iUserUseCase";
 
 
-class UserUseCase {
+class UserUseCase implements IUserUseCase{
 
     constructor(
         private _userRepository: userRepository,
@@ -182,13 +183,13 @@ class UserUseCase {
         if (res) {
             return {
                 status: 200,
+                message: 'Operation success',
                 userData: res,
-                message: 'Operation success'
             }
         } else {
             return {
                 status: 401,
-                userData: res
+                message: 'Something went wrong',
             }
         }
     }
@@ -233,7 +234,7 @@ class UserUseCase {
         if (res) {
             return {
                 status:201,
-                updatedData:res,
+                userData:res,
                 message:'User profile update successfully'
             }
         } else {
@@ -260,7 +261,7 @@ class UserUseCase {
         if (res) {
             return {
                 status:201,
-                updatedData:res,
+                userData:res,
                 message:'User about update successfully'
             }
         } else {
@@ -280,7 +281,7 @@ class UserUseCase {
             if (res) {
                 return {
                     status:201,
-                    updatedData:res,
+                    userData:res,
                     message:'User experience updated successfully'
                 }
             } else {
@@ -294,7 +295,7 @@ class UserUseCase {
             if (res) {
                 return {
                     status:201,
-                    updatedData:res,
+                    userData:res,
                     message:'User experience updated successfully'
                 }
             } else {
@@ -318,7 +319,7 @@ class UserUseCase {
         return {
             status:200,
             message:'User experience delete successful',
-            newData:updatedUserExperience
+            userData:updatedUserExperience
         }
     }
 
@@ -329,7 +330,7 @@ class UserUseCase {
             if (res) {
                 return {
                     status:201,
-                    updatedData:res,
+                    userData:res,
                     message:'User education updated successfully'
                 }
             } else {
@@ -343,7 +344,7 @@ class UserUseCase {
             if (res) {
                 return {
                     status:201,
-                    updatedData:res,
+                    userData:res,
                     message:'User education updated successfully'
                 }
             } else {
@@ -367,7 +368,7 @@ class UserUseCase {
         return {
             status:200,
             message:'User education delete successful',
-            newData:updatedUserEducation
+            userData:updatedUserEducation
         }
     }
 
@@ -377,7 +378,7 @@ class UserUseCase {
         if (res) {
             return {
                 status:201,
-                updatedData:res,
+                userData:res,
                 message:'User skills updated successfully'
             }
         } else {
@@ -412,7 +413,7 @@ class UserUseCase {
         }
     }
 
-    async updateCurrentEmail(currentEmail:string,currentMailOTP:string,newEmail:string,newMailOTP:string) {
+    async updateCurrentEmail(currentEmail:string ,currentMailOTP:string, newEmail:string, newMailOTP:string) {
         const currentMail = await this._userOTPRepo.getOtpByEmail(currentEmail)
         const newMail = await this._userOTPRepo.getOtpByEmail(newEmail)
         

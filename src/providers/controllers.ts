@@ -1,6 +1,6 @@
 import AdminController from "../adaptors/adminController";
 import EmployerController from "../adaptors/employerController";
-import JobApplicantsController from "../adaptors/jobApplicants";
+import JobApplicantsController from "../adaptors/jobApplicantsController";
 import JobsController from "../adaptors/jobsController";
 import PostsController from "../adaptors/postsController";
 import UserController from "../adaptors/userController";

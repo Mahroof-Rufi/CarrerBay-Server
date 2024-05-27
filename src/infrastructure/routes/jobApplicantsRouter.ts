@@ -13,5 +13,7 @@ router.route('/applied-jobs').get( userAuth, (req, res) => jobApplicantsControll
 router.route('/applicants')
     .post( employerAuth, (req, res) => jobApplicantsController.fetchJobApplicants(req,res))
     .patch( employerAuth, (req, res) => jobApplicantsController.updateCandidateStatus(req, res))
+router.route('/reject-application')
+    .patch( employerAuth, (req, res) => jobApplicantsController.rejectCandidate(req, res))
 
 export default router

@@ -59,7 +59,7 @@ class JobsController {
             const jobData = req.body.newJobData
             const jobId = req.body.jobId
             const response = await this._jobsUseCase.editJobPost(jobId,jobData);
-            res.status(response.status).json({ message:response.message, updatedJob:response.updatedJob })                  
+            res.status(response.status).json({ message:response.message, updatedJob:response.job })                  
         } catch (error) {
             console.error(error);            
         }

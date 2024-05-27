@@ -149,7 +149,7 @@ class UserController {
 
             if (token) {
                 const result = await this._userUseCase.updateUserProfile(newData, token)
-                res.status(result.status).json({ updatedData:result.updatedData, message:result.message })
+                res.status(result.status).json({ updatedData:result.userData, message:result.message })
             }
         } catch (error) {
             console.error(error);            
@@ -167,7 +167,7 @@ class UserController {
             const about = req.body.about;
             if (token) {
                 const result = await this._userUseCase.updateUserAbout(token, about);
-                res.status(result.status).json({ message:result.message, updatedData:result.updatedData });
+                res.status(result.status).json({ message:result.message, updatedData:result.userData });
             }
         } catch (error) {
             console.error(error);            
@@ -181,7 +181,7 @@ class UserController {
             const experience = req.body.exp
             if (token) {
                 const result = await this._userUseCase.updateUserExperience(token, experience, exp_id)
-                res.status(result.status).json({ message: result.message, updatedData:result.updatedData })
+                res.status(result.status).json({ message: result.message, updatedData:result.userData })
             }           
         } catch (error) {
             console.error(error);            
@@ -194,7 +194,7 @@ class UserController {
             const token = req.header('User-Token');
             if (token) {
                 const result = await this._userUseCase.deleteUserExperience(token, exp_id)
-                res.status(result.status).json({ message:result.message, updatedData:result.newData })
+                res.status(result.status).json({ message:result.message, updatedData:result.userData })
             } else {
                 res.status(400).json({ message:'Unauthorized user' })
             }
@@ -211,7 +211,7 @@ class UserController {
             
             if (token) {
                 const result = await this._userUseCase.updateUserEducation(token, education, education_id)
-                res.status(result.status).json({ updatedData:result.updatedData, message: result.message })
+                res.status(result.status).json({ updatedData:result.userData, message: result.message })
             }           
         } catch (error) {
             console.error(error);            
@@ -224,7 +224,7 @@ class UserController {
             const token = req.header('User-Token');
             if (token) {
                 const result = await this._userUseCase.deleteUserEducation(token, edu_id)
-                res.status(result.status).json({ message:result.message, updatedData:result.newData })
+                res.status(result.status).json({ message:result.message, updatedData:result.userData })
             }
         } catch (error) {
             console.error(error);            
@@ -238,7 +238,7 @@ class UserController {
             
             if (token) {
                 const result = await this._userUseCase.updateUserSkills(token, skills)
-                res.status(result.status).json({ updatedData:result.updatedData, message: result.message }) 
+                res.status(result.status).json({ updatedData:result.userData, message: result.message }) 
             }          
         } catch (error) {
             console.error(error);            

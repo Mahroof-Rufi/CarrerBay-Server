@@ -9,6 +9,11 @@ const appliedUsersSchema: Schema = new Schema({
     status: {
         type: String,
         required:true
+    },
+    rejected: {
+        type: Boolean,
+        required:true,
+        default: false
     }
 })
 

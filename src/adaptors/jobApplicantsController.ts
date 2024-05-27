@@ -36,7 +36,18 @@ class JobApplicantsController {
             const user_id = req.body.user_id;
             const newStatus = req.body.newStatus;
             const result = await this._jobApplicantsUseCase.updateCandidateStatus(job_id,user_id,newStatus)
-            res.status(result.status).json({ message:result.message, updatedData:result.updatedCandidateData })
+            res.status(result.status).json({ message:result.message, updatedData:result.appliedUsers })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async rejectCandidate(req:Request, res:Response) {
+        try {
+            const job_id = req.body.job_id;
+            const user_id = req.body.user_id;
+            const result = await this._jobApplicantsUseCase.rejectCandidate(job_id,user_id)
+            res.status(result.status).json({ message:result.message, updatedData:result.appliedUsers })
         } catch (error) {
             console.error(error);            
         }
