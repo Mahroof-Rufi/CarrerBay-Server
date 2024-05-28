@@ -18,18 +18,23 @@ class PostsUseCase implements IPostsUseCase{
         }
     }
 
-    async fetchPostsByEmployerId(token:string) {
+    async fetchPostsByEmployerId(token:string, pageNo:string) {
         const decode = this._jwt.verifyToken(token)
-        const post = await this._postsRepository.fetchPostsById(decode?.id)
-        if (post) {
+        const limit = 5
+        const skip = (parseInt(pageNo) - 1) * limit
+        const post = await this._postsRepository.fetchPostsById(decode?.id, skip, limit)
+        
+        const noOfPost = await this._postsRepository.fetchTotalNoOfPosts(decode?.id)
+        if (post ) {
             return {
-                status:200,
-                post:post,
-                message:'Posts found successfully'
+                status: 200,
+                message:'Posts found successfully',
+                post: post,
+                noOfPost: noOfPost
             }
         }
         return {
-            status: 404,
+            status: 400,
             message: 'Posts not found'
         }
     }

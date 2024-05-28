@@ -26,14 +26,15 @@ class JobsController {
         try {            
             const token = req.header('Employer-Token');
             const searchQuery = req.query.search
+            const pageNo = req.query.page || '1'            
             if (searchQuery && token && searchQuery != ' ' && typeof searchQuery == 'string') {
                 const searchedJobs = await this._jobsUseCase.fetchSearchedJobs(token, searchQuery)
                 res.status(searchedJobs.status).json({ jobs:searchedJobs.jobs })
             } else {
                 if(token) {
                     const query = req.query.title
-                    const result = await this._jobsUseCase.fetchJobsByEmployerId(token, query as string)
-                    res.status(result.status).json({jobs:result.jobs})
+                    const result = await this._jobsUseCase.fetchJobsByEmployerId(token, pageNo as string, query as string)
+                    res.status(result.status).json({jobs:result.jobs, noOfJobs:result.noOfJobs})
                 }
             }            
         } catch (error) {
@@ -122,6 +123,15 @@ class JobsController {
         if (token) {
             const result = await this._jobsUseCase.loadUserSavedJobs(token);
             res.status(result.status).json({ message:result.message, jobs:result.savedJobsAndPosts?.savedJobs })
+        }
+    }
+
+    async closeHiring(req:Request, res:Response) {
+        const token = req.header('Employer-Token');
+        const jobId = req.body.job_id
+        if (token) {
+            const result = await this._jobsUseCase.closeHiring(token, jobId)
+            res.status(result.status).json({ message:result.message })
         }
     }
 }

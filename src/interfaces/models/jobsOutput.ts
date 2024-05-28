@@ -8,4 +8,5 @@ export interface JobsOutput {
     jobs?:Job[] | null,
     savedJobsAndPosts?:SavedJobsAndPosts,
     isSaved?:boolean,
+    noOfJobs?:number
 }

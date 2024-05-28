@@ -10,8 +10,8 @@ class JobsRepository implements IJobsRepository {
         return job
     }
 
-    async fetch8Jobs(company_id: string, title:string | undefined): Promise<Job[]> {
-        const jobs = title ? await jobModel.find({company_id:company_id, title:title}) : await jobModel.find({company_id:company_id})
+    async fetch8Jobs(company_id: string, skip:number, limit:number, title:string | undefined): Promise<Job[]> {
+        const jobs = title ? await jobModel.find({company_id:company_id, title:title}).skip(skip).limit(limit) : await jobModel.find({company_id:company_id}).skip(skip).limit(limit)
         if (jobs) {
             return jobs
         } else {
@@ -19,8 +19,15 @@ class JobsRepository implements IJobsRepository {
         }
     }
 
-    async fetchAll6Jobs(): Promise<Job[] | null> {
-        const jobs = await jobModel.find().populate('company_id')        
+    async fetchEmployerJobsCount(employer_id: string): Promise<number> {
+        const noOfDoc = await jobModel.find({ company_id:employer_id }).countDocuments()
+        return noOfDoc
+    }
+
+    async fetchJobsByUser(): Promise<Job[] | null> {
+        const jobs = await jobModel.find(
+            { active:true }
+        ).populate('company_id')        
         
         if (jobs) {
             return jobs
@@ -69,12 +76,26 @@ class JobsRepository implements IJobsRepository {
         }
     }
 
-    async addApplicantid(job_id: string, user_id: string): Promise<Job | null> {
-        const updatdJob = await jobModel.findByIdAndUpdate(
+    async addApplicantId(job_id: string, user_id: string): Promise<Job | null> {
+        const updatedJob = await jobModel.findByIdAndUpdate(
             job_id,
             { $addToSet: { applicants:user_id } }
         )
-        return updatdJob ? updatdJob : null
+        return updatedJob ? updatedJob : null
+    }
+
+    async closeHiring(job_id: string): Promise<Job | null> {
+        const updatedJob = await jobModel.findOneAndUpdate(
+            { _id:job_id },
+            {  active: false },
+            { new:true }
+        )
+
+        if (updatedJob) {
+            return updatedJob
+        } else {
+            return updatedJob
+        }
     }
 
 }

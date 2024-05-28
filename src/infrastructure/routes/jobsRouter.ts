@@ -19,6 +19,7 @@ router.route('/employer-jobs')
     .post( employerAuth, (req, res) => jobsController.postNewJob(req, res))
     .put( employerAuth, (req, res) => jobsController.editJob(req, res))
 router.route('/employer-delete-job/:id').delete( employerAuth, (req, res) => jobsController.deleteJob(req, res))
+router.route('/close-hiring').patch( employerAuth, (req, res) => jobsController.closeHiring(req, res) )
     
 
 

@@ -153,7 +153,7 @@ class UserController {
                 if (resume) {
                     console.log('before resume upload')
                     const resumeUpload = await cloudinary.uploader.upload(resume.path);
-                    newData.resume_url = resumeUpload.secure_url;
+                    newData.resume_url = resumeUpload.url;
                     console.log('after resume upload')
                 }
 

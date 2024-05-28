@@ -14,7 +14,7 @@ class JobsUseCase implements IJobsUseCase{
     ) {}
 
     async fetchJobs() {
-        const jobs = await this._jobRepository.fetchAll6Jobs()
+        const jobs = await this._jobRepository.fetchJobsByUser()
         return {
             status: 200,
             message: 'Jobs found successfully',
@@ -22,13 +22,17 @@ class JobsUseCase implements IJobsUseCase{
         }
     }
 
-    async fetchJobsByEmployerId(token:string, title?:string | undefined) {
+    async fetchJobsByEmployerId(token:string, pageNo: string, title?:string | undefined) {
         const decode = this._jwt.verifyToken(token)
-        const jobs = await this._jobRepository.fetch8Jobs(decode?.id, title)
+        const limit = 10
+        const skip = (parseInt(pageNo) - 1) * limit
+        const jobs = await this._jobRepository.fetch8Jobs(decode?.id, skip, limit, title);
+        const noOfJobs = await this._jobRepository.fetchEmployerJobsCount(decode?.id)
         return {
             status: 200,
             message: 'Jobs found successfully',
-            jobs: jobs
+            jobs: jobs,
+            noOfJobs: noOfJobs
         }        
     }
 
@@ -165,6 +169,22 @@ class JobsUseCase implements IJobsUseCase{
             status:200,
             message:'Jobs found successfully',
             savedJobsAndPosts: res
+        }
+    }
+
+    async closeHiring(token:string, job_id:string) {
+        const decodedToken = this._jwt.verifyToken(token)
+        const res = await this._jobRepository.closeHiring(job_id)
+        if (res) {
+            return {
+                status:200,
+                message:'Hiring closed successfully'
+            }
+        } else {
+            return {
+                status:400,
+                message:'Something went wrong on the close hiring'
+            }
         }
     }
 }

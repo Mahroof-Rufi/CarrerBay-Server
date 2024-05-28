@@ -14,6 +14,7 @@ interface IJobsUseCase {
     isJobSaved(token:string, job_id:string): Promise<JobsOutput>
     unSaveJobPost(token:string, job_id:string): Promise<JobsOutput>
     loadUserSavedJobs(token:string): Promise<JobsOutput>
+    closeHiring(token:string, job_id:string): Promise<JobsOutput>
 
 }
 

@@ -1,19 +1,35 @@
 import { EmployerPosts, Post } from "../../interfaces/models/employerPosts";
 import IPostsRepository from "../../interfaces/iRepositories/iPostRepository";
 import postsModel from "../../entities_models/postModel";
+import mongoose from "mongoose";
 
 class PostsRepository implements IPostsRepository {
 
-    async fetchPostsById(employer_id: string): Promise<EmployerPosts | null> {
-        const posts = await postsModel.findOne(
-            { employer_id:employer_id }
-        );
+    async fetchPostsById(employer_id: string, skip:number, limit:number): Promise<EmployerPosts | any> {
+        const posts = await postsModel.aggregate([
+            { $match: { employer_id: new mongoose.Types.ObjectId(employer_id) } },
+            { $unwind: '$posts' },
+            { $skip: skip },
+            { $limit: limit },
+            { $group: {
+                _id: '$_id',
+                posts: { $push: '$posts' }
+            }}
+        ]);        
 
         if (posts) {
-            return posts
+            return posts[0].posts
         } else {
             return null
         }
+    }
+
+    async fetchTotalNoOfPosts(employer_id: string): Promise<number> {
+        const postsCount = await postsModel.findOne(
+            { employer_id: employer_id }
+        )        
+
+        return postsCount?.posts.length || 0
     }
  
     async addPost(description: string,employer_id:string, images?: string[] | undefined): Promise<EmployerPosts | null> {
