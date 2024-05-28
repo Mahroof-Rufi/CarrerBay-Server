@@ -23,11 +23,6 @@ router.route('/employer/forgot-password')
 router.post('/admin/login', (req, res) => adminController.login(req, res))
 
 
-
-
-
-
-
-router.post('/user/g-auth', (req, res) => userController.gAuth(req, res))
+// router.post('/user/g-auth', (req, res) => userController.gAuth(req, res))
 
 export default router

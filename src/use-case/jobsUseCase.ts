@@ -3,6 +3,7 @@ import Jwt from "../providers/jwt"
 import Job from "../interfaces/models/job"
 import SavedJobsAndPostsRepository from "../infrastructure/repositories/savedJobsAndPostsRepository"
 import IJobsUseCase from "../interfaces/iUseCases/iJobsUseCase"
+import { JobsOutput } from "../interfaces/models/jobsOutput"
 
 class JobsUseCase implements IJobsUseCase{
 
@@ -154,6 +155,16 @@ class JobsUseCase implements IJobsUseCase{
                 status:400,
                 message:'unsave job failed, try again'
             }
+        }
+    }
+
+    async loadUserSavedJobs(token: string): Promise<JobsOutput> {
+        const decodedToken = this._jwt.verifyToken(token)
+        const res = await this._savedJobsAndPostsRepository.findSavedJobs(decodedToken?.id);
+        return {
+            status:200,
+            message:'Jobs found successfully',
+            savedJobsAndPosts: res
         }
     }
 }

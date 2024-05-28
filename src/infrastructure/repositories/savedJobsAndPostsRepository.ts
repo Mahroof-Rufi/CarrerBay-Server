@@ -60,6 +60,27 @@ class SavedJobsAndPostsRepository  implements ISavedJobsAndPostsRepository{
         }
     }
 
+    async findSavedJobs(user_id: string): Promise<SavedJobsAndPosts | any> {
+        try {
+            const savedJobs = await savedJobsAndPostsModel.findOne(
+                { user_id:user_id }
+            ).populate({
+                path: 'savedJobs.job_id',
+                populate: {
+                  path: 'company_id'
+                }
+              });
+            
+            if (savedJobs) {
+                return savedJobs
+            } else {
+                return null
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
 }
 
 export default SavedJobsAndPostsRepository

@@ -5,6 +5,7 @@ interface ISavedJobsAndPostsRepository {
     insertJob(userId:string, jobId:string): Promise<SavedJobsAndPosts | null>
     isJobSaved(user_id:string, job_id:string): Promise<SavedJobsAndPosts | null>
     removeJob(userId:string, jobId:string): Promise<SavedJobsAndPosts | null>
+    findSavedJobs(user_id:string): Promise<SavedJobsAndPosts| null>
 
 }
 

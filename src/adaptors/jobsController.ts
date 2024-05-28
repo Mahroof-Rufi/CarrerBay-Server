@@ -116,6 +116,14 @@ class JobsController {
             console.error(error);            
         }
     }
+
+    async loadSavedJobs(req:Request, res:Response) {        
+        const token = req.header('User-Token');
+        if (token) {
+            const result = await this._jobsUseCase.loadUserSavedJobs(token);
+            res.status(result.status).json({ message:result.message, jobs:result.savedJobsAndPosts?.savedJobs })
+        }
+    }
 }
 
 export default JobsController

@@ -13,6 +13,7 @@ interface IJobsUseCase {
     saveJobPost(token:string, job_id:string): Promise<JobsOutput>
     isJobSaved(token:string, job_id:string): Promise<JobsOutput>
     unSaveJobPost(token:string, job_id:string): Promise<JobsOutput>
+    loadUserSavedJobs(token:string): Promise<JobsOutput>
 
 }
 
