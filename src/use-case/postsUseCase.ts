@@ -9,12 +9,16 @@ class PostsUseCase implements IPostsUseCase{
         private readonly _postsRepository:PostsRepository
     ) {}
 
-    async fetchPosts() {
-        const posts = await this._postsRepository.fetchAllPosts()
+    async fetchPosts(pageNo:string) {
+        const limit = 5
+        const skip = (parseInt(pageNo) - 1) * limit
+        const posts = await this._postsRepository.fetchAllPosts(skip,limit)
+        const noOfPosts = await this._postsRepository.fetchTotalNoOfPosts()
         return {
             status:200,
             posts: posts,
-            message:'Posts found'
+            message:'Posts found',
+            totalNoOfPosts: noOfPosts,
         }
     }
 
@@ -23,8 +27,7 @@ class PostsUseCase implements IPostsUseCase{
         const limit = 5
         const skip = (parseInt(pageNo) - 1) * limit
         const post = await this._postsRepository.fetchPostsById(decode?.id, skip, limit)
-        
-        const noOfPost = await this._postsRepository.fetchTotalNoOfPosts(decode?.id)
+        const noOfPost = await this._postsRepository.fetchTotalNoOfEmployerPosts(decode?.id)
         if (post ) {
             return {
                 status: 200,

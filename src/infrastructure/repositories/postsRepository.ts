@@ -24,7 +24,7 @@ class PostsRepository implements IPostsRepository {
         }
     }
 
-    async fetchTotalNoOfPosts(employer_id: string): Promise<number> {
+    async fetchTotalNoOfEmployerPosts(employer_id: string): Promise<number> {
         const postsCount = await postsModel.findOne(
             { employer_id: employer_id }
         )        
@@ -46,13 +46,30 @@ class PostsRepository implements IPostsRepository {
         }
     }
 
-    async fetchAllPosts(): Promise<any> {
-        const result = await postsModel.find()
+    async fetchAllPosts(skip:number, limit:number): Promise<any> {
+        const result = await postsModel.aggregate([
+            { $unwind: '$posts' },
+            { $skip: skip },
+            { $limit: limit },
+            { $group: {
+                _id: '$_id',
+                posts: { $push: '$posts' }
+            }}
+        ]);
         if (result) {
             return result
         } else {
             return null
         }
+    }
+
+    async fetchTotalNoOfPosts() {
+        const postsCount = await postsModel.aggregate([
+            { $unwind: "$posts" },        
+            { $count: "totalPosts" }      
+        ]);
+        
+        return postsCount[0].totalPosts
     }
 
     async fetchSearchedPosts(company_id:string, query:string): Promise<any> {

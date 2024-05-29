@@ -24,16 +24,26 @@ class JobsRepository implements IJobsRepository {
         return noOfDoc
     }
 
-    async fetchJobsByUser(): Promise<Job[] | null> {
+    async fetchJobsByUser(skip:number, limit:number): Promise<Job[] | null> {      
+        
         const jobs = await jobModel.find(
             { active:true }
-        ).populate('company_id')        
+        ).skip(skip).limit(limit).populate('company_id')        
+        // console.log(jobs);
         
         if (jobs) {
             return jobs
         } else {
             return null
         }
+    }
+
+    async fetchUserJobsCount(): Promise<number> {
+        const totalNoOfJobs = await jobModel.find(
+            { active:true }
+        ).countDocuments()
+
+        return totalNoOfJobs
     }
 
     async fetchSearchedJobs(query: string): Promise<Job[] | null> {

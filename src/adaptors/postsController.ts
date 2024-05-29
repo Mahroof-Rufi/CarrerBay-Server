@@ -10,8 +10,9 @@ class PostsController {
 
     async fetchPosts(req:Request, res:Response) {
         try {
-            const result = await this._postsUseCase.fetchPosts()
-            res.status(result.status).json({ message:result.message, posts:result.posts })
+            const page = req.query.page
+            const result = await this._postsUseCase.fetchPosts(page as string)
+            res.status(result.status).json({ message:result.message, posts:result.posts, totalNoOfPosts:result.totalNoOfPosts })
         } catch (error) {
             console.error(error);            
         }

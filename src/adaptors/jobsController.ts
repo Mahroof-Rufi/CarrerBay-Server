@@ -10,12 +10,14 @@ class JobsController {
     async fetchJobsByUSer(req:Request, res:Response) {
         try {
             const searchQuery = req.query.search
+            const pageNo = req.query.page || '1'
+            
             if (searchQuery && searchQuery != ' ' && typeof searchQuery == 'string') {                
                 const searchedJobs = await this._jobsUseCase.searchJobs(searchQuery)
                 res.status(searchedJobs.status).json({ data:searchedJobs.jobs })
             } else {
-                const data = await this._jobsUseCase.fetchJobs()
-                res.status(data.status).json({data:data.jobs})
+                const data = await this._jobsUseCase.fetchJobs(pageNo as string)
+                res.status(data.status).json({ data:data.jobs,totalNoOfJob:data.totalNoOfJobs })
             }
         } catch (error) {
             console.error(error);            

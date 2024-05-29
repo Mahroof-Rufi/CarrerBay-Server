@@ -13,12 +13,17 @@ class JobsUseCase implements IJobsUseCase{
         private readonly _savedJobsAndPostsRepository:SavedJobsAndPostsRepository
     ) {}
 
-    async fetchJobs() {
-        const jobs = await this._jobRepository.fetchJobsByUser()
+    async fetchJobs(page:string) {
+        const limit = 12        
+        const skip = (parseInt(page) - 1) * limit
+        
+        const jobs = await this._jobRepository.fetchJobsByUser(skip, limit)
+        const noOfJobs = await this._jobRepository.fetchUserJobsCount()
         return {
             status: 200,
             message: 'Jobs found successfully',
-            jobs: jobs
+            jobs: jobs,
+            totalNoOfJobs:noOfJobs
         }
     }
 
