@@ -46,6 +46,33 @@ class PostsRepository implements IPostsRepository {
         }
     }
 
+    async fetchAPerticularPost(employer_id: string, post_id: string): Promise<EmployerPosts | null> {
+        const post = await postsModel.findOne(
+            { employer_id:employer_id,'posts._id': post_id  },
+            { 'posts.$': 1 }
+        )
+
+        if (post) {
+            return post
+        } else {
+            return null
+        }
+    }
+
+    async editPost(employer_id: string, post_id: string, description: string, images?: string[] | undefined): Promise<EmployerPosts | null> {
+        const result = await postsModel.findOneAndUpdate(
+            { employer_id: employer_id, 'posts._id': post_id }, 
+            { $set: { 'posts.$.description': description, 'posts.$.image_urls':images } }, 
+            { new: true }
+        );
+
+        if (result) {
+            return result
+        } else {
+            return null
+        }
+    }
+
     async fetchAllPosts(skip:number, limit:number): Promise<any> {
         const result = await postsModel.aggregate([
             { $unwind: '$posts' },
@@ -84,6 +111,23 @@ class PostsRepository implements IPostsRepository {
             return searchedPosts
         } else {
             return null
+        }
+    }
+
+    async deletePostById(employer_id: string, post_id: string): Promise<EmployerPosts | null> {
+        try {
+            const deletePost = await postsModel.findOneAndUpdate(
+                { employer_id: employer_id },
+                { $pull: { posts: { _id: post_id } } }
+            ) 
+
+            if (deletePost) {
+                return deletePost
+            } else {
+                return deletePost
+            }
+        } catch (error) {
+            throw error
         }
     }
 

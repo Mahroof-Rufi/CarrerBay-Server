@@ -1,5 +1,6 @@
 import PostsRepository from "../infrastructure/repositories/postsRepository"
 import IPostsUseCase from "../interfaces/iUseCases/iPostsUseCase"
+import { PostsOutput } from "../interfaces/models/postsOutput"
 import Jwt from "../providers/jwt"
 
 class PostsUseCase implements IPostsUseCase{
@@ -66,6 +67,35 @@ class PostsUseCase implements IPostsUseCase{
             status: 200,
             message: 'Searched posts found successfully',
             posts: searchedPosts
+        }
+    }
+
+    async editPost(post_id:string, description: string, token: string, urls?: string[] | undefined): Promise<PostsOutput> {
+        const decodedToken = this._jwt.verifyToken(token)
+        const oldData = await this._postsRepository.fetchAPerticularPost(decodedToken?.id, post_id)
+        const unWantedImageURLS = oldData?.posts[0].image_urls.filter((url) => !urls?.includes(url))
+        const updatedPosts = await this._postsRepository.editPost(decodedToken?.id,post_id,description, urls)
+        if (updatedPosts) {
+            return {
+                status:200,
+                message:'Post updated successfully',
+                post:updatedPosts,
+                oldURLs:unWantedImageURLS
+            }
+        } else {
+            return {
+                status:400,
+                message:'Something went wrong'
+            }
+        }
+    }
+
+    async deletePost(token: string, post_id: string): Promise<PostsOutput> {
+        const decodedToken = this._jwt.verifyToken(token)
+        const res = await this._postsRepository.deletePostById(decodedToken?.id, post_id)
+        return {
+            status: 200,
+            message: 'Post deleted successfully'
         }
     }
     

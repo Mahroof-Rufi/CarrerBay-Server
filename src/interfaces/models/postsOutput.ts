@@ -5,4 +5,5 @@ export interface PostsOutput {
     message:string,
     post?:EmployerPosts,
     posts?:EmployerPosts[],
+    oldURLs?:string[]
 }

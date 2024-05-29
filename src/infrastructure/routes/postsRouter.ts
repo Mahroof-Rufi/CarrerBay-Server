@@ -14,5 +14,8 @@ router.route('/').get((req, res) => postsController.fetchPosts(req, res));
 router.route('/employer-posts')
     .get( employerAuth, (req, res) => postsController.fetchPostsByEmployer(req, res))
     .post( employerAuth, handleFiles, (req, res) => postsController.addPost(req, res))
+    .put( employerAuth, handleFiles, (req, res) => postsController.editPost(req, res))
+router.route('/delete-post/:post_id')
+    .delete( employerAuth, (req, res) => postsController.deletePost(req, res))
 
 export default router
