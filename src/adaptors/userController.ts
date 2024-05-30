@@ -119,6 +119,27 @@ class UserController {
         }
     }
 
+    async fetchAllUsers(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            if (token) {
+                const result = await this._userUseCase.fetchUsersData(token)
+                res.status(result.status).json({message:result?.message, users:result?.users})
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async fetchAllEmployers(req:Request, res:Response) {
+        try {
+            const result = await this._userUseCase.fetchEmployersData()
+            res.status(result.status).json({message:result?.message, employers:result?.employers})
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     async isUserBlocked(req:Request, res:Response) {
         try {
             const token = req.header('User-Token');

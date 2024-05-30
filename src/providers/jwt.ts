@@ -20,7 +20,7 @@ class Jwt {
             }
 
             const payload = { id, role };
-            const token = sign(payload, this._secretKey, { expiresIn: '1d' });
+            const token = sign(payload, this._secretKey, { expiresIn: '1h' });
             return token;
 
         } catch (error) {
@@ -40,8 +40,11 @@ class Jwt {
                 }
             } else {
                 console.error(error);
-            }
-            return null            
+                return {
+                    status: 400,
+                    message: 'Invalid Token'
+                }
+            }           
         }
     }
 

@@ -1,3 +1,4 @@
+import Employer from "./employer";
 import { User } from "./user";
 
 export interface UserOutput {
@@ -5,5 +6,6 @@ export interface UserOutput {
     message:string,
     token?:string,
     userData?:User,
-    users?:User[]
+    users?:User[],
+    employers?:Employer[]
 }

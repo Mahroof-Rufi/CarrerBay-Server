@@ -8,12 +8,15 @@ import Jwt from "../providers/jwt";
 import NodeMailer from "../providers/nodeMailer";
 import SavedJobsAndPostsRepository from "../infrastructure/repositories/savedJobsAndPostsRepository";
 import IUserUseCase from "../interfaces/iUseCases/iUserUseCase";
+import { UserOutput } from "../interfaces/models/userOutput";
+import EmployerRepository from "../infrastructure/repositories/employerRepository";
 
 
 class UserUseCase implements IUserUseCase{
 
     constructor(
         private _userRepository: userRepository,
+        private _employerRepository: EmployerRepository,
         private _jwt: Jwt,
         private _OTPgenerator: GenerateOTP,
         private _mailer: NodeMailer,
@@ -194,6 +197,27 @@ class UserUseCase implements IUserUseCase{
         }
     }
 
+    async fetchUsersData(token:string) {
+        const decodedToken = this._jwt.verifyToken(token)
+        const limit = 12
+        const res = await this._userRepository.fetchAllUsers(limit,decodedToken?.id)
+        return {
+            status: 200,
+            message: 'Users found successfully',
+            users:res
+        }
+    }
+
+    async fetchEmployersData(): Promise<UserOutput> {
+        const limit = 12
+        const res = await this._employerRepository.fetchAllEmployers(limit)
+        return {
+            status:200,
+            message:'Employers found successfully',
+            employers:res,
+        }
+    }
+
     async isUserBlockedOrNot(token:string) {
         const decodedToken = this._jwt.verifyToken(token)
         const res = await this._userRepository.findById(decodedToken?.id)
@@ -210,7 +234,8 @@ class UserUseCase implements IUserUseCase{
     }
 
     async loadUsers() {
-        const users = await this._userRepository.fetchAllUsers()
+        const limit = 10
+        const users = await this._userRepository.fetchAllUsers(limit)
         return {
             status:200,
             message:'Users found successfully',

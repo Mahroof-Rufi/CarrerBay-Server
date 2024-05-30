@@ -171,8 +171,8 @@ class UserRepository implements IUserRepository {
         }
     }
 
-    async fetchAllUsers(): Promise<any> {
-        const users = await userModel.find()
+    async fetchAllUsers(limit:number, user_id?:string): Promise<any> {
+        const users = await userModel.find({ _id:{ $ne: user_id } },{ password:0 }).limit(limit)
         if (users) {
             return users
         } else {

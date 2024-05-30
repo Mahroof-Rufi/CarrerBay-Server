@@ -5,6 +5,7 @@ import GenerateOTP from "../providers/generateOTP";
 import NodeMailer from "../providers/nodeMailer";
 import Jwt from "../providers/jwt";
 import IEmployerUseCase from "../interfaces/iUseCases/iEmployerUseCase";
+import { EmployerOutput } from "../interfaces/models/employerOutput";
 
 class EmployerUseCase implements IEmployerUseCase{
 
@@ -165,7 +166,8 @@ class EmployerUseCase implements IEmployerUseCase{
     }
 
     async loadCompanies() {
-        const employers = await this._employerRepository.fetchAllEmployers()
+        const limit = 12
+        const employers = await this._employerRepository.fetchAllEmployers(limit)
         if (!employers) {
             return {
                 status:400,

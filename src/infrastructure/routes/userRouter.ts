@@ -8,6 +8,8 @@ const router = express.Router()
 const handleFiles = upload.fields([ { name:'resume-file' }, { name:'profile-file' } ])
 
 router.route('/').get( userAuth,(req, res) => userController.fetchUserData(req, res));
+router.route('/users').get( userAuth,(req, res) => userController.fetchAllUsers(req, res));
+router.route('/employers').get( userAuth, (req, res) => userController.fetchAllEmployers(req, res));
 router.route('/is-blocked').get( userAuth, (req, res) => userController.isUserBlocked(req, res));
 router.patch('/update-profile', userAuth, handleFiles, (req, res) => userController.updateUserProfile(req, res));
 router.patch('/update-about', userAuth, (req, res) => userController.updateUserAbout(req, res));

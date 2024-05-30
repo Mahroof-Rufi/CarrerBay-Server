@@ -69,8 +69,8 @@ class EmployerRepository implements IEmployerRepository{
         }
     }
 
-    async fetchAllEmployers(): Promise<any> {
-        const employers = await employerModel.find()
+    async fetchAllEmployers(limit:number, employer_id?:string): Promise<any> {
+        const employers = await employerModel.find({ _id:{ $ne:employer_id } }).limit(limit)
         if (employers) {
             return employers
         } else {

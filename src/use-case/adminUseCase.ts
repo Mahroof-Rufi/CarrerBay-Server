@@ -37,7 +37,8 @@ class AdminUseCase implements IAdminUseCase {
     }
 
     async fetchAllUsers() {
-        const users = await this._userRepo.fetchAllUsers()
+        const limit = 10
+        const users = await this._userRepo.fetchAllUsers(limit)
         return {
             status:200,
             message:'Users found successfully',
@@ -61,7 +62,8 @@ class AdminUseCase implements IAdminUseCase {
     }
 
     async fetchAllEmployers() {
-        const employers = await this._employerRepo.fetchAllEmployers()
+        const limit = 10
+        const employers = await this._employerRepo.fetchAllEmployers(limit)
         return {
             status:200,
             message:'Employers found successfully',

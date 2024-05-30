@@ -28,6 +28,8 @@ class PostsUseCase implements IPostsUseCase{
         const limit = 5
         const skip = (parseInt(pageNo) - 1) * limit
         const post = await this._postsRepository.fetchPostsById(decode?.id, skip, limit)
+        console.log('po',post);
+        
         const noOfPost = await this._postsRepository.fetchTotalNoOfEmployerPosts(decode?.id)
         if (post ) {
             return {
@@ -74,12 +76,14 @@ class PostsUseCase implements IPostsUseCase{
         const decodedToken = this._jwt.verifyToken(token)
         const oldData = await this._postsRepository.fetchAPerticularPost(decodedToken?.id, post_id)
         const unWantedImageURLS = oldData?.posts[0].image_urls.filter((url) => !urls?.includes(url))
-        const updatedPosts = await this._postsRepository.editPost(decodedToken?.id,post_id,description, urls)
+        const updatedPosts:any = await this._postsRepository.editPost(decodedToken?.id,post_id,description, urls)
+        console.log('kk', updatedPosts.posts);
+        
         if (updatedPosts) {
             return {
                 status:200,
                 message:'Post updated successfully',
-                post:updatedPosts,
+                post:updatedPosts.posts,
                 oldURLs:unWantedImageURLS
             }
         } else {

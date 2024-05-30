@@ -73,7 +73,10 @@ class PostsController {
             const token = req.header('Employer-Token');
             const description = req.body.description;
             const post_id = req.body.post_id
-            const imageURLs = JSON.parse(req.body.oldImageUrls)
+            let imageURLs = []
+            if (req.body.oldImageUrls) {
+                imageURLs = JSON.parse(req.body.oldImageUrls)
+            }
             
             for (let i = 1; i <= 6; i++) {
                 const image = (req.files as any)[`image${i}`];
