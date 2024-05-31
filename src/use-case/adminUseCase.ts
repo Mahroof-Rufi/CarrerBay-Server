@@ -2,6 +2,7 @@ import adminRepository from "../infrastructure/repositories/adminRepository";
 import employerRepository from "../infrastructure/repositories/employerRepository";
 import userRepository from "../infrastructure/repositories/userRepository";
 import IAdminUseCase from "../interfaces/iUseCases/iAdminUseCase";
+import { AdminOutput } from "../interfaces/models/adminOutput";
 import Jwt from "../providers/jwt";
 
 class AdminUseCase implements IAdminUseCase {
@@ -22,16 +23,38 @@ class AdminUseCase implements IAdminUseCase {
                     message: 'Invalid credentials'
                 }
             }
-            const token = this._jwt.createAccessToken(admin.id, 'admin')
+            const accessToken = this._jwt.createAccessToken(admin.id, 'admin')
+            const refreshToken = this._jwt.createRefreshToken(admin.id, 'admin')
             return {
                 status: 200,
-                adminToken: token,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
                 message: 'Login successfully'
             }
         } else {
             return {
                 status: 400,
                 message: 'Data not found'
+            }
+        }
+    }
+
+    async refreshToken(refreshToken: string): Promise<AdminOutput> {
+        const decodedToken = await this._jwt.verifyRefreshToken(refreshToken)
+        if (decodedToken?.id && decodedToken?.role) {
+            const newAccessToken = await this._jwt.createAccessToken(decodedToken?.id,decodedToken?.role)
+            const newRefreshToken = await this._jwt.createRefreshToken(decodedToken?.id, decodedToken?.role)
+            return {
+                status:200,
+                message:'Token updated successfully',
+                accessToken:newAccessToken,
+                refreshToken:newRefreshToken,
+            }
+        } else {
+            return {
+                status:401,
+                message:'Refresh token expired',
+                refreshTokenExpired: true,
             }
         }
     }

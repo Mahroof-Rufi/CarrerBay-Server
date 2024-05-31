@@ -28,7 +28,7 @@ class JobsUseCase implements IJobsUseCase{
     }
 
     async fetchJobsByEmployerId(token:string, pageNo: string, title?:string | undefined) {
-        const decode = this._jwt.verifyToken(token)
+        const decode = this._jwt.verifyToken(token,"Employer")
         const limit = 10
         const skip = (parseInt(pageNo) - 1) * limit
         const jobs = await this._jobRepository.fetch8Jobs(decode?.id, skip, limit, title);
@@ -42,7 +42,7 @@ class JobsUseCase implements IJobsUseCase{
     }
 
     async fetchSearchedJobs(token:string, searchQuery:string) {
-        const decode = this._jwt.verifyToken(token)
+        const decode = this._jwt.verifyToken(token,"Employer")
         const searchedJobs = await this._jobRepository.fetchSearchedJobsByCompanyId(decode?.id, searchQuery)
         return {
             status: 200,
@@ -52,7 +52,7 @@ class JobsUseCase implements IJobsUseCase{
     }
 
     async addNewJobPost(jobData:Job, token:string) {
-        const decode = this._jwt.verifyToken(token)
+        const decode = this._jwt.verifyToken(token,"Employer")
         jobData.company_id = decode?.id
         const currentDate = new Date()
         jobData.postedAt = currentDate
@@ -114,7 +114,7 @@ class JobsUseCase implements IJobsUseCase{
     }
 
     async saveJobPost(token:string, jobId:string) {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
         const res = await this._savedJobsAndPostsRepository.insertJob(decodedToken?.id, jobId)
         console.log('res',res);
         
@@ -133,7 +133,7 @@ class JobsUseCase implements IJobsUseCase{
     }
 
     async isJobSaved(token:string, jobId:string) {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
         const res = await this._savedJobsAndPostsRepository.isJobSaved(decodedToken?.id, jobId)
         if (res) {
             return {
@@ -151,7 +151,7 @@ class JobsUseCase implements IJobsUseCase{
     }
 
     async unSaveJobPost(token:string, jobId:string) {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
         const res = await this._savedJobsAndPostsRepository.removeJob(decodedToken?.id, jobId)
         if (res) {
             return {
@@ -168,7 +168,7 @@ class JobsUseCase implements IJobsUseCase{
     }
 
     async loadUserSavedJobs(token: string): Promise<JobsOutput> {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
         const res = await this._savedJobsAndPostsRepository.findSavedJobs(decodedToken?.id);
         return {
             status:200,
@@ -178,7 +178,7 @@ class JobsUseCase implements IJobsUseCase{
     }
 
     async closeHiring(token:string, job_id:string) {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"Employer")
         const res = await this._jobRepository.closeHiring(job_id)
         if (res) {
             return {

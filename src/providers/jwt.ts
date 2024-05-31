@@ -45,15 +45,28 @@ class Jwt {
         }
     }
 
-    verifyToken(token:string): JwtPayload | null {
+    verifyToken(token:string,role: 'User' | 'Employer' | 'Admin'): JwtPayload | null {
         try {
             const decodedToken = verify(token, this._secretKey) as JwtPayload;
             return decodedToken
         } catch (error:any) {
             if (error.name == 'TokenExpiredError') {
-                return {
-                    status: 401,
-                    message: 'Token expired'
+                switch (role) {
+                    case 'User':
+                        return {
+                            status: 401,
+                            message: 'User token expired'
+                        }
+                    case 'Employer':
+                        return {
+                            status: 401,
+                            message: 'Employer token expired'
+                        }
+                    case 'Admin':
+                        return {
+                            status: 401,
+                            message: 'Admin token expired'
+                        }
                 }
             } else {
                 console.error(error);

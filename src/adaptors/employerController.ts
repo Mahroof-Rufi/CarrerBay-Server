@@ -37,8 +37,7 @@ class EmployerController {
             const employer = await this._employerUseCase.login(email, password)
             console.log(employer);
             
-            if (employer && employer.token) {
-                console.log('if');
+            if (employer && employer.accessToken && employer.refreshToken) {
                 
                 return res
                     .status(200)
@@ -56,6 +55,19 @@ class EmployerController {
             }
         } catch (error) {
             console.error();
+        }
+    }
+
+    async refreshToken(req:Request, res:Response) {
+        try {            
+            const token = req.body.refreshToken
+            
+            if (token) {
+                const result = await this._employerUseCase.refreshToken(token)
+                res.status(result.status).json({ message:result.message, accessToken:result.accessToken, refreshToken:result.refreshToken, refreshTokenExpired:result.refreshTokenExpired })
+            }
+        } catch (error) {
+            console.error(error);            
         }
     }
 

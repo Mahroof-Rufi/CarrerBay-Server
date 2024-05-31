@@ -83,11 +83,13 @@ class EmployerUseCase implements IEmployerUseCase{
             }
             
             
-            const token = this._jwt.createAccessToken(employerData._id, 'Normal-employer')
+            const accessToken = this._jwt.createAccessToken(employerData._id, 'Normal-employer')
+            const refreshToken = this._jwt.createRefreshToken(employerData._id, 'Normal-employer')
             const { password, ...employerDataWithoutPassword } = employerData;
             return {
                 status: 200,
-                token: token,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
                 employerData: employerDataWithoutPassword,
                 message: 'Login successfully'
             }
@@ -99,8 +101,28 @@ class EmployerUseCase implements IEmployerUseCase{
         }
     }
 
+    async refreshToken(refreshToken: string): Promise<EmployerOutput> {
+        const decodedToken = await this._jwt.verifyRefreshToken(refreshToken)
+        if (decodedToken?.id && decodedToken?.role) {
+            const newAccessToken = await this._jwt.createAccessToken(decodedToken?.id,decodedToken?.role)
+            const newRefreshToken = await this._jwt.createRefreshToken(decodedToken?.id, decodedToken?.role)
+            return {
+                status:200,
+                message:'Token updated successfully',
+                accessToken:newAccessToken,
+                refreshToken:newRefreshToken,
+            }
+        } else {
+            return {
+                status:401,
+                message:'Refresh token expired',
+                refreshTokenExpired: true,
+            }
+        }
+    }
+
     async fetchEmployerData(token:string) {
-        const decode = this._jwt.verifyToken(token)
+        const decode = this._jwt.verifyToken(token,"Employer")
         const res = await this._employerRepository.findById(decode?.id)
         if (res) {
             return {

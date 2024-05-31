@@ -6,6 +6,7 @@ interface IEmployerUseCase {
     sendOTP(email:string): Promise<EmployerOutput>
     register(employerData:Employer): Promise<EmployerOutput>
     login(email:string, employerPassword:string): Promise<EmployerOutput>
+    refreshToken(refreshToken:string): Promise<EmployerOutput>
     fetchEmployerData(token:string): Promise<EmployerOutput>
     forgotPasswordSendOTP(email:string): Promise<EmployerOutput>
     resetPassword(email:string, OTP:number, password:string): Promise<EmployerOutput>

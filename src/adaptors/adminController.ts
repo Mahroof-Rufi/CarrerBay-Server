@@ -11,7 +11,7 @@ class AdminController {
         try {
             const { email, password } = req.body
             const admin = await this._adminUseCase.login(email,password)
-            if (admin && admin.adminToken) {
+            if (admin && admin.accessToken && admin.refreshToken) {
                 return res.status(200)
                     .json({
                         admin,
@@ -25,6 +25,19 @@ class AdminController {
             }
         } catch (error) {
             console.error(error);
+        }
+    }
+
+    async refreshToken(req:Request, res:Response) {
+        try {            
+            const token = req.body.refreshToken
+            
+            if (token) {
+                const result = await this._adminUseCase.refreshToken(token)
+                res.status(result.status).json({ message:result.message, accessToken:result.accessToken, refreshToken:result.refreshToken, refreshTokenExpired:result.refreshTokenExpired })
+            }
+        } catch (error) {
+            console.error(error);            
         }
     }
 

@@ -9,23 +9,23 @@ export const employerAuth = async (req:Request, res:Response, next:NextFunction)
     try {
         const token = req.header('Employer-Token');
         if(!token) {
-            res.status(401).json({message:'Unauthorized access denied 1'})
+            res.status(401).json({message:'Unauthorized employer access denied'})
             return
         }     
 
-        const decodedToken = jwt.verifyToken(token)
+        const decodedToken = jwt.verifyToken(token,"Employer")
         if(decodedToken?.status && decodedToken.status == 401) {
             res.status(decodedToken.status).json({ message:decodedToken.message })
             return
         } else if ( decodedToken?.role != 'Normal-employer') {
-            res.status(401).json({ message:'Unauthorized access denied 2' })
+            res.status(401).json({ message:'Unauthorized employer access denied' })
             return
         }
 
         const employerData = employerRepo.findById(decodedToken.id)
 
         if (!employerData) {
-            res.status(401).json({ message:'Unauthorized token' })
+            res.status(401).json({ message:'Unauthorized employer token' })
         } else {
             next();
         } 

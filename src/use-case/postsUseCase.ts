@@ -24,7 +24,7 @@ class PostsUseCase implements IPostsUseCase{
     }
 
     async fetchPostsByEmployerId(token:string, pageNo:string) {
-        const decode = this._jwt.verifyToken(token)
+        const decode = this._jwt.verifyToken(token,"Employer")
         const limit = 5
         const skip = (parseInt(pageNo) - 1) * limit
         const post = await this._postsRepository.fetchPostsById(decode?.id, skip, limit)
@@ -46,7 +46,7 @@ class PostsUseCase implements IPostsUseCase{
     }
 
     async addPost(description:string,token:string, urls?:string[]) {
-        const decode = this._jwt.verifyToken(token)
+        const decode = this._jwt.verifyToken(token,"Employer")
         const res = await this._postsRepository.addPost(description,decode?.id, urls)
         
         if (res) {
@@ -63,7 +63,7 @@ class PostsUseCase implements IPostsUseCase{
     }
 
     async fetchSearchedPosts(token:string, searchQuery:string) {
-        const decode = this._jwt.verifyToken(token)
+        const decode = this._jwt.verifyToken(token,"Employer")
         const searchedPosts = await this._postsRepository.fetchSearchedPosts(decode?.id, searchQuery)
         return {
             status: 200,
@@ -73,7 +73,7 @@ class PostsUseCase implements IPostsUseCase{
     }
 
     async editPost(post_id:string, description: string, token: string, urls?: string[] | undefined): Promise<PostsOutput> {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"Employer")
         const oldData = await this._postsRepository.fetchAPerticularPost(decodedToken?.id, post_id)
         const unWantedImageURLS = oldData?.posts[0].image_urls.filter((url) => !urls?.includes(url))
         const updatedPosts:any = await this._postsRepository.editPost(decodedToken?.id,post_id,description, urls)
@@ -95,7 +95,7 @@ class PostsUseCase implements IPostsUseCase{
     }
 
     async deletePost(token: string, post_id: string): Promise<PostsOutput> {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"Employer")
         const res = await this._postsRepository.deletePostById(decodedToken?.id, post_id)
         return {
             status: 200,

@@ -64,7 +64,7 @@ class JobApplicantsUseCase implements IJobApplicantsUseCase{
 
     async applyJobs(token:string, jobId:string) {
         
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
         const res = await this._userAppliedJobs.addAppliedJob(decodedToken?.id, jobId)
         if (!res) {
             return {
@@ -89,7 +89,7 @@ class JobApplicantsUseCase implements IJobApplicantsUseCase{
     }
 
     async verifyUserApplication(token:string, jobId:string) {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"Employer")
         const jobApplicants = await this._jobApplicantsRepository.findOneCandidate(jobId,decodedToken?.id)
         if (jobApplicants) {
             if (jobApplicants) {
@@ -114,7 +114,7 @@ class JobApplicantsUseCase implements IJobApplicantsUseCase{
     }
 
     async fetchAppliedJobs(token:string) {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
         const appliedJobs = await this._userAppliedJobs.findOneById(decodedToken?.id)
         if (!appliedJobs) {
             return {

@@ -203,7 +203,7 @@ class UserUseCase implements IUserUseCase{
     }
 
     async fetchUserDataWithToken(token:string) {
-        const decode = this._jwt.verifyToken(token)
+        const decode = this._jwt.verifyToken(token, "User")
         const res = await this._userRepository.findById(decode?.id)
         if (res) {
             return {
@@ -220,7 +220,7 @@ class UserUseCase implements IUserUseCase{
     }
 
     async fetchUsersData(token:string) {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
         const limit = 12
         const res = await this._userRepository.fetchAllUsers(limit,decodedToken?.id)
         return {
@@ -241,7 +241,7 @@ class UserUseCase implements IUserUseCase{
     }
 
     async isUserBlockedOrNot(token:string) {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
         const res = await this._userRepository.findById(decodedToken?.id)
         if (res?.isActive) {
             return {
@@ -267,7 +267,7 @@ class UserUseCase implements IUserUseCase{
 
     async updateUserProfile(newData:EditUser, token:string) {
 
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
 
         const allowedUpdates = [
             'firstName', 'lastName', 'profile_url', 'jobTitle', 'industry', 'DOB', 'gender', 'city', 'state',
@@ -308,7 +308,7 @@ class UserUseCase implements IUserUseCase{
     }
 
     async updateUserAbout(token:string, about:string) {
-        const decodedToken = this._jwt.verifyToken(token);
+        const decodedToken = this._jwt.verifyToken(token,"User");
 
         const userData:User | null = await this._userRepository.findById(decodedToken?.id)
 
@@ -336,7 +336,7 @@ class UserUseCase implements IUserUseCase{
     }
 
     async updateUserExperience(token:string, experience:Experience, exp_id?:string,) {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
         if (exp_id) {
             
             const res = await this._userRepository.updateUserExperience(decodedToken?.id, exp_id, experience)
@@ -370,7 +370,7 @@ class UserUseCase implements IUserUseCase{
     }
 
     async deleteUserExperience(token:string, exp_id:string) {
-        const decode = this._jwt.verifyToken(token)
+        const decode = this._jwt.verifyToken(token,"User")
         const updatedUserExperience = await this._userRepository.deleteUserExperience(decode?.id, exp_id)
         if (!updatedUserExperience) {
             return {
@@ -386,7 +386,7 @@ class UserUseCase implements IUserUseCase{
     }
 
     async updateUserEducation(token:string, education:Education, education_id?:string,) {
-        const decodedToken = this._jwt.verifyToken(token);
+        const decodedToken = this._jwt.verifyToken(token,"User");
         if (education_id) {
             const res = await this._userRepository.updateUserEducation(decodedToken?.id, education, education_id);
             if (res) {
@@ -419,7 +419,7 @@ class UserUseCase implements IUserUseCase{
     }
 
     async deleteUserEducation(token:string, edu_id:string) {
-        const decode = this._jwt.verifyToken(token)
+        const decode = this._jwt.verifyToken(token,"User")
         const updatedUserEducation = await this._userRepository.deleteUserEducation(decode?.id, edu_id)
         if (!updatedUserEducation) {
             return {
@@ -435,7 +435,7 @@ class UserUseCase implements IUserUseCase{
     }
 
     async updateUserSkills(token:string, skills:string[]) {
-        const decodedToken = this._jwt.verifyToken(token)
+        const decodedToken = this._jwt.verifyToken(token,"User")
         const res = await this._userRepository.updateUserSkills(decodedToken?.id, skills)
         if (res) {
             return {
