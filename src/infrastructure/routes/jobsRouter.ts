@@ -6,7 +6,7 @@ import userAuth from "../../middlewares/userAuth";
 const router = express.Router()
 
 // USERS JOBS ROUTES
-router.route('/jobs').get((req, res) => jobsController.fetchJobsByUSer(req, res));
+router.route('/jobs').get( userAuth, (req, res) => jobsController.fetchJobsByUSer(req, res));
 router.route('/save-job').post( userAuth, (req, res) => jobsController.saveJob(req, res));
 router.route('/is-saved').post( userAuth, (req, res) => jobsController.isJobSaved(req, res));
 router.route('/unsave-job').post( userAuth, (req, res) => jobsController.unSaveJob(req, res));

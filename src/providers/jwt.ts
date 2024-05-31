@@ -12,7 +12,24 @@ class Jwt {
         this._secretKey = process.env.JWT_Secret || "";
     }
 
-    createToken(id: string, role: string): string | undefined {
+    createAccessToken(id: string, role: string): string | undefined {
+        try {
+            console.log('create token',role, '  ',id);
+            
+            if (!this._secretKey) {
+                throw new Error('Secret key is undefined');
+            }
+
+            const payload = { id, role };
+            const token = sign(payload, this._secretKey, { expiresIn: '1m' });
+            return token;
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    createRefreshToken(id: string, role: string): string | undefined {
         try {
             
             if (!this._secretKey) {
@@ -20,7 +37,7 @@ class Jwt {
             }
 
             const payload = { id, role };
-            const token = sign(payload, this._secretKey, { expiresIn: '1h' });
+            const token = sign(payload, this._secretKey, { expiresIn: '2m' });
             return token;
 
         } catch (error) {
@@ -36,12 +53,32 @@ class Jwt {
             if (error.name == 'TokenExpiredError') {
                 return {
                     status: 401,
-                    message: 'Token expired, login again'
+                    message: 'Token expired'
                 }
             } else {
                 console.error(error);
                 return {
-                    status: 400,
+                    status: 40,
+                    message: 'Invalid Token'
+                }
+            }           
+        }
+    }
+
+    verifyRefreshToken(token:string): JwtPayload | null {
+        try {
+            const decodedToken = verify(token, this._secretKey) as JwtPayload;
+            return decodedToken
+        } catch (error:any) {
+            if (error.name == 'TokenExpiredError') {
+                return {
+                    status: 401,
+                    message: 'Refresh token expired, login again'
+                }
+            } else {
+                console.error(error);
+                return {
+                    status: 40,
                     message: 'Invalid Token'
                 }
             }           

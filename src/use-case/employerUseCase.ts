@@ -83,7 +83,7 @@ class EmployerUseCase implements IEmployerUseCase{
             }
             
             
-            const token = this._jwt.createToken(employerData._id, 'Normal-employer')
+            const token = this._jwt.createAccessToken(employerData._id, 'Normal-employer')
             const { password, ...employerDataWithoutPassword } = employerData;
             return {
                 status: 200,

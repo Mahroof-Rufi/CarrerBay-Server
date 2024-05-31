@@ -89,10 +89,12 @@ class UserUseCase implements IUserUseCase{
                     message: 'This account blocked by Admin'
                 }
             }
-            const token = this._jwt.createToken(userData._id, 'Normal-User')
+            const accessToken = this._jwt.createAccessToken(userData._id, 'Normal-User')
+            const refreshToken = this._jwt.createRefreshToken(userData._id, 'Normal-User')
             return {
                 status: 200,
-                token: token,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
                 message: 'Login successfully'
             }
         } else {
@@ -103,10 +105,30 @@ class UserUseCase implements IUserUseCase{
         }
     }
 
+    async refreshToken(token: string): Promise<UserOutput> {
+        const decodedToken = await this._jwt.verifyRefreshToken(token)
+        if (decodedToken?.id && decodedToken?.role) {
+            const newAccessToken = await this._jwt.createAccessToken(decodedToken?.id,decodedToken?.role)
+            const newRefreshToken = await this._jwt.createRefreshToken(decodedToken?.id, decodedToken?.role)
+            return {
+                status:200,
+                message:'Token updated successfully',
+                accessToken:newAccessToken,
+                refreshToken:newRefreshToken,
+            }
+        } else {
+            return {
+                status:401,
+                message:'Refresh token expired',
+                refreshTokenExpired: true,
+            }
+        }
+    }
+
     async gAuth(fullName:string, email: string, password: string, google_id:string) {
         const user = await this._userRepository.findByEmail(email)
         if (user) {
-            const token = this._jwt.createToken(user._id, 'Normal-User')
+            const token = this._jwt.createAccessToken(user._id, 'Normal-User')
             return {
                 status: 200,
                 token: token,
@@ -116,7 +138,7 @@ class UserUseCase implements IUserUseCase{
         } else {
             const res:User = await this._userRepository.insertOne({firstName:fullName,email:email,g_id:google_id})
             if (res) {
-                const token = this._jwt.createToken(res._id, 'Normal-User')
+                const token = this._jwt.createAccessToken(res._id, 'Normal-User')
                 return {
                     status: 200,
                     token: token,

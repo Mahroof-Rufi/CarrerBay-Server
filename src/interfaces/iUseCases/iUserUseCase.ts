@@ -8,6 +8,7 @@ interface IUserUseCase {
     sendOTP(email:string): Promise<UserOutput>
     signUp(userData:User): Promise<UserOutput>
     logIn(email:string, password:string): Promise<UserOutput>
+    refreshToken(token:string): Promise<UserOutput>
     gAuth(fullName:string, email:string, password:string, google_id:string): Promise<UserOutput>
     forgotPasswordSendOTP(email:string): Promise<UserOutput>
     resetPassword(email:string, OTP:number, password:string): Promise<UserOutput>

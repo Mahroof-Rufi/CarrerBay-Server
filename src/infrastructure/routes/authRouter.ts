@@ -6,6 +6,7 @@ const router = express.Router()
 // USER AUTH ROUTES
 router.post('/user/send-otp', (req, res) => userController.sendOTP(req,res))
 router.post('/user/login', (req, res) => userController.logIn(req,res))
+router.post('/user/refresh-token', (req, res) => userController.refreshToken(req, res))
 router.post('/user/register', (req, res) => userController.signUp(req,res))
 router.route('/user/forgot-password',)
     .post((req, res) => userController.forgotPasswordSendOTP(req, res))

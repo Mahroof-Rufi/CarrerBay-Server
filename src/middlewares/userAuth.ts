@@ -8,26 +8,31 @@ const userRepo = new userRepository()
 export const userAuth = async (req:Request, res:Response, next:NextFunction) => {
     try {
         const token = req.header('User-Token');
+        
         if(!token) {
-            res.status(403).json({message:'Unauthorized access denied 1'})
+            res.status(401).json({message:'Unauthorized access denied'})
             return
         }     
 
         const decodedToken = jwt.verifyToken(token)
-        if(decodedToken?.status && decodedToken.status == 403) {
+        console.log('dec',decodedToken?.id);
+        
+        if(decodedToken?.status && decodedToken.status == 401) {
             res.status(decodedToken.status).json({ message:decodedToken.message })
             return
         } else if ( decodedToken?.role != 'Normal-User') {
-            res.status(403).json({ message:'Unauthorized access' })
+            console.log(decodedToken?.role);
+            
+            res.status(401).json({ message:'Unauthorized access denied' })
             return
         }
 
         const userData = await userRepo.findById(decodedToken.id)
 
         if (!userData) {
-            res.status(403).json({ message:'Unauthorized access' })
+            res.status(401).json({ message:'Unauthorized access denied' })
         } else if (!userData.isActive) {
-            res.status(403).json({ message:'Your account is blocked by admin' })
+            res.status(401).json({ message:'Your account is blocked by admin' })
         } else {
             next();
         } 

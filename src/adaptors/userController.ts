@@ -38,7 +38,7 @@ class UserController {
         try {
             const { email, password } = req.body
             const user = await this._userUseCase.logIn(email,password)
-            if (user && user.token) {
+            if (user && user.accessToken && user.refreshToken) {
                 return res
                     .status(200)
                     .json({
@@ -53,6 +53,22 @@ class UserController {
             }
         } catch (error) {
             console.error();
+        }
+    }
+
+    async refreshToken(req:Request, res:Response) {
+        try {            
+            console.log('hwrw thw refre route');
+            
+            const token = req.body.refreshToken
+            console.log('token here',token);
+            
+            if (token) {
+                const result = await this._userUseCase.refreshToken(token)
+                res.status(result.status).json({ message:result.message, accessToken:result.accessToken, refreshToken:result.refreshToken, refreshTokenExpired:result.refreshTokenExpired })
+            }
+        } catch (error) {
+            console.error(error);            
         }
     }
 

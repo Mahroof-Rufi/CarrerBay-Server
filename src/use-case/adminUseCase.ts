@@ -22,7 +22,7 @@ class AdminUseCase implements IAdminUseCase {
                     message: 'Invalid credentials'
                 }
             }
-            const token = this._jwt.createToken(admin.id, 'admin')
+            const token = this._jwt.createAccessToken(admin.id, 'admin')
             return {
                 status: 200,
                 adminToken: token,

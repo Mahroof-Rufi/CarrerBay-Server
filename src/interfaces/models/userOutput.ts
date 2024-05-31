@@ -7,5 +7,8 @@ export interface UserOutput {
     token?:string,
     userData?:User,
     users?:User[],
-    employers?:Employer[]
+    employers?:Employer[],
+    accessToken?:string,
+    refreshToken?:string,
+    refreshTokenExpired?:boolean
 }
