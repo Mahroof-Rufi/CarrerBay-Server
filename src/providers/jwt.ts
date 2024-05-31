@@ -21,7 +21,7 @@ class Jwt {
             }
 
             const payload = { id, role };
-            const token = sign(payload, this._secretKey, { expiresIn: '1m' });
+            const token = sign(payload, this._secretKey, { expiresIn: '24h' });
             return token;
 
         } catch (error) {
@@ -37,7 +37,7 @@ class Jwt {
             }
 
             const payload = { id, role };
-            const token = sign(payload, this._secretKey, { expiresIn: '2m' });
+            const token = sign(payload, this._secretKey, { expiresIn: '7d' });
             return token;
 
         } catch (error) {
