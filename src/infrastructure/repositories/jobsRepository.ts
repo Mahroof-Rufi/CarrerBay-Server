@@ -10,29 +10,36 @@ class JobsRepository implements IJobsRepository {
         return job
     }
 
-    async fetch8Jobs(company_id: string, skip:number, limit:number, sort?:string, title?:string | undefined): Promise<Job[]> {
+    async fetch8Jobs(company_id: string, skip: number, limit: number, sort?: string, filterQuery?: any, title?: string | undefined): Promise<Job[]> {
         let sortQuery: { [key: string]: any } | undefined;
-        if (sort == 'newest') {
-            sortQuery = { _id:-1 }
-        } else if (sort == 'oldest') {
-            sortQuery = { _id:1 }
+        if (sort === 'newest') {
+            sortQuery = { _id: -1 };
+        } else if (sort === 'oldest') {
+            sortQuery = { _id: 1 };
         }
-        let jobs
+        filterQuery.company_id = company_id;
+    
+        // If title filter is provided, include it in the filter query
+        if (title) {
+            filterQuery.title = title;
+        }
+    
+        console.log(filterQuery);
+    
+        let jobs;
         if (sortQuery) {
-            jobs = title ? await jobModel.find({company_id:company_id, title:title}).skip(skip).limit(limit).sort(sortQuery) : await jobModel.find({company_id:company_id}).skip(skip).limit(limit).sort(sortQuery)
-            console.log('sorted',jobs);
-            
+            jobs = await jobModel.find(filterQuery).skip(skip).limit(limit).sort(sortQuery);
         } else {
-            jobs = title ? await jobModel.find({company_id:company_id, title:title}).skip(skip).limit(limit) : await jobModel.find({company_id:company_id}).skip(skip).limit(limit)
-            console.log('unsorted');
-            
+            jobs = await jobModel.find(filterQuery).skip(skip).limit(limit);
         }
+    
         if (jobs) {
-            return jobs
+            return jobs;
         } else {
-            return []
+            return [];
         }
     }
+    
 
     async fetchEmployerJobsCount(employer_id: string): Promise<number> {
         const noOfDoc = await jobModel.find({ company_id:employer_id }).countDocuments()
