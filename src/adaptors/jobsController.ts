@@ -11,12 +11,38 @@ class JobsController {
         try {
             const searchQuery = req.query.search
             const pageNo = req.query.page || '1'
+            const sort = req.query.sort
+            
+            const query: { [key: string]: any } = req.query;
+            const filter: any = {};
 
-            if (searchQuery && searchQuery != ' ' && typeof searchQuery == 'string') {
-                const searchedJobs = await this._jobsUseCase.searchJobs(searchQuery)
-                res.status(searchedJobs.status).json({ data: searchedJobs.jobs })
+            for (const key in query) {
+                
+                if (query.hasOwnProperty(key) && key !== 'page' && key !== 'sort' && key !== 'search') {
+                    const value = query[key];
+
+                    if (value.includes(',')) {
+                        const valuesArray = value.split(',');
+
+                        if (valuesArray.every((v: any) => v === 'true' || v === 'false')) {
+                            filter[key] = { $in: valuesArray.map((v: any) => v === 'true') };
+                        } else {
+                            filter[key] = { $in: valuesArray };
+                        }
+
+                    } else if (value === 'true' || value === 'false') {
+                        filter[key] = value === 'true';
+                    } else {
+                        filter[key] = value;
+                    }
+                }
+            }
+            
+            if (searchQuery && searchQuery != '' && typeof searchQuery == 'string') {
+                const searchedJobs = await this._jobsUseCase.searchJobs(searchQuery,pageNo as string, sort as string, filter)
+                res.status(searchedJobs.status).json({ data: searchedJobs.jobs, totalNoOfJob: searchedJobs.noOfJobs })
             } else {
-                const data = await this._jobsUseCase.fetchJobs(pageNo as string)
+                const data = await this._jobsUseCase.fetchJobs(pageNo as string, sort as string, filter)
                 res.status(data.status).json({ data: data.jobs, totalNoOfJob: data.totalNoOfJobs })
             }
         } catch (error) {

@@ -9,7 +9,7 @@ interface IJobsUseCase {
     addNewJobPost(jobData:Job, token:string): Promise<JobsOutput>
     editJobPost(job_id:string, jobData:Job): Promise<JobsOutput>
     deleteJob(job_id:string): Promise<JobsOutput>
-    searchJobs(query:string): Promise<JobsOutput>
+    searchJobs(query:string, page:string, sort:string, filterQuery:any): Promise<JobsOutput>
     saveJobPost(token:string, job_id:string): Promise<JobsOutput>
     isJobSaved(token:string, job_id:string): Promise<JobsOutput>
     unSaveJobPost(token:string, job_id:string): Promise<JobsOutput>

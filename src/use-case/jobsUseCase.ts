@@ -13,12 +13,12 @@ class JobsUseCase implements IJobsUseCase {
         private readonly _savedJobsAndPostsRepository: SavedJobsAndPostsRepository
     ) { }
 
-    async fetchJobs(page: string) {
+    async fetchJobs(page: string, sort?:string, filterQuery?:any) {
         const limit = 12
         const skip = (parseInt(page) - 1) * limit
 
-        const jobs = await this._jobRepository.fetchJobsByUser(skip, limit)
-        const noOfJobs = await this._jobRepository.fetchUserJobsCount()
+        const jobs = await this._jobRepository.fetchJobsByUser(skip, limit, sort, filterQuery)
+        const noOfJobs = await this._jobRepository.fetchUserJobsCount(filterQuery)
         return {
             status: 200,
             message: 'Jobs found successfully',
@@ -107,20 +107,24 @@ class JobsUseCase implements IJobsUseCase {
         }
     }
 
-    async searchJobs(query: string) {
-        const searchedJobs = await this._jobRepository.fetchSearchedJobs(query)
+    async searchJobs(query: string, page:string, sort:string, filterQuery:any) {
+        filterQuery.jobTitle = { $regex: query, $options: 'i' }
+        const limit = 10;
+        const skip = (parseInt(page) - 1) * limit;
+        const searchedJobs = await this._jobRepository.fetchSearchedJobs(skip, limit, sort, filterQuery)
+        const noOfJobs = await this._jobRepository.fetchUserJobsCount(filterQuery)
 
         return {
             status: 200,
             message: 'Searched Jobs found successfully',
-            jobs: searchedJobs
+            jobs: searchedJobs,
+            noOfJobs:noOfJobs
         }
     }
 
     async saveJobPost(token: string, jobId: string) {
         const decodedToken = this._jwt.verifyToken(token, "User")
         const res = await this._savedJobsAndPostsRepository.insertJob(decodedToken?.id, jobId)
-        console.log('res', res);
 
         if (res) {
             return {
