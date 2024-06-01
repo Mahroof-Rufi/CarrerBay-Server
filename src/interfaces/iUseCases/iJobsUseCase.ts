@@ -5,7 +5,7 @@ interface IJobsUseCase {
 
     fetchJobs(pageNo:string): Promise<JobsOutput>
     fetchJobsByEmployerId(token:string, pageNo:string, sort?:string, filterQuery?:any ,title?:string | undefined): Promise<JobsOutput>
-    fetchSearchedJobs(token:string, searchQuery:string): Promise<JobsOutput>
+    fetchSearchedJobs(token:string, pageNo:string,searchQuery:string, sort?:string, filter?:any): Promise<JobsOutput>
     addNewJobPost(jobData:Job, token:string): Promise<JobsOutput>
     editJobPost(job_id:string, jobData:Job): Promise<JobsOutput>
     deleteJob(job_id:string): Promise<JobsOutput>

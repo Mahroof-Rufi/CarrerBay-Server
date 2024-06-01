@@ -10,21 +10,18 @@ class JobsRepository implements IJobsRepository {
         return job
     }
 
-    async fetch8Jobs(company_id: string, skip: number, limit: number, sort?: string, filterQuery?: any, title?: string | undefined): Promise<Job[]> {
+    async fetch8Jobs(company_id: string, skip: number, limit: number, sort?: string, filterQuery?: any): Promise<Job[]> {
+
         let sortQuery: { [key: string]: any } | undefined;
+
         if (sort === 'newest') {
             sortQuery = { _id: -1 };
         } else if (sort === 'oldest') {
             sortQuery = { _id: 1 };
         }
+
         filterQuery.company_id = company_id;
-    
-        // If title filter is provided, include it in the filter query
-        if (title) {
-            filterQuery.title = title;
-        }
-    
-        console.log(filterQuery);
+        
     
         let jobs;
         if (sortQuery) {
@@ -41,17 +38,24 @@ class JobsRepository implements IJobsRepository {
     }
     
 
-    async fetchEmployerJobsCount(employer_id: string): Promise<number> {
-        const noOfDoc = await jobModel.find({ company_id:employer_id }).countDocuments()
-        return noOfDoc
+    async fetchEmployerJobsCount(employer_id: string, filterQuery?:any): Promise<number> {
+        console.log('filtere', filterQuery);
+        
+        if (filterQuery) {
+            filterQuery.company_id = employer_id;
+            const noOfDoc = await jobModel.find(filterQuery).countDocuments()
+            return noOfDoc
+        } else {
+            const noOfDoc = await jobModel.find({ company_id:employer_id }).countDocuments()
+            return noOfDoc
+        }
     }
 
     async fetchJobsByUser(skip:number, limit:number): Promise<Job[] | null> {      
         
         const jobs = await jobModel.find(
             { active:true }
-        ).skip(skip).limit(limit).populate('company_id')        
-        // console.log(jobs);
+        ).skip(skip).limit(limit).populate('company_id') 
         
         if (jobs) {
             return jobs
@@ -79,16 +83,46 @@ class JobsRepository implements IJobsRepository {
         }
     }
 
-    async fetchSearchedJobsByCompanyId(company_id: string, query: string): Promise<Job[] | null> {
-        const searchedJobs = jobModel.find(
-            { company_id:company_id, jobTitle: { $regex: query, $options: 'i' } }
-        )
-        if (searchedJobs) {
-            return searchedJobs
+    async fetchSearchedJobsByCompanyId(company_id: string, skip: number, limit: number, searchQuery: string, sort?: string, filterQuery?: any): Promise<Job[] | null> {
+        let sortQuery: { [key: string]: any } | undefined;
+    
+        if (sort === 'newest') {
+            sortQuery = { _id: -1 };
+        } else if (sort === 'oldest') {
+            sortQuery = { _id: 1 };
+        }
+    
+        const combinedQuery: any = { company_id: company_id };
+    
+        // Add the search query if provided
+        if (searchQuery) {
+            combinedQuery.jobTitle = { $regex: searchQuery, $options: 'i' };
+        }
+    
+        // Add other filter queries if provided
+        if (filterQuery) {
+            // Remove 'search' field from the filterQuery
+            delete filterQuery.search;
+            Object.assign(combinedQuery, filterQuery);
+        }
+    
+        console.log('Combined Query:', combinedQuery);
+    
+        let searchedJobs;
+        if (sortQuery) {
+            searchedJobs = jobModel.find(combinedQuery).skip(skip).limit(limit).sort(sortQuery);
         } else {
-            return null
+            searchedJobs = jobModel.find(combinedQuery).skip(skip).limit(limit);
+        }
+    
+        if (searchedJobs) {
+            return searchedJobs;
+        } else {
+            return null;
         }
     }
+     
+    
 
     async updateJobByID(job_id: string, jobData:Job): Promise<Job | null> {
         const updatedJob = await jobModel.findByIdAndUpdate(

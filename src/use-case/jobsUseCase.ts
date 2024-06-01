@@ -27,12 +27,12 @@ class JobsUseCase implements IJobsUseCase {
         }
     }
 
-    async fetchJobsByEmployerId(token: string, pageNo: string, sort?: string, filterQuery?: any, title?: string) {
+    async fetchJobsByEmployerId(token: string, pageNo: string, sort?: string, filterQuery?: any) {
         const decode = this._jwt.verifyToken(token, "Employer");
         const limit = 10;
         const skip = (parseInt(pageNo) - 1) * limit;
-        const jobs = await this._jobRepository.fetch8Jobs(decode?.id, skip, limit, sort, filterQuery, title);
-        const noOfJobs = await this._jobRepository.fetchEmployerJobsCount(decode?.id);
+        const jobs = await this._jobRepository.fetch8Jobs(decode?.id, skip, limit, sort, filterQuery);
+        const noOfJobs = await this._jobRepository.fetchEmployerJobsCount(decode?.id, filterQuery);
         return {
             status: 200,
             message: 'Jobs found successfully',
@@ -41,13 +41,17 @@ class JobsUseCase implements IJobsUseCase {
         };
     }
 
-    async fetchSearchedJobs(token: string, searchQuery: string) {
+    async fetchSearchedJobs(token: string, pageNo: string, searchQuery: string, sort?:string, filter?:any) {
         const decode = this._jwt.verifyToken(token, "Employer")
-        const searchedJobs = await this._jobRepository.fetchSearchedJobsByCompanyId(decode?.id, searchQuery)
+        const limit = 10;
+        const skip = (parseInt(pageNo) - 1) * limit;
+        const searchedJobs = await this._jobRepository.fetchSearchedJobsByCompanyId(decode?.id, skip, limit,searchQuery, sort, filter)
+        const noOfJobs = await this._jobRepository.fetchEmployerJobsCount(decode?.id, filter);
         return {
             status: 200,
             message: 'Searched jobs found successfully',
-            jobs: searchedJobs
+            jobs: searchedJobs,
+            noOfJobs: noOfJobs,
         }
     }
 

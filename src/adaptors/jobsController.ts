@@ -30,13 +30,14 @@ class JobsController {
 
             const searchQuery = req.query.search;
             const pageNo = req.query.page || '1';
-            const sort = req.query.sort;
+            const sort = req.query.sort;            
 
             const query: { [key: string]: any } = req.query;
             const filter: any = {};
 
             for (const key in query) {
-                if (query.hasOwnProperty(key) && key !== 'page' && key !== 'sort') {
+                
+                if (query.hasOwnProperty(key) && key !== 'page' && key !== 'sort' && key !== 'search') {
                     const value = query[key];
 
                     if (value.includes(',')) {
@@ -60,13 +61,12 @@ class JobsController {
                 filter.active = true;
             }
 
-            if (searchQuery && token && searchQuery != ' ' && typeof searchQuery == 'string') {
-                const searchedJobs = await this._jobsUseCase.fetchSearchedJobs(token, searchQuery)
-                res.status(searchedJobs.status).json({ jobs: searchedJobs.jobs })
-            } else {
-                if (token) {
-                    const query = req.query.title
-                    const result = await this._jobsUseCase.fetchJobsByEmployerId(token, pageNo as string, sort as string, filter as string, query as string)
+            if (searchQuery && token && searchQuery != '' && typeof searchQuery == 'string') {                
+                const searchedJobs = await this._jobsUseCase.fetchSearchedJobs(token, pageNo as string, searchQuery, sort as string, filter)
+                res.status(searchedJobs.status).json({ jobs: searchedJobs.jobs, noOfJobs: searchedJobs.noOfJobs })
+            } else {                
+                if (token) {                    
+                    const result = await this._jobsUseCase.fetchJobsByEmployerId(token, pageNo as string, sort as string, filter)
                     res.status(result.status).json({ jobs: result.jobs, noOfJobs: result.noOfJobs })
                 }
             }
