@@ -19,17 +19,21 @@ class PostsController {
     }
 
     async fetchPostsByEmployer(req:Request, res:Response) {
-        try {            
+        try {    
+                   
             const token = req.header('Employer-Token');
             const searchQuery = req.query.search            
             const page = req.query.page
+            const sort = req.query.sort 
+            console.log('se',searchQuery);
+                       
 
-            if (searchQuery && token && searchQuery != ' ' && typeof searchQuery == 'string') {
-                const searchedPosts = await this._postsUseCase.fetchSearchedPosts(token, searchQuery)
-                res.status(searchedPosts.status).json({ posts:searchedPosts.posts, })
-            } else {
-                if (token && page) {                    
-                    const result = await this._postsUseCase.fetchPostsByEmployerId(token,page as string)
+            if (token) {
+                if (searchQuery && searchQuery != '' && typeof searchQuery == "string") {
+                    const searchedPosts = await this._postsUseCase.fetchSearchedPosts(token, page as string , sort as string, searchQuery)
+                    res.status(searchedPosts.status).json({ posts:searchedPosts.posts, totalNoOfPosts:searchedPosts.noOfPost })
+                } else {
+                    const result = await this._postsUseCase.fetchPostsByEmployerId(token, page as string, sort as string)
                     res.status(result.status).json({ message:result.message, posts:result.post, totalNoOfPosts:result.noOfPost })
                 }
             }

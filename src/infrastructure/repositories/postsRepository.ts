@@ -2,15 +2,26 @@ import { EmployerPosts, Post } from "../../interfaces/models/employerPosts";
 import IPostsRepository from "../../interfaces/iRepositories/iPostRepository";
 import postsModel from "../../entities_models/postModel";
 import mongoose from "mongoose";
+import e from "express";
 
 class PostsRepository implements IPostsRepository {
 
-    async fetchPostsById(employer_id: string, skip:number, limit:number): Promise<EmployerPosts | any> {
+    async fetchPostsById(employer_id: string, skip:number, limit:number, sort:string): Promise<EmployerPosts | any> {
+
+        let sortQuery: 1 | -1 = 1;
+
+        if (sort === 'newest') {
+            sortQuery = -1;
+        } else if (sort === 'oldest') {
+            sortQuery = 1;
+        }
+
         const posts = await postsModel.aggregate([
             { $match: { employer_id: new mongoose.Types.ObjectId(employer_id) } },
             { $unwind: '$posts' },
             { $skip: skip },
             { $limit: limit },
+            { $sort:  { 'posts._id':sortQuery } },
             { $group: {
                 _id: '$_id',
                 posts: { $push: '$posts' }
@@ -24,12 +35,27 @@ class PostsRepository implements IPostsRepository {
         }
     }
 
-    async fetchTotalNoOfEmployerPosts(employer_id: string): Promise<number> {
-        const postsCount = await postsModel.findOne(
-            { employer_id: employer_id }
-        )        
+    async fetchTotalNoOfEmployerPosts(employer_id: string, skip:number = 0, limit:number = 0, searchQuery?:string): Promise<number> {
+        if (searchQuery) {
+            
+            const searchedPosts:any = await postsModel.find(
+                { employer_id: employer_id,
+                  "posts.description": { $regex: searchQuery , $options: 'i' }
+                },
+                { "posts.$": 1 } 
+            ).skip(skip).limit(limit)
 
-        return postsCount?.posts.length || 0
+            console.log(searchedPosts.length);
+           
+            return searchedPosts.length ? searchedPosts.length : 0
+            
+        } else {
+            const postsCount = await postsModel.findOne(
+                { employer_id: employer_id }
+            )        
+    
+            return postsCount?.posts.length || 0
+        }
     }
  
     async addPost(description: string,employer_id:string, images?: string[] | undefined): Promise<EmployerPosts | null> {
@@ -99,16 +125,28 @@ class PostsRepository implements IPostsRepository {
         return postsCount[0].totalPosts
     }
 
-    async fetchSearchedPosts(company_id:string, query:string): Promise<any> {
-        const searchedPosts = await postsModel.find(
+    async fetchSearchedPosts(company_id:string, skip:number, limit:number, sort:string, query?:string): Promise<any> {
+        
+        let sortQuery: -1 | 1 = 1;
+
+        if (sort == 'newest') {
+            sortQuery = -1
+        } else if (sort == 'oldest') {
+            sortQuery = 1
+        }
+
+        const searchedPosts:any = await postsModel.find(
             { employer_id: company_id,
               "posts.description": { $regex: query , $options: 'i' }
             },
             { "posts.$": 1 } 
-        )
+        ).sort({ _id:sortQuery })
 
-        if (searchedPosts) {
-            return searchedPosts
+        console.log(searchedPosts);
+        
+
+        if (searchedPosts[0]?.posts) {
+            return searchedPosts[0]?.posts
         } else {
             return null
         }

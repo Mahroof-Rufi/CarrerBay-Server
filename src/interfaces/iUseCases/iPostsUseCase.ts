@@ -6,7 +6,7 @@ interface IPostsUseCase {
     fetchPostsByEmployerId(token:string,pageNo:string): Promise<PostsOutput>
     addPost(description:string, token:string, urls?:string[]): Promise<PostsOutput>
     editPost(post_id:string, description:string, token:string, urls?:string[]): Promise<PostsOutput>
-    fetchSearchedPosts(token:string, searchQuery:string): Promise<PostsOutput>
+    fetchSearchedPosts(token:string, searchQuery:string, pageNo:string, sort?:string): Promise<PostsOutput>
     deletePost(token:string, post_id:string): Promise<PostsOutput>
 
 }

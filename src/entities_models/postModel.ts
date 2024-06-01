@@ -29,7 +29,12 @@ const postSchema: Schema = new Schema({
     },
     saved: {
         type: [String]
-    }
+    },
+    postedAt: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
 });
 
 const postsSchema: Schema = new Schema({

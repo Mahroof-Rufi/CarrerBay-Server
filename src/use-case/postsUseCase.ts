@@ -23,13 +23,11 @@ class PostsUseCase implements IPostsUseCase{
         }
     }
 
-    async fetchPostsByEmployerId(token:string, pageNo:string) {
+    async fetchPostsByEmployerId(token:string, pageNo:string, sort?:string) {
         const decode = this._jwt.verifyToken(token,"Employer")
         const limit = 5
         const skip = (parseInt(pageNo) - 1) * limit
-        const post = await this._postsRepository.fetchPostsById(decode?.id, skip, limit)
-        console.log('po',post);
-        
+        const post = await this._postsRepository.fetchPostsById(decode?.id, skip, limit, sort as string)
         const noOfPost = await this._postsRepository.fetchTotalNoOfEmployerPosts(decode?.id)
         if (post ) {
             return {
@@ -45,10 +43,24 @@ class PostsUseCase implements IPostsUseCase{
         }
     }
 
+    async fetchSearchedPosts(token:string, pageNo:string ,sort:string, searchQuery?:string) {
+        const decode = this._jwt.verifyToken(token,"Employer")
+        const limit = 5
+        const skip = (parseInt(pageNo) - 1) * limit
+        const searchedPosts = await this._postsRepository.fetchSearchedPosts(decode?.id, skip, limit, sort ,searchQuery)
+        const noOfPost = await this._postsRepository.fetchTotalNoOfEmployerPosts(decode?.id, skip, limit, searchQuery)
+        
+        return {
+            status: 200,
+            message: 'Searched posts found successfully',
+            posts: searchedPosts,
+            noOfPost: noOfPost
+        }
+    }
+
     async addPost(description:string,token:string, urls?:string[]) {
         const decode = this._jwt.verifyToken(token,"Employer")
         const res = await this._postsRepository.addPost(description,decode?.id, urls)
-        
         if (res) {
             return {
                 status:201,
@@ -59,16 +71,6 @@ class PostsUseCase implements IPostsUseCase{
         return {
             status:400,
             message:'post upload failed'
-        }
-    }
-
-    async fetchSearchedPosts(token:string, searchQuery:string) {
-        const decode = this._jwt.verifyToken(token,"Employer")
-        const searchedPosts = await this._postsRepository.fetchSearchedPosts(decode?.id, searchQuery)
-        return {
-            status: 200,
-            message: 'Searched posts found successfully',
-            posts: searchedPosts
         }
     }
 
