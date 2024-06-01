@@ -10,8 +10,23 @@ class JobsRepository implements IJobsRepository {
         return job
     }
 
-    async fetch8Jobs(company_id: string, skip:number, limit:number, title:string | undefined): Promise<Job[]> {
-        const jobs = title ? await jobModel.find({company_id:company_id, title:title}).skip(skip).limit(limit) : await jobModel.find({company_id:company_id}).skip(skip).limit(limit)
+    async fetch8Jobs(company_id: string, skip:number, limit:number, sort?:string, title?:string | undefined): Promise<Job[]> {
+        let sortQuery: { [key: string]: any } | undefined;
+        if (sort == 'newest') {
+            sortQuery = { _id:-1 }
+        } else if (sort == 'oldest') {
+            sortQuery = { _id:1 }
+        }
+        let jobs
+        if (sortQuery) {
+            jobs = title ? await jobModel.find({company_id:company_id, title:title}).skip(skip).limit(limit).sort(sortQuery) : await jobModel.find({company_id:company_id}).skip(skip).limit(limit).sort(sortQuery)
+            console.log('sorted',jobs);
+            
+        } else {
+            jobs = title ? await jobModel.find({company_id:company_id, title:title}).skip(skip).limit(limit) : await jobModel.find({company_id:company_id}).skip(skip).limit(limit)
+            console.log('unsorted');
+            
+        }
         if (jobs) {
             return jobs
         } else {

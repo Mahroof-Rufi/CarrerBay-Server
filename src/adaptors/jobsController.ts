@@ -28,14 +28,17 @@ class JobsController {
         try {            
             const token = req.header('Employer-Token');
             const searchQuery = req.query.search
-            const pageNo = req.query.page || '1'            
+            const pageNo = req.query.page || '1'
+            const sort = req.query.sort    
+            console.log(req.query);
+                 
             if (searchQuery && token && searchQuery != ' ' && typeof searchQuery == 'string') {
                 const searchedJobs = await this._jobsUseCase.fetchSearchedJobs(token, searchQuery)
                 res.status(searchedJobs.status).json({ jobs:searchedJobs.jobs })
             } else {
                 if(token) {
                     const query = req.query.title
-                    const result = await this._jobsUseCase.fetchJobsByEmployerId(token, pageNo as string, query as string)
+                    const result = await this._jobsUseCase.fetchJobsByEmployerId(token, pageNo as string, sort as string, query as string)
                     res.status(result.status).json({jobs:result.jobs, noOfJobs:result.noOfJobs})
                 }
             }            
