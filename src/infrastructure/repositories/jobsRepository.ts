@@ -38,11 +38,15 @@ class JobsRepository implements IJobsRepository {
     }
     
 
-    async fetchEmployerJobsCount(employer_id: string, filterQuery?:any): Promise<number> {
-        console.log('filtere', filterQuery);
+    async fetchEmployerJobsCount(employer_id: string, filterQuery?:any, searchQuery?:string): Promise<number> {
         
         if (filterQuery) {
             filterQuery.company_id = employer_id;
+            if (searchQuery) {
+                filterQuery.jobTitle =  new RegExp(searchQuery, 'i');
+            }
+            console.log('filterereeee',filterQuery);
+            
             const noOfDoc = await jobModel.find(filterQuery).countDocuments()
             return noOfDoc
         } else {

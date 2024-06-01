@@ -61,11 +61,11 @@ class JobsController {
                 filter.active = true;
             }
 
-            if (searchQuery && token && searchQuery != '' && typeof searchQuery == 'string') {                
-                const searchedJobs = await this._jobsUseCase.fetchSearchedJobs(token, pageNo as string, searchQuery, sort as string, filter)
-                res.status(searchedJobs.status).json({ jobs: searchedJobs.jobs, noOfJobs: searchedJobs.noOfJobs })
-            } else {                
-                if (token) {                    
+            if (token) {
+                if (searchQuery && searchQuery != '' && typeof searchQuery == "string") {                    
+                    const searchedJobs = await this._jobsUseCase.fetchSearchedJobs(token, pageNo as string, searchQuery, sort as string, filter)
+                    res.status(searchedJobs.status).json({ jobs: searchedJobs.jobs, noOfJobs: searchedJobs.noOfJobs })
+                } else {
                     const result = await this._jobsUseCase.fetchJobsByEmployerId(token, pageNo as string, sort as string, filter)
                     res.status(result.status).json({ jobs: result.jobs, noOfJobs: result.noOfJobs })
                 }

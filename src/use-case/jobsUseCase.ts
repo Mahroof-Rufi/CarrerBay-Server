@@ -46,7 +46,7 @@ class JobsUseCase implements IJobsUseCase {
         const limit = 10;
         const skip = (parseInt(pageNo) - 1) * limit;
         const searchedJobs = await this._jobRepository.fetchSearchedJobsByCompanyId(decode?.id, skip, limit,searchQuery, sort, filter)
-        const noOfJobs = await this._jobRepository.fetchEmployerJobsCount(decode?.id, filter);
+        const noOfJobs = await this._jobRepository.fetchEmployerJobsCount(decode?.id, filter, searchQuery);
         return {
             status: 200,
             message: 'Searched jobs found successfully',
