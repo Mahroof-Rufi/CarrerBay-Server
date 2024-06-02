@@ -219,24 +219,30 @@ class UserUseCase implements IUserUseCase{
         }
     }
 
-    async fetchUsersData(token:string) {
+    async fetchUsersData(token:string, pageNo:string, sort:string, filter:any) {
         const decodedToken = this._jwt.verifyToken(token,"User")
         const limit = 12
-        const res = await this._userRepository.fetchAllUsers(limit,decodedToken?.id)
+        const skip = (parseInt(pageNo) - 1) * limit;
+        const res = await this._userRepository.fetchAllUsers(skip, limit, decodedToken?.id, sort, filter)
+        const totalNoOfUsers = await this._userRepository.fetchUsersCount(decodedToken?.id, filter)
         return {
             status: 200,
             message: 'Users found successfully',
-            users:res
+            users:res,
+            totalNoOfUsers: totalNoOfUsers
         }
     }
 
-    async fetchEmployersData(): Promise<UserOutput> {
+    async fetchEmployersData(pageNo:string, sort:string, filter:any): Promise<UserOutput> {
         const limit = 12
-        const res = await this._employerRepository.fetchAllEmployers(limit)
+        const skip = (parseInt(pageNo) - 1) * limit;
+        const res = await this._employerRepository.fetchAllEmployers(skip, limit,'', sort, filter)
+        const totalEmployersCount = await this._employerRepository.FetchEmployersCount(filter)
         return {
             status:200,
             message:'Employers found successfully',
             employers:res,
+            totalEmployersCount:totalEmployersCount
         }
     }
 
@@ -255,9 +261,10 @@ class UserUseCase implements IUserUseCase{
         }
     }
 
-    async loadUsers() {
+    async loadUsers(pageNo:string) {
         const limit = 10
-        const users = await this._userRepository.fetchAllUsers(limit)
+        const skip = (parseInt(pageNo) - 1) * limit;
+        const users = await this._userRepository.fetchAllUsers(skip,limit)
         return {
             status:200,
             message:'Users found successfully',

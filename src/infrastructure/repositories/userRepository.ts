@@ -3,6 +3,7 @@ import { Education } from "../../interfaces/models/subModels/education";
 import { EditUser, G_AuthUser, User } from "../../interfaces/models/user";
 import IUserRepository from "../../interfaces/iRepositories/iUserRepository";
 import userModel from "../../entities_models/userModel";
+import { SortOrder } from "mongoose";
 
 class UserRepository implements IUserRepository {
 
@@ -171,13 +172,32 @@ class UserRepository implements IUserRepository {
         }
     }
 
-    async fetchAllUsers(limit:number, user_id?:string): Promise<any> {
-        const users = await userModel.find({ _id:{ $ne: user_id } },{ password:0 }).limit(limit)
-        if (users) {
-            return users
+    async fetchAllUsers(skip: number, limit: number, user_id?: string, sort?: string, filter?: any): Promise<any> {
+        filter._id = { $ne: user_id };
+        
+        let sortQuery: { [key: string]: SortOrder } = { firstName: 1 };
+        if (sort === 'a-z') {
+            sortQuery = { firstName: 1 };
+        } else if (sort === 'z-a') {
+            sortQuery = { firstName: -1 };
+        }       
+        
+        if (user_id) {
+            const users = await userModel.find(filter, { password: 0 }).sort(sortQuery).skip(skip).limit(limit);
+            return users || null;
         } else {
-            return null
+            const users = await userModel.find({ password: 0 }).sort(sortQuery).skip(skip).limit(limit);
+            return users || null;
         }
+        
+    }
+
+    async fetchUsersCount(user_id: string, filter?: any): Promise<number> {
+        if (user_id) {
+            filter._id = { $ne: user_id };
+        }
+        const users = await userModel.find(filter)
+        return users.length || 0;
     }
 
     async changeStatusById(user_id: string): Promise<User | null> {

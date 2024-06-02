@@ -116,7 +116,8 @@ class UserController {
 
     async loadUsers(req:Request, res:Response) {
         try {
-            const result = await this._userUseCase.loadUsers()
+            const pageNo = req.query.page || '1'
+            const result = await this._userUseCase.loadUsers(pageNo as string)
             res.status(result.status).json({ message:result.message, data:result.users })
         } catch (error) {
             console.error(error);
@@ -138,9 +139,38 @@ class UserController {
     async fetchAllUsers(req:Request, res:Response) {
         try {
             const token = req.header('User-Token');
+            const page = req.query.page || '1'
+            const sort = req.query.sort
+            
+            const query: { [key: string]: any } = req.query;
+            
+            const filter: any = {};
+
+            for (const key in query) {
+                if (query.hasOwnProperty(key) && key !== 'page' && key !== 'sort' && key !== 'search') {
+                    const value = query[key];
+            
+                    if (value.includes(',')) {
+                        const valuesArray = value.split(',');
+            
+                        if (key === 'jobTitle') {
+                            filter[key] = { $in: valuesArray.map((val:string) => new RegExp(val, 'i')) };
+                        } else {
+                            filter[key] = { $in: valuesArray };
+                        }
+                    } else {
+                        if (key === 'jobTitle') {
+                            filter[key] = new RegExp(value, 'i');
+                        } else {
+                            filter[key] = value;
+                        }
+                    }
+                }
+            }        
+
             if (token) {
-                const result = await this._userUseCase.fetchUsersData(token)
-                res.status(result.status).json({message:result?.message, users:result?.users})
+                const result = await this._userUseCase.fetchUsersData(token, page as string, sort as string, filter)
+                res.status(result.status).json({ message:result?.message, users:result?.users, totalNoOfUsers:result.totalNoOfUsers })
             }
         } catch (error) {
             console.error(error)
@@ -149,8 +179,38 @@ class UserController {
 
     async fetchAllEmployers(req:Request, res:Response) {
         try {
-            const result = await this._userUseCase.fetchEmployersData()
-            res.status(result.status).json({message:result?.message, employers:result?.employers})
+            const page = req.query.page || '1'
+            const sort = req.query.sort
+            
+            const query: { [key: string]: any } = req.query;
+            console.log('empQ',query);
+            
+            const filter: any = {};
+
+            for (const key in query) {
+                if (query.hasOwnProperty(key) && key !== 'page' && key !== 'sort' && key !== 'search') {
+                    const value = query[key];
+            
+                    if (value.includes(',')) {
+                        const valuesArray = value.split(',');
+            
+                        if (key === 'industry') {
+                            filter[key] = { $in: valuesArray.map((val:string) => new RegExp(val, 'i')) };
+                        } else {
+                            filter[key] = { $in: valuesArray };
+                        }
+                    } else {
+                        if (key === 'industry') {
+                            filter[key] = new RegExp(value, 'i');
+                        } else {
+                            filter[key] = value;
+                        }
+                    }
+                }
+            }    
+
+            const result = await this._userUseCase.fetchEmployersData(page as string, sort as string, filter)
+            res.status(result.status).json({message:result?.message, employers:result?.employers, totalEmployersCount:result.totalEmployersCount})
         } catch (error) {
             console.error(error)
         }

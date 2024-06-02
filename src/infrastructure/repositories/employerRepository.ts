@@ -1,6 +1,7 @@
 import employer from "../../interfaces/models/employer";
 import IEmployerRepository from "../../interfaces/iRepositories/iEmployerRepository";
 import employerModel from "../../entities_models/employerModel";
+import { SortOrder } from "mongoose";
 
 class EmployerRepository implements IEmployerRepository{
 
@@ -69,13 +70,28 @@ class EmployerRepository implements IEmployerRepository{
         }
     }
 
-    async fetchAllEmployers(limit:number, employer_id?:string): Promise<any> {
-        const employers = await employerModel.find({ _id:{ $ne:employer_id } }).limit(limit)
-        if (employers) {
-            return employers
+    async fetchAllEmployers(skip:number, limit:number, employer_id?:string, sort?:string, filterQuery?:any): Promise<any> {
+        
+        let sortQuery: { [key: string]: SortOrder } = { companyName: 1 }
+        if (sort == 'a-z') {
+            sortQuery = { companyName: 1 }
         } else {
-            return null
+            sortQuery = { companyName: -1 }
         }
+        if (employer_id) {
+            const employers = await employerModel.find({ _id:{ $ne:employer_id } }).sort(sortQuery).skip(skip).limit(limit)
+            return employers || null
+        } else {
+            const employers = await employerModel.find(filterQuery).skip(skip).sort(sortQuery).limit(limit)
+            console.log('herer emp',employers);
+            
+            return employers || null
+        }
+    }
+
+    async FetchEmployersCount(filterQuery?: any): Promise<number> {
+        const employers = await employerModel.find(filterQuery)
+        return employers.length || 0
     }
 
     async changeStatusById(employer_id: string): Promise<employer | null> {

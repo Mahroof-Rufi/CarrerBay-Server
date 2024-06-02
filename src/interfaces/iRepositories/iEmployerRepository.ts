@@ -8,7 +8,8 @@ interface IEmployerRepository {
     updatePassword(email:string, password:string): Promise<employer | null>
     updateProfile(email:string, newData:employer): Promise<employer | null>
     updateEmail(email:string,newEmail:string): Promise<employer | null>
-    fetchAllEmployers(limit:number, employer_id?:string):Promise<employer | null>
+    fetchAllEmployers(skip:number, limit:number, employer_id?:string, sort?:string, filterQuery?:any):Promise<employer | null>
+    FetchEmployersCount(filterQuery?:any): Promise<number>
     changeStatusById(employer_id:string):Promise<employer | null>
 }
 

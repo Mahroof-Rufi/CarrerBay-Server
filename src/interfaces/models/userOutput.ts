@@ -10,5 +10,6 @@ export interface UserOutput {
     employers?:Employer[],
     accessToken?:string,
     refreshToken?:string,
-    refreshTokenExpired?:boolean
+    refreshTokenExpired?:boolean,
+    totalEmployersCount?:number
 }

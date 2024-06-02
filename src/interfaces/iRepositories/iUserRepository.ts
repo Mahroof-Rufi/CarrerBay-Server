@@ -17,7 +17,8 @@ interface IUserRepository {
     deleteUserEducation(user_id:string, edu_id:string): Promise<User | null>
     updateUserSkills(user_id:string, skills:string[]): Promise<User | null>
     changeEmailByEmail(currentEmail:string,newEmail:string):Promise<User | null>
-    fetchAllUsers(limit:number,user_id?:string):Promise<User | null>
+    fetchAllUsers(skip:number, limit:number, user_id?:string, sort?:string, filter?:any):Promise<User | null>
+    fetchUsersCount(user_id?:string, filter?:any): Promise<number>
     changeStatusById(user_id:string):Promise<User | null>
 }
 

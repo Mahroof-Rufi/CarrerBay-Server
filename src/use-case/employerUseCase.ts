@@ -189,7 +189,7 @@ class EmployerUseCase implements IEmployerUseCase{
 
     async loadCompanies() {
         const limit = 12
-        const employers = await this._employerRepository.fetchAllEmployers(limit)
+        const employers = await this._employerRepository.fetchAllEmployers(limit,0)
         if (!employers) {
             return {
                 status:400,
