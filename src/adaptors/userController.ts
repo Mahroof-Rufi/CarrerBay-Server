@@ -141,6 +141,7 @@ class UserController {
             const token = req.header('User-Token');
             const page = req.query.page || '1'
             const sort = req.query.sort
+            const search = req.query.search
             
             const query: { [key: string]: any } = req.query;
             
@@ -169,7 +170,7 @@ class UserController {
             }        
 
             if (token) {
-                const result = await this._userUseCase.fetchUsersData(token, page as string, sort as string, filter)
+                const result = await this._userUseCase.fetchUsersData(token, page as string, sort as string, search as string,filter)
                 res.status(result.status).json({ message:result?.message, users:result?.users, totalNoOfUsers:result.totalNoOfUsers })
             }
         } catch (error) {
@@ -181,6 +182,7 @@ class UserController {
         try {
             const page = req.query.page || '1'
             const sort = req.query.sort
+            const search = req.query.search
             
             const query: { [key: string]: any } = req.query;
             console.log('empQ',query);
@@ -209,7 +211,7 @@ class UserController {
                 }
             }    
 
-            const result = await this._userUseCase.fetchEmployersData(page as string, sort as string, filter)
+            const result = await this._userUseCase.fetchEmployersData(page as string, sort as string, search as string, filter)
             res.status(result.status).json({message:result?.message, employers:result?.employers, totalEmployersCount:result.totalEmployersCount})
         } catch (error) {
             console.error(error)

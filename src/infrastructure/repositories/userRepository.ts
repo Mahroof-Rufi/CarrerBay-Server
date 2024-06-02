@@ -172,7 +172,7 @@ class UserRepository implements IUserRepository {
         }
     }
 
-    async fetchAllUsers(skip: number, limit: number, user_id?: string, sort?: string, filter?: any): Promise<any> {
+    async fetchAllUsers(skip: number, limit: number, user_id?: string, sort?: string, search?:string, filter?: any): Promise<any> {
         filter._id = { $ne: user_id };
         
         let sortQuery: { [key: string]: SortOrder } = { firstName: 1 };
@@ -180,7 +180,16 @@ class UserRepository implements IUserRepository {
             sortQuery = { firstName: 1 };
         } else if (sort === 'z-a') {
             sortQuery = { firstName: -1 };
-        }       
+        }      
+        
+        if (search) {
+            const regex = new RegExp(search, 'i'); 
+            filter.$or = [
+                { firstName: regex },
+                { lastName: regex },
+                { jobTitle: regex }
+            ];
+        }
         
         if (user_id) {
             const users = await userModel.find(filter, { password: 0 }).sort(sortQuery).skip(skip).limit(limit);

@@ -70,7 +70,7 @@ class EmployerRepository implements IEmployerRepository{
         }
     }
 
-    async fetchAllEmployers(skip:number, limit:number, employer_id?:string, sort?:string, filterQuery?:any): Promise<any> {
+    async fetchAllEmployers(skip:number, limit:number, employer_id?:string, sort?:string, search?:string, filterQuery?:any): Promise<any> {
         
         let sortQuery: { [key: string]: SortOrder } = { companyName: 1 }
         if (sort == 'a-z') {
@@ -78,6 +78,15 @@ class EmployerRepository implements IEmployerRepository{
         } else {
             sortQuery = { companyName: -1 }
         }
+
+        if (search) {
+            const regex = new RegExp(search, 'i'); 
+            filterQuery.$or = [
+                { companyName: regex },
+                { industry: regex },
+            ];
+        }
+
         if (employer_id) {
             const employers = await employerModel.find({ _id:{ $ne:employer_id } }).sort(sortQuery).skip(skip).limit(limit)
             return employers || null
