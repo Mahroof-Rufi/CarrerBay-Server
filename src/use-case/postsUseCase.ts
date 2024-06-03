@@ -23,6 +23,16 @@ class PostsUseCase implements IPostsUseCase{
         }
     }
 
+    async triggerPostLike(token: string, employer_id: string, post_id: string): Promise<PostsOutput> {
+        const decodedToken = this._jwt.verifyToken(token,"User")
+        const res:any = await this._postsRepository.triggerPostLike(employer_id, post_id, decodedToken?.id)
+        return {
+            status:200,
+            message:'Like updated successfully',
+            posts: res[0],
+        }
+    }
+
     async fetchPostsByEmployerId(token:string, pageNo:string, sort?:string) {
         const decode = this._jwt.verifyToken(token,"Employer")
         const limit = 5

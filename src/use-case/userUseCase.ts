@@ -234,9 +234,10 @@ class UserUseCase implements IUserUseCase{
     }
 
     async fetchEmployersData(pageNo:string, sort:string, search:string, filter:any): Promise<UserOutput> {
-        const limit = 12
+        const limit = 10
         const skip = (parseInt(pageNo) - 1) * limit;
         const res = await this._employerRepository.fetchAllEmployers(skip, limit,'', sort, search, filter)
+        
         const totalEmployersCount = await this._employerRepository.FetchEmployersCount(filter)
         return {
             status:200,

@@ -4,6 +4,6 @@ export interface PostsOutput {
     status:number,
     message:string,
     post?:EmployerPosts,
-    posts?:EmployerPosts[],
+    posts?:EmployerPosts[] | null,
     oldURLs?:string[]
 }

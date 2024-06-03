@@ -43,8 +43,44 @@ class AdminController {
 
     async fetchAllUsers(req:Request, res:Response) {
         try {
-            const result = await this._adminUseCase.fetchAllUsers()
-            res.status(result.status).json({ message:result.message, users:result.users })
+            const page = req.query.page || 1
+            const sort = req.query.sort
+            const search = req.query.search
+
+            const queries: { [key: string]: any } = req.query;
+
+            const filter: any = {};
+
+            for (const key in queries) {
+                if (queries.hasOwnProperty(key) && key !== 'page' && key !== 'sort' && key !== 'search') {
+                    const value = queries[key];
+            
+                    if (value.includes(',')) {
+                        const valuesArray = value.split(',');
+            
+                        if (valuesArray.every((v: any) => v === 'true' || v === 'false')) {
+                            filter[key] = { $in: valuesArray.map((v: any) => v === 'true') };
+                        } else {
+                            if (key === 'jobTitle') {
+                                const regexArray = valuesArray.map((v: any) => new RegExp(v, 'i'));
+                                filter.$or = regexArray.map((regex: RegExp) => ({ jobTitle: regex }));
+                            } else {
+                                filter[key] = { $in: valuesArray };
+                            }
+                        }
+                    } else if (value === 'true' || value === 'false') {
+                        filter[key] = value === 'true';
+                    } else if (key === 'jobTitle') {
+                        const regex = new RegExp(value, 'i');
+                        filter[key] = regex;
+                    } else {
+                        filter[key] = value;
+                    }
+                }
+            }           
+
+            const result = await this._adminUseCase.fetchAllUsers(page as number, sort as string, search as string, filter)
+            res.status(result.status).json({ message:result.message, users:result.users, totalUsersCount:result.totalUsersCount })
         } catch (error) {
             console.error(error);            
         }
@@ -62,8 +98,44 @@ class AdminController {
 
     async fetchAllEmployers(req:Request, res:Response) {
         try {
-            const result = await this._adminUseCase.fetchAllEmployers()
-            res.status(result.status).json({ message:result.message, employers:result.employers })
+            const page = req.query.page || 1
+            const sort = req.query.sort
+            const search = req.query.search
+            const queries: { [key: string]: any } = req.query;
+
+            const filter: any = {};
+
+            for (const key in queries) {
+                if (queries.hasOwnProperty(key) && key !== 'page' && key !== 'sort' && key !== 'search') {
+                    const value = queries[key];
+            
+                    if (value.includes(',')) {
+                        const valuesArray = value.split(',');
+            
+                        if (valuesArray.every((v: any) => v === 'true' || v === 'false')) {
+                            filter[key] = { $in: valuesArray.map((v: any) => v === 'true') };
+                        } else {
+                            if (key === 'industry') {
+                                const regexArray = valuesArray.map((v: any) => new RegExp(v, 'i'));
+                                filter.$or = regexArray.map((regex: RegExp) => ({ industry: regex }));
+                            } else {
+                                filter[key] = { $in: valuesArray };
+                            }
+                        }
+                    } else if (value === 'true' || value === 'false') {
+                        filter[key] = value === 'true';
+                    } else if (key === 'industry') {
+                        const regex = new RegExp(value, 'i');
+                        filter[key] = regex;
+                    } else {
+                        filter[key] = value;
+                    }
+                }
+            }                      
+            
+
+            const result = await this._adminUseCase.fetchAllEmployers(page as number, sort as string, search as string,filter)
+            res.status(result.status).json({ message:result.message, employers:result.employers, totalUsersCount:result.totalEmployersCount })
         } catch (error) {
             console.error(error);            
         }

@@ -57,19 +57,53 @@ class PostsRepository implements IPostsRepository {
             return postsCount?.posts.length || 0
         }
     }
+
+    async triggerPostLike(employer_id: string, post_id: string, user_id: string): Promise<EmployerPosts | any> {
+        const post:any = await postsModel.findOne(
+            { employer_id: employer_id, 'posts._id': post_id  },
+            { 'posts.$': 1 }
+        );
+
+        if (!post || post.posts.length === 0) {
+            throw new Error('Post not found');
+        }
+
+        const userLiked = post.posts[0].likes.includes(user_id);
+
+        const updateQuery = userLiked ? { $pull: { 'posts.$.likes': user_id } } : { $addToSet: { 'posts.$.likes': user_id } };
+        
+        await postsModel.updateOne(
+            { 'employer_id': employer_id, 'posts._id': post_id },
+            updateQuery
+        );   
+        
+        const updatedEmployer = await postsModel.aggregate([
+            { $match: { 'employer_id': { $in: [new mongoose.Types.ObjectId(employer_id)] } } },
+            { $unwind: '$posts' },
+            { $match: { 'posts._id': { $in: [new mongoose.Types.ObjectId(post_id)] } } },
+            {
+              $addFields: {
+                'posts.employer_id': '$employer_id'
+              }
+            },
+            {
+              $replaceRoot: {
+                newRoot: '$posts'
+              }
+            }
+          ]);
+      
+          return updatedEmployer;
+    }
  
-    async addPost(description: string,employer_id:string, images?: string[] | undefined): Promise<EmployerPosts | null> {
+    async addPost(description: string,employer_id:string, images?: string[] | undefined): Promise<EmployerPosts[] | any> {
         const result = await postsModel.findOneAndUpdate(
             { employer_id: employer_id }, 
             { $push: { posts: { description: description, image_urls: images } } }, 
             { upsert: true, new: true }
         );
 
-        if (result) {
-            return result
-        } else {
-            return null
-        }
+        return result || null
     }
 
     async fetchAPerticularPost(employer_id: string, post_id: string): Promise<EmployerPosts | null> {
@@ -99,22 +133,22 @@ class PostsRepository implements IPostsRepository {
         }
     }
 
-    async fetchAllPosts(skip:number, limit:number): Promise<any> {
+    async fetchAllPosts(skip: number, limit: number): Promise<any> {
         const result = await postsModel.aggregate([
+            { $project: { employer_id: 1, posts: 1, _id: 0 } },
             { $unwind: '$posts' },
+            { $addFields: { 'posts.employer_id': '$employer_id' } },
+            { $replaceRoot: { newRoot: '$posts' } },
             { $skip: skip },
-            { $limit: limit },
-            { $group: {
-                _id: '$_id',
-                posts: { $push: '$posts' }
-            }}
-        ]);
-        if (result) {
-            return result
+            { $limit: limit }
+          ]);
+    
+        if (result) {            
+            return result;
         } else {
-            return null
+            return null;
         }
-    }
+    }    
 
     async fetchTotalNoOfPosts() {
         const postsCount = await postsModel.aggregate([

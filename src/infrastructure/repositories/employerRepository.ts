@@ -91,9 +91,7 @@ class EmployerRepository implements IEmployerRepository{
             const employers = await employerModel.find({ _id:{ $ne:employer_id } }).sort(sortQuery).skip(skip).limit(limit)
             return employers || null
         } else {
-            const employers = await employerModel.find(filterQuery).skip(skip).sort(sortQuery).limit(limit)
-            console.log('herer emp',employers);
-            
+            const employers = await employerModel.find(filterQuery).skip(skip).sort(sortQuery).limit(limit)            
             return employers || null
         }
     }

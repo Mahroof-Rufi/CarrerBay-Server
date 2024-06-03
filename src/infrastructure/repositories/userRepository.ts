@@ -172,8 +172,18 @@ class UserRepository implements IUserRepository {
         }
     }
 
-    async fetchAllUsers(skip: number, limit: number, user_id?: string, sort?: string, search?:string, filter?: any): Promise<any> {
-        filter._id = { $ne: user_id };
+    async fetchAllUsers(skip: number, limit: number, user_id?: string, sort?: string, filter?: any, search?:string): Promise<any> {
+        console.log('filter',filter);
+        console.log('sort',sort);
+        
+        
+        if (!filter) {
+            filter = {};
+        }
+        
+        if (user_id) {
+            filter._id = { $ne: user_id };
+        }
         
         let sortQuery: { [key: string]: SortOrder } = { firstName: 1 };
         if (sort === 'a-z') {
@@ -195,13 +205,13 @@ class UserRepository implements IUserRepository {
             const users = await userModel.find(filter, { password: 0 }).sort(sortQuery).skip(skip).limit(limit);
             return users || null;
         } else {
-            const users = await userModel.find({ password: 0 }).sort(sortQuery).skip(skip).limit(limit);
+            const users = await userModel.find(filter,{ password: 0 }).sort(sortQuery).skip(skip).limit(limit);            
             return users || null;
         }
         
     }
 
-    async fetchUsersCount(user_id: string, filter?: any): Promise<number> {
+    async fetchUsersCount(user_id?: string, filter?: any): Promise<number> {
         if (user_id) {
             filter._id = { $ne: user_id };
         }

@@ -59,13 +59,17 @@ class AdminUseCase implements IAdminUseCase {
         }
     }
 
-    async fetchAllUsers() {
+    async fetchAllUsers(pageNo:number, sort:string, search:string, filter:any) {
         const limit = 10
-        const users = await this._userRepo.fetchAllUsers(limit,0)
+        const skip = (pageNo - 1) * limit;
+        const users = await this._userRepo.fetchAllUsers(skip, limit, '' ,sort, filter, search)
+        const totalUsersCount = await this._userRepo.fetchUsersCount('',filter)
+        
         return {
             status:200,
             message:'Users found successfully',
-            users:users
+            users:users,
+            totalUsersCount:totalUsersCount
         }
     }
 
@@ -84,13 +88,16 @@ class AdminUseCase implements IAdminUseCase {
         }
     }
 
-    async fetchAllEmployers() {
+    async fetchAllEmployers(pageNo:number, sort:string, search:string, filter?:any) {
         const limit = 10
-        const employers = await this._employerRepo.fetchAllEmployers(limit,0)
+        const skip = (pageNo - 1) * limit;
+        const employers = await this._employerRepo.fetchAllEmployers(skip, limit, '',sort, search,filter)
+        const totalEmployersCount = await this._employerRepo.FetchEmployersCount(filter)
         return {
             status:200,
             message:'Employers found successfully',
-            employers:employers
+            employers:employers,
+            totalEmployersCount:totalEmployersCount
         }
     }
 

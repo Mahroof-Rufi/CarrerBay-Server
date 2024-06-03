@@ -11,8 +11,20 @@ class PostsController {
     async fetchPosts(req:Request, res:Response) {
         try {
             const page = req.query.page
-            const result = await this._postsUseCase.fetchPosts(page as string)
+            const result = await this._postsUseCase.fetchPosts(page as string)            
             res.status(result.status).json({ message:result.message, posts:result.posts, totalNoOfPosts:result.totalNoOfPosts })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
+    async triggerPostLike(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            const employer_id = req.body.employer_id
+            const post_id = req.body.post_id
+            const result = await this._postsUseCase.triggerPostLike(token as string, employer_id, post_id)  
+            res.status(result.status).json({ message:result.message, updatedPost:result.posts })
         } catch (error) {
             console.error(error);            
         }
