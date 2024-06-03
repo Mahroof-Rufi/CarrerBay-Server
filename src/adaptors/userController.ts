@@ -136,6 +136,16 @@ class UserController {
         }
     }
 
+    async fetchUserProfileById(req:Request, res:Response) {
+        try {
+            const user_id = req.body.user_id
+            const result = await this._userUseCase.fetchUseProfileWithUserId(user_id)
+            res.status(result.status).json({message:result?.message, userData:result?.userData})
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
     async fetchAllUsers(req:Request, res:Response) {
         try {
             const token = req.header('User-Token');

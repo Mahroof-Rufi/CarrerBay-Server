@@ -219,6 +219,22 @@ class UserUseCase implements IUserUseCase{
         }
     }
 
+    async fetchUseProfileWithUserId(user_id:string) {
+        const res = await this._userRepository.findById(user_id)
+        if (res) {
+            return {
+                status: 200,
+                message: 'Operation success',
+                userData: res,
+            }
+        } else {
+            return {
+                status: 400,
+                message: 'Something went wrong',
+            }
+        }
+    }
+
     async fetchUsersData(token:string, pageNo:string, sort:string, search:string,filter:any) {
         const decodedToken = this._jwt.verifyToken(token,"User")
         const limit = 12

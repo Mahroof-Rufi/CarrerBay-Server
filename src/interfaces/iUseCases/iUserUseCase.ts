@@ -12,7 +12,7 @@ interface IUserUseCase {
     gAuth(fullName:string, email:string, password:string, google_id:string): Promise<UserOutput>
     forgotPasswordSendOTP(email:string): Promise<UserOutput>
     resetPassword(email:string, OTP:number, password:string): Promise<UserOutput>
-    fetchUserDataWithToken(token:string): Promise<UserOutput>
+    fetchUserDataWithToken(token:string, isSelf:boolean): Promise<UserOutput>
     fetchUsersData(token:string, pageNo:string, sort:string, search:string,filter:any): Promise<UserOutput>
     fetchEmployersData(pageNo:string, sort:string, search:string, filter:any): Promise<UserOutput>
     isUserBlockedOrNot(token:string): Promise<UserOutput>
