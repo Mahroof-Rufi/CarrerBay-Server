@@ -263,6 +263,22 @@ class UserUseCase implements IUserUseCase{
         }
     }
 
+    async fetchEmployerProfileById(employer_id:string) {
+        const res = await this._employerRepository.findById(employer_id)
+        if (res) {
+            return {
+                status:200,
+                employerData:res,
+                message:'Operation success'
+            }
+        } else {
+            return {
+                status:400,
+                message:'Employer not found'
+            }
+        }
+    }
+
     async isUserBlockedOrNot(token:string) {
         const decodedToken = this._jwt.verifyToken(token,"User")
         const res = await this._userRepository.findById(decodedToken?.id)

@@ -228,6 +228,16 @@ class UserController {
         }
     }
 
+    async fetchEmployerProfileById(req:Request, res:Response) {
+        try {
+            const employer_id = req.body.employer_id
+            const result = await this._userUseCase.fetchEmployerProfileById(employer_id)
+            res.status(result?.status).json({ message:result.message, employerData:result?.employerData })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
     async isUserBlocked(req:Request, res:Response) {
         try {
             const token = req.header('User-Token');
