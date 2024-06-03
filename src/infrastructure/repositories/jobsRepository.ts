@@ -55,6 +55,17 @@ class JobsRepository implements IJobsRepository {
         }
     }
 
+    async fetchEmployerJobsById(employer_id: string, skip:number, limit:number): Promise<Job | any> {
+        const employerJobs = await jobModel.find({ company_id:employer_id }).populate('company_id').skip(skip).limit(limit)
+        return employerJobs || null
+    }
+
+    async fetchNoOfJobsByEmployerId(employer_id: string): Promise<number> {
+        const noOfJobs = await jobModel.find({ company_id:employer_id }).countDocuments()
+        
+        return noOfJobs || 0
+    }
+
     async fetchJobsByUser(skip:number, limit:number, sort?:string, filterQuery?:any): Promise<Job[] | null> {     
         filterQuery.active = true
         let sortQuery: { [key: string]: any } | undefined;

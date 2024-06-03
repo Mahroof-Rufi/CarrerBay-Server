@@ -50,6 +50,17 @@ class JobsController {
         }
     }
 
+    async fetchJobsByEmployerId(req: Request, res: Response) {
+        try {            
+            const employer_id = req.query.employer_id
+            const pageNo = req.query.page            
+            const result = await this._jobsUseCase.fetchJobsByEmployerID(employer_id as string, pageNo as string)
+            res.status(result.status).json({ message:result.message, employerJobs:result.jobs, totalNoOfJobs:result.noOfJobs })
+        } catch (error) {
+            console.error(error);            
+        }
+    }
+
     async fetchJobsByEmployer(req: Request, res: Response) {
         try {
             const token = req.header('Employer-Token');

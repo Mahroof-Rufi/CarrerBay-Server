@@ -2,7 +2,9 @@ import Job from "../models/job";
 
 interface IJobsRepository {
 
-    insertOneJob(jobData:Job): Promise<Job>
+    insertOneJob(jobData:Job): Promise<Job | null>
+    fetchEmployerJobsById(employer_id:string, skip:number, limit:number): Promise<Job>
+    fetchNoOfJobsByEmployerId(employer_id:string): Promise<number>
     fetch8Jobs(company_id:string, skip:number, limit:number, sort?:string, filterQuery?:any,title?:string | undefined): Promise<Job[]>
     fetchEmployerJobsCount(employer_id:string, filter?:any): Promise<number>
     fetchJobsByUser(skip:number, limit:number): Promise<Job[] | null>

@@ -27,6 +27,21 @@ class JobsUseCase implements IJobsUseCase {
         }
     }
 
+    async fetchJobsByEmployerID(employer_id: string, pageNo:string): Promise<JobsOutput> {
+        const limit =  6
+        const skip = (parseInt(pageNo) - 1) * limit
+        
+        const employerJobs = await this._jobRepository.fetchEmployerJobsById(employer_id, skip, limit)
+        const totalEmployerJobsCount = await this._jobRepository.fetchNoOfJobsByEmployerId(employer_id)
+        
+        return {
+            status:200,
+            message:'Jobs found successfully',
+            jobs:employerJobs,
+            noOfJobs: totalEmployerJobsCount
+        }
+    }
+
     async fetchJobsByEmployerId(token: string, pageNo: string, sort?: string, filterQuery?: any) {
         const decode = this._jwt.verifyToken(token, "Employer");
         const limit = 10;

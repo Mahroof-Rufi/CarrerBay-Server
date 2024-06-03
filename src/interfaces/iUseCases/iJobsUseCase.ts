@@ -4,6 +4,7 @@ import { JobsOutput } from "../models/jobsOutput"
 interface IJobsUseCase {
 
     fetchJobs(pageNo:string): Promise<JobsOutput>
+    fetchJobsByEmployerID(employer_id:string, pageNo:string): Promise<JobsOutput>
     fetchJobsByEmployerId(token:string, pageNo:string, sort?:string, filterQuery?:any ,title?:string | undefined): Promise<JobsOutput>
     fetchSearchedJobs(token:string, pageNo:string,searchQuery:string, sort?:string, filter?:any): Promise<JobsOutput>
     addNewJobPost(jobData:Job, token:string): Promise<JobsOutput>
