@@ -96,6 +96,16 @@ class AdminController {
         }
     }
 
+    async fetchUserById(req:Request, res:Response) {
+        try {
+            const user_id = req.query.user_id
+            const result = await this._adminUseCase.fetchUserByUserId(user_id as string)
+            res.status(result.status).json({ message:result.message, userData:result.userData })
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     async fetchAllEmployers(req:Request, res:Response) {
         try {
             const page = req.query.page || 1
@@ -138,6 +148,16 @@ class AdminController {
             res.status(result.status).json({ message:result.message, employers:result.employers, totalUsersCount:result.totalEmployersCount })
         } catch (error) {
             console.error(error);            
+        }
+    }
+
+    async fetchEmployerById(req:Request, res:Response) {
+        try {
+            const employer_id = req.query.employer_id
+            const result = await this._adminUseCase.fetchEmployerById(employer_id as string)
+            res.status(result.status).json({ message:result.message, employerData:result.employerData })
+        } catch (error) {
+            console.error(error)
         }
     }
 

@@ -37,7 +37,7 @@ class PostsController {
             const searchQuery = req.query.search            
             const page = req.query.page
             const sort = req.query.sort 
-            console.log('se',searchQuery);
+            console.log('se',sort);
                        
 
             if (token) {

@@ -88,6 +88,22 @@ class AdminUseCase implements IAdminUseCase {
         }
     }
 
+    async fetchUserByUserId(user_id:string) {
+        const userData = await this._userRepo.findById(user_id)
+        if (userData) {
+            return {
+                status:200,
+                message:'User found successfully',
+                userData:userData
+            }
+        } else {
+            return {
+                status:400,
+                message:'User not found'
+            }
+        }
+    }
+
     async fetchAllEmployers(pageNo:number, sort:string, search:string, filter?:any) {
         const limit = 10
         const skip = (pageNo - 1) * limit;
@@ -98,6 +114,22 @@ class AdminUseCase implements IAdminUseCase {
             message:'Employers found successfully',
             employers:employers,
             totalEmployersCount:totalEmployersCount
+        }
+    }
+
+    async fetchEmployerById(employer_id:string) {
+        const employerData = await this._employerRepo.findById(employer_id)
+        if (employerData) {
+            return {
+                status:200,
+                message:'Employer found successfully',
+                employerData:employerData
+            }
+        } else {
+            return {
+                status:400,
+                message:'Employer not found'
+            }
         }
     }
 

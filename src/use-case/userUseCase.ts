@@ -239,7 +239,7 @@ class UserUseCase implements IUserUseCase{
         const decodedToken = this._jwt.verifyToken(token,"User")
         const limit = 12
         const skip = (parseInt(pageNo) - 1) * limit;
-        const res = await this._userRepository.fetchAllUsers(skip, limit, decodedToken?.id, sort, search,filter)
+        const res = await this._userRepository.fetchAllUsers(skip, limit, decodedToken?.id, sort, filter, search)
         const totalNoOfUsers = await this._userRepository.fetchUsersCount(decodedToken?.id, filter)
         return {
             status: 200,

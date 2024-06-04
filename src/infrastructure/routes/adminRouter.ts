@@ -7,8 +7,14 @@ const router = express.Router()
 router.route('/users')
     .get( adminAuth ,(req, res) => adminController.fetchAllUsers(req, res))
     .patch( adminAuth, (req, res) => adminController.userAction(req, res))
+
+router.route('/user').get( adminAuth, (req, res) => adminController.fetchUserById(req, res))
+
 router.route('/employers')
     .get( adminAuth, (req, res) => adminController.fetchAllEmployers(req, res))
     .patch( adminAuth, (req, res) => adminController.employerAction(req, res))
+
+router.route('/employer')
+    .get( adminAuth, (req, res) => adminController.fetchEmployerById(req, res))
 
 export default router
