@@ -46,7 +46,8 @@ class JobsController {
                 res.status(data.status).json({ data: data.jobs, totalNoOfJob: data.totalNoOfJobs })
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -58,7 +59,8 @@ class JobsController {
             const result = await this._jobsUseCase.fetchJobsByEmployerID(employer_id as string, pageNo as string)
             res.status(result.status).json({ message:result.message, employerJobs:result.jobs, totalNoOfJobs:result.noOfJobs })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -110,7 +112,8 @@ class JobsController {
             }
             
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -123,7 +126,8 @@ class JobsController {
                 res.status(response.status).json({ message: response.message, job: response.job })
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -134,7 +138,8 @@ class JobsController {
             const response = await this._jobsUseCase.editJobPost(jobId, jobData);
             res.status(response.status).json({ message: response.message, updatedJob: response.job })
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -144,7 +149,8 @@ class JobsController {
             const response = await this._jobsUseCase.deleteJob(jobId)
             res.status(response.status).json({ message: response.message })
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -158,7 +164,8 @@ class JobsController {
                 res.status(result.status).json({ message: result.message, saved: result.savedJobsAndPosts })
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -172,7 +179,8 @@ class JobsController {
                 res.status(result.status).json({ message: result.message, isSaved: result.isSaved })
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -186,7 +194,8 @@ class JobsController {
                 res.status(result.status).json({ message: result.message, updatedSavedJobAndPosts: result.updatedSavedJobsAndPosts })
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 

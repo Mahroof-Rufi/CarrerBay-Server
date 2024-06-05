@@ -24,7 +24,8 @@ class AdminController {
                 });
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -37,7 +38,8 @@ class AdminController {
                 res.status(result.status).json({ message:result.message, accessToken:result.accessToken, refreshToken:result.refreshToken, refreshTokenExpired:result.refreshTokenExpired })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -82,7 +84,8 @@ class AdminController {
             const result = await this._adminUseCase.fetchAllUsers(page as number, sort as string, search as string, filter)
             res.status(result.status).json({ message:result.message, users:result.users, totalUsersCount:result.totalUsersCount })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -92,7 +95,8 @@ class AdminController {
             const result = await this._adminUseCase.userAction(userId)
             res.status(result.status).json({ message:result.message, updatedUser:result.updatedUser })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -102,7 +106,8 @@ class AdminController {
             const result = await this._adminUseCase.fetchUserByUserId(user_id as string)
             res.status(result.status).json({ message:result.message, userData:result.userData })
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -147,7 +152,8 @@ class AdminController {
             const result = await this._adminUseCase.fetchAllEmployers(page as number, sort as string, search as string,filter)
             res.status(result.status).json({ message:result.message, employers:result.employers, totalUsersCount:result.totalEmployersCount })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })           
         }
     }
 
@@ -157,7 +163,8 @@ class AdminController {
             const result = await this._adminUseCase.fetchEmployerById(employer_id as string)
             res.status(result.status).json({ message:result.message, employerData:result.employerData })
         } catch (error) {
-            console.error(error)
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -168,7 +175,8 @@ class AdminController {
             const result = await this._adminUseCase.employerAction(employer_id)
             res.status(result.status).json({ message:result.message, updatedEmployer:result.updatedEmployer })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 

@@ -13,7 +13,8 @@ class JobApplicantsController {
             const result = await this._jobApplicantsUseCase.fetchJobApplicants(job_id)
             res.status(result.status).json({ message:result.message,appliedUsers:result.appliedUsers })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -26,7 +27,8 @@ class JobApplicantsController {
                 res.status(result.status).json({ message:result.message, updatedAppliedJobs:result.updatedAppliedJobs })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -38,7 +40,8 @@ class JobApplicantsController {
             const result = await this._jobApplicantsUseCase.updateCandidateStatus(job_id,user_id,newStatus)
             res.status(result.status).json({ message:result.message, updatedData:result.appliedUsers })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -49,7 +52,8 @@ class JobApplicantsController {
             const result = await this._jobApplicantsUseCase.rejectCandidate(job_id,user_id)
             res.status(result.status).json({ message:result.message, updatedData:result.appliedUsers })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -63,7 +67,8 @@ class JobApplicantsController {
                 res.status(result.status).json({ message:result.message,isApplied:result.isApplied })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -76,7 +81,8 @@ class JobApplicantsController {
                 res.status(result.status).json({ message:result.message,appliedJobs:result.appliedJobs })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 }

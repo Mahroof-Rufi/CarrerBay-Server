@@ -14,7 +14,8 @@ class PostsController {
             const result = await this._postsUseCase.fetchPosts(page as string)            
             res.status(result.status).json({ message:result.message, posts:result.posts, totalNoOfPosts:result.totalNoOfPosts })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -26,7 +27,8 @@ class PostsController {
             const result = await this._postsUseCase.triggerPostLike(token as string, employer_id, post_id)  
             res.status(result.status).json({ message:result.message, updatedPost:result.posts })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -51,7 +53,8 @@ class PostsController {
             }
             
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -80,7 +83,8 @@ class PostsController {
                 res.status(result.status).json({ message:result.message,updatedPosts:result.post })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -130,7 +134,8 @@ class PostsController {
                 res.status(result.status).json({ message:result.message,updatedPosts:result.post})
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -143,7 +148,8 @@ class PostsController {
                 res.status(result.status).json({ message:result.message,post_id:postId })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 }

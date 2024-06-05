@@ -14,7 +14,8 @@ class EmployerController {
             const response = await this._employerUseCase.sendOTP(email)
             res.status(response.status).json(response.message)
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -25,7 +26,8 @@ class EmployerController {
             const result = await this._employerUseCase.register(employerData)
             res.status(result.status).json(result.message)
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -54,7 +56,8 @@ class EmployerController {
                     });
             }
         } catch (error) {
-            console.error();
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -67,7 +70,8 @@ class EmployerController {
                 res.status(result.status).json({ message:result.message, accessToken:result.accessToken, refreshToken:result.refreshToken, refreshTokenExpired:result.refreshTokenExpired })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })        
         }
     }
 
@@ -76,7 +80,8 @@ class EmployerController {
             const result = await this._employerUseCase.loadCompanies()
             res.status(result.status).json({ message:result.message, data:result.employers })
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -88,7 +93,8 @@ class EmployerController {
                 res.status(result?.status).json({ message:result.message, employerData:result?.employerData })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -98,7 +104,8 @@ class EmployerController {
             const result = await this._employerUseCase.forgotPasswordSendOTP(email)
             res.status(result.status).json(result.message)
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -108,7 +115,8 @@ class EmployerController {
             const data = await this._employerUseCase.resetPassword(email, OTP, password)
             res.status(data.status).json(data.message)
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -140,7 +148,8 @@ class EmployerController {
                 res.status(data.status).json({ updatedData: data.employerData, message: data.message });
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -150,7 +159,8 @@ class EmployerController {
             const result = await this._employerUseCase.updateEmailWithOTP(email, OTP, newEmail)
             res.status(result.status).json({message:result.message, data:result?.EmployerData})
         } catch (error) {
-            console.error(error); 
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' }) 
         }
     }
 

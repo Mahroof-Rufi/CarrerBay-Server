@@ -18,8 +18,8 @@ class UserController {
             const user = await this._userUseCase.signUp(userData)
             res.status(user.status).json(user.message)
         } catch (error) {
-            console.error(error);
-
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -29,7 +29,8 @@ class UserController {
             const response = await this._userUseCase.sendOTP(email)
             res.status(response.status).json(response.message)                    
         } catch (error) {
-            console.error(error); 
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' }) 
         }
     }
 
@@ -68,7 +69,8 @@ class UserController {
                 res.status(result.status).json({ message:result.message, accessToken:result.accessToken, refreshToken:result.refreshToken, refreshTokenExpired:result.refreshTokenExpired })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -90,7 +92,8 @@ class UserController {
                 });
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -100,7 +103,8 @@ class UserController {
             const user = await this._userUseCase.forgotPasswordSendOTP(email)
             res.status(user.status).json(user.message)
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -110,7 +114,8 @@ class UserController {
             const data = await this._userUseCase.resetPassword(email, OTP, password)
             res.status(data.status).json(data.message)
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -120,7 +125,8 @@ class UserController {
             const result = await this._userUseCase.loadUsers(pageNo as string)
             res.status(result.status).json({ message:result.message, data:result.users })
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -132,7 +138,8 @@ class UserController {
                 res.status(result.status).json({message:result?.message, userData:result?.userData})
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -142,7 +149,8 @@ class UserController {
             const result = await this._userUseCase.fetchUseProfileWithUserId(user_id)
             res.status(result.status).json({message:result?.message, userData:result?.userData})
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -184,7 +192,8 @@ class UserController {
                 res.status(result.status).json({ message:result?.message, users:result?.users, totalNoOfUsers:result.totalNoOfUsers })
             }
         } catch (error) {
-            console.error(error)
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -224,7 +233,8 @@ class UserController {
             const result = await this._userUseCase.fetchEmployersData(page as string, sort as string, search as string, filter)
             res.status(result.status).json({message:result?.message, employers:result?.employers, totalEmployersCount:result.totalEmployersCount})
         } catch (error) {
-            console.error(error)
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
@@ -234,7 +244,8 @@ class UserController {
             const result = await this._userUseCase.fetchEmployerProfileById(employer_id)
             res.status(result?.status).json({ message:result.message, employerData:result?.employerData })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -246,7 +257,8 @@ class UserController {
                 res.status(result.status).json({message:result?.message,})
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -283,7 +295,8 @@ class UserController {
                 res.status(result.status).json({ updatedData:result.userData, message:result.message })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -301,7 +314,8 @@ class UserController {
                 res.status(result.status).json({ message:result.message, updatedData:result.userData });
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -315,7 +329,8 @@ class UserController {
                 res.status(result.status).json({ message: result.message, updatedData:result.userData })
             }           
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -330,7 +345,8 @@ class UserController {
                 res.status(400).json({ message:'Unauthorized user' })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -345,7 +361,8 @@ class UserController {
                 res.status(result.status).json({ updatedData:result.userData, message: result.message })
             }           
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -358,7 +375,8 @@ class UserController {
                 res.status(result.status).json({ message:result.message, updatedData:result.userData })
             }
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -372,7 +390,8 @@ class UserController {
                 res.status(result.status).json({ updatedData:result.userData, message: result.message }) 
             }          
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -382,7 +401,8 @@ class UserController {
             const result = await this._userUseCase.sendOTPToCurrentEmail(currentEmail)
             res.status(result.status).json({ message:result.message })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
@@ -396,7 +416,8 @@ class UserController {
             const result = await this._userUseCase.updateCurrentEmail(currentEmail, currentEmailOTP, newEmail, newEmailOTP)
             res.status(result.status).json({ message:result.message })
         } catch (error) {
-            console.error(error);            
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
         }
     }
 
