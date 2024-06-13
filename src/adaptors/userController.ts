@@ -283,7 +283,7 @@ class UserController {
 
                 if (resume) {
                     console.log('before resume upload')
-                    const resumeUpload = await cloudinary.uploader.upload(resume.path);
+                    const resumeUpload = await cloudinary.uploader.upload(resume.path, { resource_type:'raw' });
                     newData.resume_url = resumeUpload.url;
                     console.log('after resume upload')
                 }

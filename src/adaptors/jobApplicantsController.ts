@@ -1,3 +1,4 @@
+import cloudinary from "../providers/cloudinary";
 import JobApplicantsUseCase from "../use-case/jobApplicantsUseCase";
 import { Request, Response } from "express";
 
@@ -20,10 +21,20 @@ class JobApplicantsController {
 
     async applyJob(req:Request, res:Response) {
         try {
+            const job_id = req.body.job_id;
+            let resume_url;
+            const resume = (req.files as { [fieldname: string]: Express.Multer.File[] })["resume"]?.[0];
+
+            if (resume) {
+                console.log('before resume upload')
+                const resumeUpload = await cloudinary.uploader.upload(resume.path, { resource_type:'raw' });
+                resume_url = resumeUpload.url;
+                console.log('after resume upload')
+            }
+            
             const token = req.header('User-Token');
-            const job_id:string = req.body.jobId
             if (token) {
-                const result = await this._jobApplicantsUseCase.applyJobs(token,job_id)
+                const result = await this._jobApplicantsUseCase.applyJobs(token, job_id, resume_url as string)
                 res.status(result.status).json({ message:result.message, updatedAppliedJobs:result.updatedAppliedJobs })
             }
         } catch (error) {

@@ -3,11 +3,11 @@ import jobApplicantsModel from "../../entities_models/jobApplicantsModel"
 
 class JobApplicantsRepository implements IJobApplicantsRepository {
     
-    async addAppliedUser(job_id: string, user_id: string): Promise<any> {
+    async addAppliedUser(job_id: string, user_id: string, resume_url:string): Promise<any> {
         try {
             const appliedUsers = await jobApplicantsModel.findOneAndUpdate(
                 { job_id:job_id },
-                { $addToSet: { appliedUsers: { user_id: user_id, status: "under-review" } } },
+                { $addToSet: { appliedUsers: { user_id: user_id, resume:resume_url, status: "under-review" } } },
                 { upsert: true, new: true }
             )
             if (appliedUsers) {

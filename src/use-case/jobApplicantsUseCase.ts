@@ -62,9 +62,8 @@ class JobApplicantsUseCase implements IJobApplicantsUseCase{
         } 
     }
 
-    async applyJobs(token:string, jobId:string) {
-        
-        const decodedToken = this._jwt.verifyToken(token,"User")
+    async applyJobs(token:string, jobId:string, resume_url:string) {
+        const decodedToken = this._jwt.verifyToken(token, "User")
         const res = await this._userAppliedJobs.addAppliedJob(decodedToken?.id, jobId)
         if (!res) {
             return {
@@ -72,8 +71,7 @@ class JobApplicantsUseCase implements IJobApplicantsUseCase{
                 message:'User not found'
             }
         } else {
-            const job = await this._jobApplicantsRepository.addAppliedUser(jobId, decodedToken?.id)
-            
+            const job = await this._jobApplicantsRepository.addAppliedUser(jobId, decodedToken?.id, resume_url)
             if (!job) {
                 return {
                     status:404,

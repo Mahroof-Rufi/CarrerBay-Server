@@ -2,10 +2,13 @@ import express from 'express'
 import { jobApplicantsController } from '../../providers/controllers';
 import userAuth from '../../middlewares/userAuth';
 import employerAuth from '../../middlewares/employerAuth';
+import upload from '../../middlewares/multer';
 
 const router = express.Router()
 
-router.route('/apply-job').patch( userAuth, (req, res) => jobApplicantsController.applyJob(req, res))
+const resumeHandler = upload.fields([{name:'resume'}])
+
+router.route('/apply-job').post( userAuth, resumeHandler, (req, res) => jobApplicantsController.applyJob(req, res))
 router.route('/verify-application').post( userAuth, (req, res) => jobApplicantsController.verifyUserApplication(req, res))
 router.route('/applied-jobs').get( userAuth, (req, res) => jobApplicantsController.fetchAppliedJobs(req, res))
 router.route('/applicants')

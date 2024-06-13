@@ -6,6 +6,10 @@ const appliedUsersSchema: Schema = new Schema({
         ref: 'user',
         required: true
     },
+    resume: {
+        type: String,
+        required:true
+    },
     status: {
         type: String,
         required:true
