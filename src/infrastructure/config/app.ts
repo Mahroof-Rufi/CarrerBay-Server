@@ -8,6 +8,7 @@ import adminRouter from '../routes/adminRouter'
 import jobsRouter from '../routes/jobsRouter'
 import postsRouter from '../routes/postsRouter'
 import jobApplicantsRouter from '../routes/jobApplicantsRouter'
+import chatRouter from '../routes/chatRouter'
 
 export const createServer = () => {
 
@@ -27,6 +28,7 @@ export const createServer = () => {
         app.use('/api/jobs', jobsRouter)
         app.use('/api/posts', postsRouter)
         app.use('/api/job-applicants', jobApplicantsRouter)
+        app.use('/api/chat', chatRouter)
 
         return app        
     } catch (error) {
