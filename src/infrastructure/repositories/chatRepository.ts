@@ -26,11 +26,20 @@ class ChatRepository implements IChatRepository {
     }
 
     async getMessagesByUserIdAndReceiverId(user_id: string, receiver_id: string): Promise<Chat[] | null> {
-        const chats = await chatModel.find(
-            { sender: user_id, receiver: receiver_id }
-        )
+        const chats = await chatModel.find({
+          $or: [
+            { sender: user_id, receiver: receiver_id },
+            { sender: receiver_id, receiver: user_id }
+          ]
+        }).sort({ timestamp: 1 });
 
         return chats || null
+    }
+
+    async saveMessage(user_id: string, receiver_id: string, content: string): Promise<Chat> {
+      const message = new chatModel({ sender:user_id, receiver:receiver_id, content:content })
+      await message.save()
+      return message
     }
 
 }

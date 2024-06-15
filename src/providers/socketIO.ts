@@ -12,8 +12,8 @@ const socketServer = new Server(server, {
 });
 
 interface Users {
-    userId: string;
-    socketId:string
+  userId: string;
+  socketId:string
 }
   
   let users:Users[] = []
@@ -44,11 +44,13 @@ interface Users {
       })
     
       socket.on('sendMessage', ({sender,receiver,text,createdAt}) => {
+        console.log(users);
+        
         const receiverData = getUser(receiver)
         const senderData = getUser(sender)
         
-        if(receiverData) socketServer.to(receiverData.socketId).emit('message',{sender,receiver,text,createdAt})
-        if(senderData) socketServer.to(senderData.socketId).emit('message',{sender,receiver,text,createdAt})
+        if(receiverData) socketServer.to(receiverData.socketId).emit('message',{sender,receiver,content:text,createdAt})
+        if(senderData) socketServer.to(senderData.socketId).emit('message',{sender,receiver,content:text,createdAt})
       });
   
       socket.on("end_session",(receiver)=>{

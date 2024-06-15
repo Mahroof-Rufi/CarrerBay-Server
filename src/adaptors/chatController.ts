@@ -23,6 +23,15 @@ class ChatController {
             res.status(result.status).json({ message:result.message, chats:result.chats })
         }
     }
+
+    async saveMessage(req:Request, res:Response) {
+        const token = req.header('User-Token');
+        const { receiver_id, content } = req.body
+        if (token) {
+            const result = await this._chatUseCase.saveMessage(token, receiver_id, content)
+            res.status(result.status).json({ message:result.message })
+        }
+    }
 }
 
 export default ChatController

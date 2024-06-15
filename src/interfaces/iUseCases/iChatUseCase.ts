@@ -5,6 +5,7 @@ interface IChatUseCase {
 
     getConnectedUsers(token:string): Promise<ChatOutput>
     getMessagesByReceiverId(token:string, receiver_id:string): Promise<ChatOutput>
+    saveMessage(token:string, receiver_id:string, content:string): Promise<ChatOutput>
 
 }
 
