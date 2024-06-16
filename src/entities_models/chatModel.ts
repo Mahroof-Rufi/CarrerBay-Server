@@ -14,10 +14,6 @@ const chatSchema: Schema<Chat> = new Schema({
         type: String,
         required: true
     },
-    profileType: {
-        type: String,
-        required: true
-    },
     createdAt : {
         type: Date,
         default: Date.now

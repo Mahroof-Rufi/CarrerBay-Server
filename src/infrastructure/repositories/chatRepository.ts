@@ -15,7 +15,15 @@ class ChatRepository implements IChatRepository {
             { user_id: user_id },
             update,
             { upsert: true, new: true }
-        );
+        )
+        .populate('connections.users')
+        .populate('connections.employers');
+
+        await connectionsModel.findOneAndUpdate(
+          { user_id: connection_id },
+          { $addToSet: { 'connections.users': user_id } },
+          { upsert: true, new: true }
+        )
 
         return connections || null
     }
@@ -39,8 +47,8 @@ class ChatRepository implements IChatRepository {
         return chats || null
     }
 
-    async saveMessage(user_id: string, receiver_id: string, content: string, profileType:string): Promise<Chat> {
-      const message = new chatModel({ sender:user_id, receiver:receiver_id, content:content, profileType:profileType })
+    async saveMessage(user_id: string, receiver_id: string, content: string): Promise<Chat> {
+      const message = new chatModel({ sender:user_id, receiver:receiver_id, content:content })
       await message.save()
       return message
     }
