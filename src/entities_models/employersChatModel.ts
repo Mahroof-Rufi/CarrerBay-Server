@@ -1,13 +1,15 @@
 import { Schema, model } from "mongoose";
 import { Chat } from "../interfaces/models/chat";
 
-const chatSchema: Schema<Chat> = new Schema({
+const employersChatSchema: Schema<Chat> = new Schema({
     sender: {
         type: Schema.Types.ObjectId,
+        ref: 'employer',
         required: true
     },
     receiver: {
         type: Schema.Types.ObjectId,
+        ref: 'employer',
         required: true
     },
     content: {
@@ -24,6 +26,6 @@ const chatSchema: Schema<Chat> = new Schema({
     }
 })
 
-const chatModel = model<Chat>('chat', chatSchema);
+const chatModel = model<Chat>('users_chats', usersChatSchema);
 
 export default chatModel

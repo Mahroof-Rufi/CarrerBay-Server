@@ -59,16 +59,7 @@ interface Users {
         if(user){
             socketServer.to(user.socketId).emit("exit_from_chat")
         }
-      })
-  
-      socket.on("call:start",({sender,receiver})=>{      
-        const receiverData = getUser(receiver)
-        if(receiverData){
-            socketServer.to(receiverData.socketId).emit("call:start",sender)
-        }
-        
-      })
-  
+      })  
   
       socket.on('disconnect', () => {
         // console.log('User disconnected');

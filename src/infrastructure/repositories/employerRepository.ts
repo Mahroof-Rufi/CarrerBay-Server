@@ -33,11 +33,7 @@ class EmployerRepository implements IEmployerRepository{
     async findById(id:string): Promise<employer | null> {
         try {
             const employerData = await employerModel.findById(id)
-            if (employerData) {
-                return employerData
-            } else {
-                return null
-            }
+            return employerData || null
         } catch (error) {
             console.log(error);
             throw error

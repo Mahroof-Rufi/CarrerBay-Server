@@ -11,6 +11,16 @@ class ChatUseCase implements IChatUseCase {
         private readonly _jwt:Jwt
     ) {}
 
+    async addConnections(token: string, connection_id: string, isUser: boolean): Promise<ChatOutput> {
+        const decodedToken = await this._jwt.verifyToken(token, "User")
+        const connections = await this._chatRepo.addConnection(decodedToken?.id, connection_id, isUser)
+        return {
+            status:200,
+            message:'Connections added successfully',
+            connection: connections
+        }
+    }
+
     async getConnectedUsers(token: string): Promise<ChatOutput> {
         const decodedToken = await this._jwt.verifyToken(token, "User")
         const connectedUsers = await this._chatRepo.getConnectedUsers(decodedToken?.id)
@@ -31,9 +41,9 @@ class ChatUseCase implements IChatUseCase {
         }
     }
 
-    async saveMessage(token: string, receiver_id:string, content:string): Promise<ChatOutput> {
+    async saveMessage(token: string, receiver_id:string, content:string, profileType:string): Promise<ChatOutput> {
         const decodedToken = await this._jwt.verifyToken(token, "User")
-        const message = await this._chatRepo.saveMessage(decodedToken?.id, receiver_id, content)
+        const message = await this._chatRepo.saveMessage(decodedToken?.id, receiver_id, content,profileType)
         if (message) {
             return {
                 status: 200,

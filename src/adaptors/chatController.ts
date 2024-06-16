@@ -7,11 +7,21 @@ class ChatController {
         private readonly _chatUseCase:ChatUseCase
     ) {}
 
+    async addConnection(req:Request, res:Response) {
+        const token = req.header('User-Token');
+        const connection_id = req.body.connection_id
+        const isUser = req.body.isUser
+        if (token) {
+            const result = await this._chatUseCase.addConnections(token, connection_id, isUser)
+            res.status(result.status).json({ message:result.message, connections:result.connection })
+        }
+    }
+
     async getConnectedUsers(req:Request, res:Response) {
         const token = req.header('User-Token');
         if (token) {
             const result = await this._chatUseCase.getConnectedUsers(token)
-            res.status(result.status).json({ message:result.message, connection:result.connection })
+            res.status(result.status).json({ message:result.message, connections:result.connection })
         }
     }
 
@@ -26,9 +36,9 @@ class ChatController {
 
     async saveMessage(req:Request, res:Response) {
         const token = req.header('User-Token');
-        const { receiver_id, content } = req.body
+        const { receiver_id, content, profileType } = req.body
         if (token) {
-            const result = await this._chatUseCase.saveMessage(token, receiver_id, content)
+            const result = await this._chatUseCase.saveMessage(token, receiver_id, content, profileType)
             res.status(result.status).json({ message:result.message })
         }
     }
