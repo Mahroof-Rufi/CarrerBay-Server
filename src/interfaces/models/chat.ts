@@ -1,9 +1,12 @@
 import { Date, Schema } from "mongoose";
+import { interviewDetails } from "./subModels/interviewDetails";
 
 export interface Chat {
     sender: string | Schema.Types.ObjectId,
     receiver: string | Schema.Types.ObjectId,
     content: string,
     profileType: 'Users' | 'Employers',
-    createdAt: Date
+    createdAt: Date,
+    type: 'text' | 'interview',
+    interviewDetails: interviewDetails
 }

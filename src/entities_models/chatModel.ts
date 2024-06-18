@@ -17,6 +17,12 @@ const chatSchema: Schema<Chat> = new Schema({
     createdAt : {
         type: Date,
         default: Date.now
+    },
+    type: { type: String, enum: ['text', 'interview'], default: 'text' },
+    interviewDetails: {
+        interviewDate: { type: Date },
+        interviewTime: String,
+        status: { type: String, enum: ['scheduled', 'completed', 'canceled'] }
     }
 })
 

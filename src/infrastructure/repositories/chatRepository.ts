@@ -6,34 +6,56 @@ import connectionsModel from "../../entities_models/connectionModel";
 
 class ChatRepository implements IChatRepository {
 
-    async addConnection(user_id: string, connection_id: string, isUser: boolean): Promise<any> {      
-      const update = isUser
-            ? { $addToSet: { 'connections.users': connection_id } }
-            : { $addToSet: { 'connections.employers': connection_id } };
+    async addConnection(user_id: string, connection_id: string, isUser?: boolean): Promise<any> {      
+      
+      let update;
 
-        const connections = await connectionsModel.findOneAndUpdate(
-            { user_id: user_id },
-            update,
-            { upsert: true, new: true }
-        )
-        .populate('connections.users')
-        .populate('connections.employers');
+      if (typeof isUser != 'undefined') {        
+        update = isUser
+          ? { $addToSet: { 'connections.users': connection_id } }
+          : { $addToSet: { 'connections.employers': connection_id } };
+      } else {
+        update = { $addToSet: { 'connections.users': connection_id } }
+      }
 
+      const connections = await connectionsModel.findOneAndUpdate(
+          { user_id: user_id },
+          update,
+          { upsert: true, new: true }
+      )
+      .populate('connections.users')
+      .populate('connections.employers');
+
+      if (typeof isUser != 'undefined') {
         await connectionsModel.findOneAndUpdate(
           { user_id: connection_id },
           { $addToSet: { 'connections.users': user_id } },
           { upsert: true, new: true }
         )
-
-        return connections || null
-    }
-
-    async getConnectedUsers(user_id: string): Promise<any> {
-      const connections = await connectionsModel.findOne({ user_id: user_id },{ _id:0,user_id:0 })
-      .populate('connections.users')
-      .populate('connections.employers');
+      } else {
+        await connectionsModel.findOneAndUpdate(
+          { user_id: connection_id },
+          { $addToSet: { 'connections.employers': user_id } },
+          { upsert: true, new: true }
+        )
+      }
 
       return connections || null
+    }
+
+    async getConnectedUsers(user_id: string, context:'User' | 'Employer'): Promise<any> {
+      if (context == 'User') {
+        const connections = await connectionsModel.findOne({ user_id: user_id },{ _id:0,user_id:0 })
+        .populate('connections.users')
+        .populate('connections.employers');
+
+        return connections || null
+      } else if (context == 'Employer') {
+        const connections = await connectionsModel.findOne({ user_id: user_id },{ _id:0,user_id:0 })
+        .populate('connections.users')
+
+        return connections || null
+      }
     }
 
     async getMessagesByUserIdAndReceiverId(user_id: string, receiver_id: string): Promise<Chat[] | null> {

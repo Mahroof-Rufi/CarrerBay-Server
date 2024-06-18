@@ -52,7 +52,7 @@ const jobApplicantsUseCase = new JobApplicantsUseCase(jobApplicantsRepository,ap
 const jobsUseCase = new JobsUseCase(jwt,jobsRepository,savedJobsAndPostsRepository);
 const postsUseCase = new PostsUseCase(jwt,postsRepository);
 const userUseCase = new UserUseCase(userRepository,employerRepository,jwt,OTPGenerator,mailer,userOTPRepository);
-const chatUseCase = new ChatUseCase(chatsRepository,jwt);
+const chatUseCase = new ChatUseCase(chatsRepository,userRepository,jwt);
 
 // Controllers
 export const adminController = new AdminController(adminUseCase);
