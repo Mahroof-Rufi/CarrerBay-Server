@@ -51,7 +51,7 @@ const employerUseCase = new EmployerUseCase(employerRepository,employerOTPReposi
 const jobApplicantsUseCase = new JobApplicantsUseCase(jobApplicantsRepository,appliedJobsRepository,jwt);
 const jobsUseCase = new JobsUseCase(jwt,jobsRepository,savedJobsAndPostsRepository);
 const postsUseCase = new PostsUseCase(jwt,postsRepository);
-const userUseCase = new UserUseCase(userRepository,employerRepository,jwt,OTPGenerator,mailer,userOTPRepository);
+const userUseCase = new UserUseCase(userRepository,employerRepository,chatsRepository,jwt,OTPGenerator,mailer,userOTPRepository);
 const chatUseCase = new ChatUseCase(chatsRepository,userRepository,jwt);
 
 // Controllers

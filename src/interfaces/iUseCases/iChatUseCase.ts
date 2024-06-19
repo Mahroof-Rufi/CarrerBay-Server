@@ -11,7 +11,7 @@ interface IChatUseCase {
     getEmployerConnections(token:string): Promise<ChatOutput>
     fetchUserById(user_id:string): Promise<ChatOutput>
     getEmployerMessagesByReceiverId(token:string, receiver_id:string): Promise<ChatOutput>
-
-}
+    scheduleInterview(token:string, receiver_id:string, date:Date, time:string): Promise<ChatOutput>
+} 
 
 export default IChatUseCase

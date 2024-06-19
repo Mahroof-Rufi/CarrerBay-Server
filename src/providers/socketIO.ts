@@ -43,14 +43,13 @@ interface Users {
         }
       })
     
-      socket.on('sendMessage', ({sender,receiver,text,createdAt}) => {
-        console.log(users);
+      socket.on('sendMessage', ({sender,receiver,text,type,createdAt}) => {
         
         const receiverData = getUser(receiver)
         const senderData = getUser(sender)
         
-        if(receiverData) socketServer.to(receiverData.socketId).emit('message',{sender,receiver,content:text,createdAt})
-        if(senderData) socketServer.to(senderData.socketId).emit('message',{sender,receiver,content:text,createdAt})
+        if(receiverData) socketServer.to(receiverData.socketId).emit('message',{sender,receiver,content:text,type,createdAt})
+        if(senderData) socketServer.to(senderData.socketId).emit('message',{sender,receiver,content:text,type,createdAt})
       });
   
       socket.on("end_session",(receiver)=>{

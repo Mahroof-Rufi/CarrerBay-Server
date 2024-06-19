@@ -64,7 +64,7 @@ class ChatRepository implements IChatRepository {
             { sender: user_id, receiver: receiver_id },
             { sender: receiver_id, receiver: user_id }
           ]
-        }).sort({ timestamp: 1 });
+        }).sort({ timestamp: 1 }).populate('interviewDetails.employer');
 
         return chats || null
     }
@@ -73,6 +73,26 @@ class ChatRepository implements IChatRepository {
       const message = new chatModel({ sender:user_id, receiver:receiver_id, content:content })
       await message.save()
       return message
+    }
+
+    async saveInterviewSchedule(employer_id: string, receiver_id: string, date: Date, time: string): Promise<Chat> {
+      const scheduleData = {
+        employer: employer_id,
+        interviewDate:date,
+        interviewTime:time,
+        status:'scheduled'
+      }
+      const interviewSchedule = new chatModel({ sender:employer_id, receiver:receiver_id, type:'interview', interviewDetails:scheduleData })
+      await interviewSchedule.save()
+      return interviewSchedule
+    }
+    
+    async findScheduledInterviews(user_id: string): Promise<Chat[] | null> {
+      const scheduledInterviews = await chatModel.find(
+        { receiver: user_id, type:'interview' },
+      ).populate('interviewDetails.employer')
+
+      return scheduledInterviews || null
     }
 
 }

@@ -15,6 +15,7 @@ interface IUserUseCase {
     fetchUserDataWithToken(token:string, isSelf:boolean): Promise<UserOutput>
     fetchUsersData(token:string, pageNo:string, sort:string, search:string,filter:any): Promise<UserOutput>
     fetchEmployersData(pageNo:string, sort:string, search:string, filter:any): Promise<UserOutput>
+    getScheduledInterviews(token:string): Promise<UserOutput>
     isUserBlockedOrNot(token:string): Promise<UserOutput>
     loadUsers(pageNo:string): Promise<UserOutput>
     updateUserProfile(newData:EditUser, token:string): Promise<UserOutput>

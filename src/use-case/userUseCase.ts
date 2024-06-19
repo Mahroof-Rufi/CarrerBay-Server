@@ -10,17 +10,19 @@ import SavedJobsAndPostsRepository from "../infrastructure/repositories/savedJob
 import IUserUseCase from "../interfaces/iUseCases/iUserUseCase";
 import { UserOutput } from "../interfaces/models/userOutput";
 import EmployerRepository from "../infrastructure/repositories/employerRepository";
+import ChatRepository from "../infrastructure/repositories/chatRepository";
 
 
 class UserUseCase implements IUserUseCase{
 
     constructor(
-        private _userRepository: userRepository,
-        private _employerRepository: EmployerRepository,
-        private _jwt: Jwt,
-        private _OTPgenerator: GenerateOTP,
-        private _mailer: NodeMailer,
-        private _userOTPRepo:userOTPRepository,
+        private readonly _userRepository: userRepository,
+        private readonly _employerRepository: EmployerRepository,
+        private readonly _chatRepository: ChatRepository,
+        private readonly _jwt: Jwt,
+        private readonly _OTPgenerator: GenerateOTP,
+        private readonly _mailer: NodeMailer,
+        private readonly _userOTPRepo:userOTPRepository,
     ) { }
 
 
@@ -275,6 +277,23 @@ class UserUseCase implements IUserUseCase{
             return {
                 status:400,
                 message:'Employer not found'
+            }
+        }
+    }
+
+    async getScheduledInterviews(token: string): Promise<UserOutput> {
+        const decodedToken = this._jwt.verifyToken(token,"User")
+        const scheduleInterviews = await this._chatRepository.findScheduledInterviews(decodedToken?.id)
+        if (scheduleInterviews) {
+            return {
+                status: 200,
+                message: 'Scheduled Interviews found successfully',
+                scheduledInterviews: scheduleInterviews
+            }
+        } else {
+            return {
+                status: 400,
+                message: 'Scheduled Interviews not found'
             }
         }
     }

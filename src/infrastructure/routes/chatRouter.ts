@@ -16,5 +16,6 @@ router.get('/employer/get-connections', employerAuth, (req, res) => chatControll
 router.get('/employer/get-user', employerAuth, (req, res) => chatController.getUserById(req, res))
 router.get('/employer/get-messages/:receiver_id', employerAuth, (req, res) => chatController.getEmployerMessagesByReceiverId(req, res))
 router.post('/employer/save-message', employerAuth, (req, res) => chatController.saveMessageByEmployer(req, res))
+router.post('/employer/schedule-interview', employerAuth, (req, res) => chatController.scheduleInterview(req, res))
 
 export default router

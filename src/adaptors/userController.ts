@@ -238,6 +238,19 @@ class UserController {
         }
     }
 
+    async getScheduledInterviews(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            if (token) {
+                const result = await this._userUseCase.getScheduledInterviews(token)
+                res.status(result.status).json({ message:result.message, scheduledInterviews:result.scheduledInterviews })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
+        }
+    }
+
     async fetchEmployerProfileById(req:Request, res:Response) {
         try {
             const employer_id = req.body.employer_id

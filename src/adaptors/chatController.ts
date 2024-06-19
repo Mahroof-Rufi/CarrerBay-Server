@@ -84,6 +84,15 @@ class ChatController {
         }
     }
 
+    async scheduleInterview(req:Request, res:Response) {
+        const token = req.header('Employer-Token');
+        const { receiver_id, date, time } = req.body
+        if (token) {
+            const result = await this._chatUseCase.scheduleInterview(token, receiver_id, date, time)
+            res.status(result.status).json({ message:result.message })
+        }
+    }
+
 }
 
 export default ChatController

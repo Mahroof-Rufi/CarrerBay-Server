@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import { Chat } from "../interfaces/models/chat";
 
 const chatSchema: Schema<Chat> = new Schema({
@@ -12,7 +12,6 @@ const chatSchema: Schema<Chat> = new Schema({
     },
     content: {
         type: String,
-        required: true
     },
     createdAt : {
         type: Date,
@@ -20,6 +19,7 @@ const chatSchema: Schema<Chat> = new Schema({
     },
     type: { type: String, enum: ['text', 'interview'], default: 'text' },
     interviewDetails: {
+        employer: { type:mongoose.Types.ObjectId, ref:'employer' },
         interviewDate: { type: Date },
         interviewTime: String,
         status: { type: String, enum: ['scheduled', 'completed', 'canceled'] }

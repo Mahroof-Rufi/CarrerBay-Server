@@ -100,6 +100,22 @@ class ChatUseCase implements IChatUseCase {
         }
     }
 
+    async scheduleInterview(token: string, receiver_id: string, date: Date, time: string): Promise<ChatOutput> {
+        const decodedToken = await this._jwt.verifyToken(token, "Employer")
+        const scheduledInterview = await this._chatRepo.saveInterviewSchedule(decodedToken?.id, receiver_id, date, time)
+        if (scheduledInterview) {
+            return {
+                status:200,
+                message:'Interview scheduled successfully'
+            } 
+        } else {
+            return {
+                status:400,
+                message:'Interview schedule failed'
+            }
+        }
+    }
+
 }
 
 export default ChatUseCase

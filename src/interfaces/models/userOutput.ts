@@ -1,3 +1,4 @@
+import { Chat } from "./chat";
 import Employer from "./employer";
 import { User } from "./user";
 
@@ -11,5 +12,6 @@ export interface UserOutput {
     accessToken?:string,
     refreshToken?:string,
     refreshTokenExpired?:boolean,
-    totalEmployersCount?:number
+    totalEmployersCount?:number,
+    scheduledInterviews?:Chat[]
 }
