@@ -48,9 +48,9 @@ class ChatUseCase implements IChatUseCase {
         }
     }
 
-    async saveMessage(token: string, receiver_id:string, content:string): Promise<ChatOutput> {
+    async saveMessage(token: string, receiver_id:string, content:string, type:string = 'text'): Promise<ChatOutput> {
         const decodedToken = await this._jwt.verifyToken(token, "User")
-        const message = await this._chatRepo.saveMessage(decodedToken?.id, receiver_id, content)
+        const message = await this._chatRepo.saveMessage(decodedToken?.id, receiver_id, content, type)
         if (message) {
             return {
                 status: 200,
@@ -100,9 +100,9 @@ class ChatUseCase implements IChatUseCase {
         }
     }
 
-    async scheduleInterview(token: string, receiver_id: string, date: Date, time: string): Promise<ChatOutput> {
+    async scheduleInterview(token: string, receiver_id: string, date: Date, time: string, message_id?:string): Promise<ChatOutput> {
         const decodedToken = await this._jwt.verifyToken(token, "Employer")
-        const scheduledInterview = await this._chatRepo.saveInterviewSchedule(decodedToken?.id, receiver_id, date, time)
+        const scheduledInterview = await this._chatRepo.saveInterviewSchedule(decodedToken?.id, receiver_id, date, time, message_id)
         if (scheduledInterview) {
             return {
                 status:200,
@@ -112,6 +112,22 @@ class ChatUseCase implements IChatUseCase {
             return {
                 status:400,
                 message:'Interview schedule failed'
+            }
+        }
+    }
+
+    async cancelScheduledInterview(message_id: string): Promise<ChatOutput> {
+        const cancelledInterview = await this._chatRepo.cancelInterview(message_id)
+        if (cancelledInterview) {
+            return {
+                status:200,
+                message:'Interview cancellation successful',
+                chat: cancelledInterview,
+            } 
+        } else {
+            return {
+                status:400,
+                message:'Something went wrong'
             }
         }
     }

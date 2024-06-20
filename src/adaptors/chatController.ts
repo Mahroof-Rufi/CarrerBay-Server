@@ -8,88 +8,150 @@ class ChatController {
     ) {}
 
     async addUserConnection(req:Request, res:Response) {
-        const token = req.header('User-Token');
-        const connection_id = req.body.connection_id
-        const isUser = req.body.isUser
-        if (token) {
-            const result = await this._chatUseCase.addConnections(token, connection_id, isUser)
-            res.status(result.status).json({ message:result.message, connections:result.connection })
+        try {
+            const token = req.header('User-Token');
+            const connection_id = req.body.connection_id
+            const isUser = req.body.isUser
+            if (token) {
+                const result = await this._chatUseCase.addConnections(token, connection_id, isUser)
+                res.status(result.status).json({ message:result.message, connections:result.connection })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' }) 
         }
     }
 
     async getConnectedUsers(req:Request, res:Response) {
-        const token = req.header('User-Token');
-        if (token) {
-            const result = await this._chatUseCase.getConnectedUsers(token)
-            res.status(result.status).json({ message:result.message, connections:result.connection })
+        try {
+            const token = req.header('User-Token');
+            if (token) {
+                const result = await this._chatUseCase.getConnectedUsers(token)
+                res.status(result.status).json({ message:result.message, connections:result.connection })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' }) 
         }
     }
 
     async getUserMessagesByReceiverId(req:Request, res:Response) {
-        const token = req.header('User-Token');
-        const receiver_id = req.params.receiver_id        
-        if (token) {
-            const result = await this._chatUseCase.getUserMessagesByReceiverId(token,receiver_id)
-            res.status(result.status).json({ message:result.message, chats:result.chats })
+        try {
+            const token = req.header('User-Token');
+            const receiver_id = req.params.receiver_id        
+            if (token) {
+                const result = await this._chatUseCase.getUserMessagesByReceiverId(token,receiver_id)
+                res.status(result.status).json({ message:result.message, chats:result.chats })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' }) 
         }
     }
 
     async saveMessageByUser(req:Request, res:Response) {
-        const token = req.header('User-Token');
-        const { receiver_id, content } = req.body
-        if (token) {
-            const result = await this._chatUseCase.saveMessage(token, receiver_id, content)
-            res.status(result.status).json({ message:result.message })
+        try {
+            const token = req.header('User-Token');
+            const { receiver_id, content } = req.body
+            if (token) {
+                const result = await this._chatUseCase.saveMessage(token, receiver_id, content)
+                res.status(result.status).json({ message:result.message })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' }) 
         }
     }
 
     async getEmployerConnections(req:Request, res:Response) {
-        const token = req.header('Employer-Token');
-        if (token) {
-            const result = await this._chatUseCase.getConnectedUsers(token)
-            res.status(result.status).json({ message:result.message, connections:result.connection })
+        try {
+            const token = req.header('Employer-Token');
+            if (token) {
+                const result = await this._chatUseCase.getConnectedUsers(token)
+                res.status(result.status).json({ message:result.message, connections:result.connection })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
     async getUserById(req:Request, res:Response) {
-        const user_id = req.query.user_id
-        const result = await this._chatUseCase.fetchUserById(user_id as string)
-        res.status(result.status).json({ message:result.message, userData:result.user })
+        try {
+            const user_id = req.query.user_id
+            const result = await this._chatUseCase.fetchUserById(user_id as string)
+            res.status(result.status).json({ message:result.message, userData:result.user })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
+        }
     }
 
     async getEmployerMessagesByReceiverId(req:Request, res:Response) {
-        const token = req.header('Employer-Token');
-        const receiver_id = req.params.receiver_id        
-        if (token && receiver_id) {
-            const result = await this._chatUseCase.getEmployerMessagesByReceiverId(token,receiver_id)
-            res.status(result.status).json({ message:result.message, chats:result.chats })
+        try {
+            const token = req.header('Employer-Token');
+            const receiver_id = req.params.receiver_id        
+            if (token && receiver_id) {
+                const result = await this._chatUseCase.getEmployerMessagesByReceiverId(token,receiver_id)
+                res.status(result.status).json({ message:result.message, chats:result.chats })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
     async saveMessageByEmployer(req:Request, res:Response) {
-        const token = req.header('Employer-Token');
-        const { receiver_id, content } = req.body
-        if (token) {
-            const result = await this._chatUseCase.saveMessage(token, receiver_id, content)
-            res.status(result.status).json({ message:result.message })
+        try {
+            const token = req.header('Employer-Token');
+            const { receiver_id, content, type } = req.body
+            
+            if (token) {
+                const result = await this._chatUseCase.saveMessage(token, receiver_id, content, type)
+                res.status(result.status).json({ message:result.message })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
     async addEmployerConnection(req:Request, res:Response) {
-        const token = req.header('Employer-Token');
-        const connection_id = req.body.connection_id
-        if (token) {
-            const result = await this._chatUseCase.addConnections(token, connection_id)
-            res.status(result.status).json({ message:result.message, connections:result.connection })
+        try {
+            const token = req.header('Employer-Token');
+            const connection_id = req.body.connection_id
+            if (token) {
+                const result = await this._chatUseCase.addConnections(token, connection_id)
+                res.status(result.status).json({ message:result.message, connections:result.connection })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 
     async scheduleInterview(req:Request, res:Response) {
-        const token = req.header('Employer-Token');
-        const { receiver_id, date, time } = req.body
-        if (token) {
-            const result = await this._chatUseCase.scheduleInterview(token, receiver_id, date, time)
-            res.status(result.status).json({ message:result.message })
+        try {
+            const token = req.header('Employer-Token');
+            const { receiver_id, date, time, message_id } = req.body
+            if (token) {
+                const result = await this._chatUseCase.scheduleInterview(token, receiver_id, date, time, message_id)
+                res.status(result.status).json({ message:result.message })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
+        }
+    }
+
+    async cancelScheduleInterview(req:Request, res:Response) {
+        try {
+            const message_id = req.body.message_id
+            const result = await this._chatUseCase.cancelScheduledInterview(message_id)
+            res.status(result.status).json({ message:result.message, chat:result.chat })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 

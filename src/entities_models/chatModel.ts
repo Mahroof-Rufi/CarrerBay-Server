@@ -17,7 +17,7 @@ const chatSchema: Schema<Chat> = new Schema({
         type: Date,
         default: Date.now
     },
-    type: { type: String, enum: ['text', 'interview'], default: 'text' },
+    type: { type: String, enum: ['text', 'interview', 'URL'], default: 'text' },
     interviewDetails: {
         employer: { type:mongoose.Types.ObjectId, ref:'employer' },
         interviewDate: { type: Date },
