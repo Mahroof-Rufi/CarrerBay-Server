@@ -43,14 +43,43 @@ interface Users {
         }
       })
     
-      socket.on('sendMessage', ({sender,receiver,text,type,createdAt}) => {
-        
-        const receiverData = getUser(receiver)
-        const senderData = getUser(sender)
-        
-        if(receiverData) socketServer.to(receiverData.socketId).emit('message',{sender,receiver,content:text,type,createdAt})
-        if(senderData) socketServer.to(senderData.socketId).emit('message',{sender,receiver,content:text,type,createdAt})
-      });
+      socket.on('sendMessage', ({ _id = '',sender, receiver, text = '', type, employer,interviewDate, interviewTime, status, createdAt }) => {
+        try {
+            const receiverData = getUser(receiver);
+            const senderData = getUser(sender);
+            
+            const messageData = {
+                _id,
+                sender,
+                receiver,
+                content: text,
+                type,
+                interviewDetails: {
+                    employer: employer,
+                    interviewDate,
+                    interviewTime,
+                    status
+                },
+                createdAt
+            };
+    
+            if (receiverData) {
+                socketServer.to(receiverData.socketId).emit('message', messageData);
+                console.log(`Message sent to receiver: ${receiverData.socketId}`);
+            }
+    
+            if (senderData) {
+                socketServer.to(senderData.socketId).emit('message', messageData);
+                console.log(`Message sent to sender: ${senderData.socketId}`);
+            } else {
+              console.log('kkkk');
+              
+            }
+        } catch (error) {
+            console.error('Error in sendMessage:', error);
+        }
+    });
+    
   
       socket.on("end_session",(receiver)=>{
         const user = getUser(receiver)

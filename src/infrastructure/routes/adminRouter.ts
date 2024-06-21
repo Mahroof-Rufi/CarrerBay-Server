@@ -14,6 +14,10 @@ router.route('/employers')
     .get( adminAuth, (req, res) => adminController.fetchAllEmployers(req, res))
     .patch( adminAuth, (req, res) => adminController.employerAction(req, res))
 
+router.route('/jobs')
+    .get( adminAuth, (req,res) => adminController.fetchAllJobs(req, res))
+    .patch( adminAuth, (req,res) => adminController.jobAction(req, res))
+
 router.route('/employer')
     .get( adminAuth, (req, res) => adminController.fetchEmployerById(req, res))
 

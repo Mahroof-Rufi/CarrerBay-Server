@@ -46,7 +46,7 @@ const savedJobsAndPostsRepository = new SavedJobsAndPostsRepository()
 const chatsRepository = new ChatRepository()
 
 // UseCases
-const adminUseCase = new AdminUseCase(adminRepository,userRepository,employerRepository,jwt);
+const adminUseCase = new AdminUseCase(adminRepository,userRepository,employerRepository,jobsRepository,jwt);
 const employerUseCase = new EmployerUseCase(employerRepository,employerOTPRepository,OTPGenerator,mailer,jwt);
 const jobApplicantsUseCase = new JobApplicantsUseCase(jobApplicantsRepository,appliedJobsRepository,jwt);
 const jobsUseCase = new JobsUseCase(jwt,jobsRepository,savedJobsAndPostsRepository);

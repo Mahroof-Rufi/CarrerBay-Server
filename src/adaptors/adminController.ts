@@ -180,6 +180,64 @@ class AdminController {
         }
     }
 
+    async fetchAllJobs(req:Request, res:Response) {
+        try {
+            const page = req.query.page || 1
+            const sort = req.query.sort
+            const search = req.query.search
+            const queries: { [key: string]: any } = req.query;
+
+            const filter: any = {};
+
+            for (const key in queries) {
+                if (queries.hasOwnProperty(key) && key !== 'page' && key !== 'sort' && key !== 'search') {
+                    const value = queries[key];
+            
+                    if (value.includes(',')) {
+                        const valuesArray = value.split(',');
+            
+                        if (valuesArray.every((v: any) => v === 'true' || v === 'false')) {
+                            filter[key] = { $in: valuesArray.map((v: any) => v === 'true') };
+                        } else {
+                            if (key === 'industry') {
+                                const regexArray = valuesArray.map((v: any) => new RegExp(v, 'i'));
+                                filter.$or = regexArray.map((regex: RegExp) => ({ industry: regex }));
+                            } else {
+                                filter[key] = { $in: valuesArray };
+                            }
+                        }
+                    } else if (value === 'true' || value === 'false') {
+                        filter[key] = value === 'true';
+                    } else if (key === 'industry') {
+                        const regex = new RegExp(value, 'i');
+                        filter[key] = regex;
+                    } else {
+                        filter[key] = value;
+                    }
+                }
+            }                      
+            
+
+            const result = await this._adminUseCase.fetchAllJobs(page as number, sort as string, search as string,filter)
+            res.status(result.status).json({ message:result.message, jobs:result.jobs, totalJobsCount:result.totalJobsCount })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })           
+        }
+    }
+
+    async jobAction(req:Request, res:Response) {
+        try {
+            const job_id = req.body.job_id
+            
+            const result = await this._adminUseCase.jobAction(job_id)
+            res.status(result.status).json({ message:result.message, updatedJob:result.updatedJob })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
+        }
+    }
+
 }
 
 export default AdminController

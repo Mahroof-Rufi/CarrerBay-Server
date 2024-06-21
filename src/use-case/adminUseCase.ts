@@ -1,5 +1,6 @@
 import adminRepository from "../infrastructure/repositories/adminRepository";
 import employerRepository from "../infrastructure/repositories/employerRepository";
+import JobsRepository from "../infrastructure/repositories/jobsRepository";
 import userRepository from "../infrastructure/repositories/userRepository";
 import IAdminUseCase from "../interfaces/iUseCases/iAdminUseCase";
 import { AdminOutput } from "../interfaces/models/adminOutput";
@@ -11,6 +12,7 @@ class AdminUseCase implements IAdminUseCase {
         private readonly _adminRepo:adminRepository,
         private readonly _userRepo:userRepository,
         private readonly _employerRepo:employerRepository,
+        private readonly _jobsRepo:JobsRepository,
         private readonly _jwt:Jwt
         ) {}
 
@@ -145,6 +147,34 @@ class AdminUseCase implements IAdminUseCase {
             status:200,
             message:'Employer action successful',
             updatedEmployer:updatedEmployer
+        }
+    }
+
+    async fetchAllJobs(pageNo:number, sort:string, search:string, filter?:any) {
+        const limit = 10
+        const skip = (pageNo - 1) * limit;
+        const jobs = await this._jobsRepo.fetch8Jobs(skip, limit,sort, search,filter)
+        const totalJobsCount = await this._jobsRepo.FetchJobsCount(filter)
+        return {
+            status:200,
+            message:'Employers found successfully',
+            jobs:jobs,
+            totalJobsCount:totalJobsCount
+        }
+    }
+
+    async jobAction(job_id: string): Promise<AdminOutput> {
+        const updatedJob = await this._jobsRepo.changeStatusById(job_id)
+        if (!updatedJob) {
+            return {
+                status:400,
+                message:'Job not found'
+            }
+        }
+        return {
+            status:200,
+            message:'Job action successful',
+            updatedJob:updatedJob
         }
     }
 

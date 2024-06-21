@@ -1,4 +1,5 @@
 import Employer from "./employer";
+import Job from "./job";
 import { User } from "./user";
 
 export interface AdminOutput {
@@ -11,4 +12,5 @@ export interface AdminOutput {
     updatedUser?: User;
     employers?: Employer[];
     updatedEmployer?: Employer;
+    updatedJob?: Job;
 }

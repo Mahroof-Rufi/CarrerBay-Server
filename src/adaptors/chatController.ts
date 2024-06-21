@@ -52,9 +52,9 @@ class ChatController {
     async saveMessageByUser(req:Request, res:Response) {
         try {
             const token = req.header('User-Token');
-            const { receiver_id, content } = req.body
+            const { receiver_id, content, type } = req.body
             if (token) {
-                const result = await this._chatUseCase.saveMessage(token, receiver_id, content)
+                const result = await this._chatUseCase.saveMessage(token, receiver_id, content, type)
                 res.status(result.status).json({ message:result.message })
             }
         } catch (error) {
@@ -133,9 +133,9 @@ class ChatController {
     async scheduleInterview(req:Request, res:Response) {
         try {
             const token = req.header('Employer-Token');
-            const { receiver_id, date, time, message_id } = req.body
+            const { receiver, date, time, message_id } = req.body
             if (token) {
-                const result = await this._chatUseCase.scheduleInterview(token, receiver_id, date, time, message_id)
+                const result = await this._chatUseCase.scheduleInterview(token, receiver, date, time, message_id)
                 res.status(result.status).json({ message:result.message })
             }
         } catch (error) {

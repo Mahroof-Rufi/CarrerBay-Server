@@ -46,7 +46,7 @@ class JobsUseCase implements IJobsUseCase {
         const decode = this._jwt.verifyToken(token, "Employer");
         const limit = 10;
         const skip = (parseInt(pageNo) - 1) * limit;
-        const jobs = await this._jobRepository.fetch8Jobs(decode?.id, skip, limit, sort, filterQuery);
+        const jobs = await this._jobRepository.fetch8Jobs(skip, limit, sort, '',filterQuery, decode?.id);
         const noOfJobs = await this._jobRepository.fetchEmployerJobsCount(decode?.id, filterQuery);
         return {
             status: 200,
@@ -75,7 +75,6 @@ class JobsUseCase implements IJobsUseCase {
         jobData.company_id = decode?.id
         const currentDate = new Date()
         jobData.postedAt = currentDate
-        jobData.active = true
         const job = await this._jobRepository.insertOneJob(jobData)
         if (job) {
             return {

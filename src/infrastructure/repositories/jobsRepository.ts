@@ -15,7 +15,7 @@ class JobsRepository implements IJobsRepository {
         }
     }
 
-    async fetch8Jobs(company_id: string, skip: number, limit: number, sort?: string, filterQuery?: any): Promise<Job[]> {
+    async fetch8Jobs(skip: number, limit: number, sort?: string, searchValue?:string, filterQuery?: any, company_id?: string): Promise<Job[]> {
         try {
             let sortQuery: { [key: string]: any } | undefined;
 
@@ -25,7 +25,12 @@ class JobsRepository implements IJobsRepository {
                 sortQuery = { _id: 1 };
             }
 
-            filterQuery.company_id = company_id;
+            if (searchValue) {
+                const regex = new RegExp(searchValue, 'i'); 
+                filterQuery = { jobTitle: regex }
+            }
+
+            if (company_id) filterQuery.company_id = company_id;
             
 
             let jobs;
@@ -45,6 +50,16 @@ class JobsRepository implements IJobsRepository {
             throw error
         }
     }
+
+    async FetchJobsCount(filterQuery?: any): Promise<number> {
+        try {
+            const jobs = await jobModel.find(filterQuery)
+            return jobs.length || 0
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+    }
     
 
     async fetchEmployerJobsCount(employer_id: string, filterQuery?:any, searchQuery?:string): Promise<number> {
@@ -54,7 +69,6 @@ class JobsRepository implements IJobsRepository {
                 if (searchQuery) {
                     filterQuery.jobTitle =  new RegExp(searchQuery, 'i');
                 }
-                console.log('filterereeee',filterQuery);
                 
                 const noOfDoc = await jobModel.find(filterQuery).countDocuments()
                 return noOfDoc
@@ -70,7 +84,7 @@ class JobsRepository implements IJobsRepository {
 
     async fetchEmployerJobsById(employer_id: string, skip:number, limit:number): Promise<Job | any> {
         try {
-            const employerJobs = await jobModel.find({ company_id:employer_id, active:true }).populate('company_id').skip(skip).limit(limit)
+            const employerJobs = await jobModel.find({ company_id:employer_id, isActive:true, isClosed:false }).populate('company_id').skip(skip).limit(limit)
             return employerJobs || null
         } catch (error) {
             console.log(error);
@@ -90,7 +104,8 @@ class JobsRepository implements IJobsRepository {
 
     async fetchJobsByUser(skip:number, limit:number, sort?:string, filterQuery?:any): Promise<Job[] | null> {     
         try {
-            filterQuery.active = true
+            filterQuery.isActive = true
+            filterQuery.isClosed = false
             let sortQuery: { [key: string]: any } | undefined;
         
             if (sort === 'newest') {
@@ -114,7 +129,8 @@ class JobsRepository implements IJobsRepository {
 
     async fetchUserJobsCount(filterQuery:any): Promise<number> {        
         try {
-            filterQuery.active = true
+            filterQuery.isActive = true
+            filterQuery.isClosed = false
             const totalNoOfJobs = await jobModel.find(filterQuery).countDocuments()
             return totalNoOfJobs
         } catch (error) {
@@ -125,7 +141,8 @@ class JobsRepository implements IJobsRepository {
 
     async fetchSearchedJobs(skip:number, limit:number, sort:string, filterQuery:any): Promise<Job[] | null> {
         try {
-            filterQuery.active = true
+            filterQuery.isActive = true
+            filterQuery.isClosed = false
             const searchedJobs = jobModel.find(filterQuery).skip(skip).limit(limit).populate('company_id');
             if (searchedJobs) {
                 return searchedJobs
@@ -224,7 +241,7 @@ class JobsRepository implements IJobsRepository {
         try {
             const updatedJob = await jobModel.findOneAndUpdate(
                 { _id:job_id },
-                {  active: false },
+                {  isClosed: true },
                 { new:true }
             )
     
@@ -233,6 +250,21 @@ class JobsRepository implements IJobsRepository {
             } else {
                 return updatedJob
             }
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+    }
+
+    async changeStatusById(job_id: string): Promise<Job | null> {
+        try {
+            const updatedJob = await jobModel.findOneAndUpdate(
+                { _id: job_id },
+                [ { $set: { isActive: { $not: "$isActive" } } } ],
+                { new:true }
+            )           
+            
+            return updatedJob || null
         } catch (error) {
             console.log(error);
             throw error

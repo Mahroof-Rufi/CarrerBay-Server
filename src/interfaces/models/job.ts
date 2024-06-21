@@ -15,7 +15,8 @@ interface Job {
     responsibilities: string[],
     skills: string[],
     qualifications: string[],
-    active: boolean,
+    isClosed: boolean,
+    isActive:boolean,
     postedAt: Date,
     applicants?: string[]
 }

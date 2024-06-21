@@ -62,9 +62,15 @@ const jobSchema = new Schema<Job>({
         type: Date,
         required: true
     },
-    active: {
+    isClosed: {
         type: Boolean,
-        required: true
+        required: true,
+        default: false
+    },
+    isActive: {
+        type: Boolean,
+        required: true,
+        default: true
     },
     applicants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }]
 })
