@@ -4,6 +4,7 @@ import adminAuth from "../../middlewares/adminAuth";
 
 const router = express.Router()
 
+router.route('/dashboard-stats').get( adminAuth, (req, res) => adminController.fetchDashBoardStatistics(req, res))
 router.route('/users')
     .get( adminAuth ,(req, res) => adminController.fetchAllUsers(req, res))
     .patch( adminAuth, (req, res) => adminController.userAction(req, res))

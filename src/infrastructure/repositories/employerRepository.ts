@@ -153,6 +153,45 @@ class EmployerRepository implements IEmployerRepository{
             throw error
         }
     }
+
+    async getEmployersStatistics(startDate: string, endDate: string): Promise<number[]> {
+        try {
+            const pipeline = [
+                {
+                  $match: {
+                    joinedAt: {
+                      $gte: new Date(startDate),
+                      $lte: new Date(endDate)
+                    }
+                  }
+                },
+                {
+                  $group: {
+                    _id: { $month: "$joinedAt" },
+                    count: { $sum: 1 }
+                  }
+                },
+                {
+                  $sort: { _id: 1 as 1 | -1 }
+                }
+              ];
+            
+              const result = await employerModel.aggregate(pipeline).exec();
+
+              const monthlyCountsArray = Array(6).fill(0);
+          
+              result.forEach(item => {
+                const monthIndex = item._id - 1; 
+                monthlyCountsArray[monthIndex] = item.count;
+              });
+              console.log(monthlyCountsArray);
+              
+              return monthlyCountsArray;
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+    }
     
 }
 

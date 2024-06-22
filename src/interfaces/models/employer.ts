@@ -15,6 +15,7 @@ interface Employer {
     X_url?: string,
     about?: string,
     isActive: boolean,
+    joinedAt?: Date 
 }
 
 export default Employer

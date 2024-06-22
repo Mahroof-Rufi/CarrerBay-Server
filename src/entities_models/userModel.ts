@@ -146,6 +146,11 @@ const userSchema: Schema<User> = new Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    joinedAt: {
+        type: Date,
+        required: true,
+        default: Date.now
     }
 })
 

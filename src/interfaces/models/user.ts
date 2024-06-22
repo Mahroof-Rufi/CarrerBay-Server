@@ -25,7 +25,8 @@ export interface User {
     skills?: string[],
     OTP?: number,
     appliedJobs?: string[],
-    isActive:boolean
+    isActive:boolean,
+    joinedAt:Date
 }
 
 export interface G_AuthUser {

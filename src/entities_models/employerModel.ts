@@ -51,6 +51,11 @@ const employerSchema: Schema<employer> = new Schema({
     isActive: {
         type: Boolean,
         default:true
+    },
+    joinedAt: {
+        type: Date,
+        required: true,
+        default: Date.now
     }
 })
 

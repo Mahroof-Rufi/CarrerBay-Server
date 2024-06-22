@@ -13,4 +13,13 @@ export interface AdminOutput {
     employers?: Employer[];
     updatedEmployer?: Employer;
     updatedJob?: Job;
+    userStats?: number[];
+    employerStats?: number[];
+    jobsStats?: number[];
+    appliedJobsStats?: number[];
+    hiringStats?: number[];
+    totalNoOfUsers?: number;
+    totalNoOfEmployers?: number;
+    totalNoOfJobs?: number;
+    totalNoOfAppliedJobs?: number;
 }

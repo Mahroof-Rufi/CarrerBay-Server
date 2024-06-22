@@ -43,6 +43,30 @@ class AdminController {
         }
     }
 
+    async fetchDashBoardStatistics(req:Request, res:Response) {
+        try {
+            const startDate = req.query.startDate
+            const endDate = req.query.endDate
+
+            const result = await this._adminUseCase.getDashboardStatistics(startDate as string ,endDate as string)
+            res.status(result.status).json({
+                message:result.message, 
+                userStats:result.userStats, 
+                employerStats:result.employerStats, 
+                jobStats:result.jobsStats, 
+                jobApplicationStats:result.appliedJobsStats, 
+                hiringStats:result.hiringStats,
+                totalNoOfUsers:result.totalNoOfUsers,
+                totalNoOfEmployers:result.totalNoOfEmployers,
+                totalNoOfJobs:result.totalNoOfJobs,
+                totalNoOfAppliedJobs:result.totalNoOfAppliedJobs
+            })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
+        }
+    }
+
     async fetchAllUsers(req:Request, res:Response) {
         try {
             const page = req.query.page || 1

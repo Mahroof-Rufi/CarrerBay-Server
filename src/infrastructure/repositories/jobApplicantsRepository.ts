@@ -43,22 +43,46 @@ class JobApplicantsRepository implements IJobApplicantsRepository {
 
     async updateCandidateStatus(job_id: string, user_id: string, newStatus: string): Promise<any> {
         try {
+            const updateQuery = { job_id: job_id, 'appliedUsers.user_id': user_id };
+    
+            let updateOperation;
+            if (newStatus === 'hired') {
+                updateOperation = {
+                    $set: {
+                        'appliedUsers.$[elem].status': newStatus,
+                        'appliedUsers.$[elem].hiredAt': new Date()
+                    }
+                };
+            } else {
+                updateOperation = {
+                    $set: {
+                        'appliedUsers.$[elem].status': newStatus
+                    }
+                };
+            }
+    
+            const options = {
+                arrayFilters: [{ 'elem.user_id': user_id }],
+                new: true
+            };
+    
             const updatedJobApplicant = await jobApplicantsModel.findOneAndUpdate(
-                {  job_id: job_id, 'appliedUsers.user_id': user_id  },
-                {  $set: { 'appliedUsers.$.status': newStatus } },
-                {  new: true }
+                updateQuery,
+                updateOperation,
+                options
             ).populate('appliedUsers.user_id');
     
             if (updatedJobApplicant) {
-                return updatedJobApplicant
+                return updatedJobApplicant;
             } else {
-                return null
+                return null;
             }
         } catch (error) {
             console.log(error);
-            throw error
+            throw error;
         }
     }
+    
 
     async rejectCandidateStatus(job_id: string, user_id: string): Promise<any> {
         try {
@@ -93,6 +117,48 @@ class JobApplicantsRepository implements IJobApplicantsRepository {
         } catch (error) {
             console.log(error);
             throw error
+        }
+    }
+
+    async getHiringStatistics(startDate: string, endDate: string): Promise<number[]> {
+        try {
+            const pipeline = [
+                {
+                    $unwind: "$appliedUsers"
+                },
+                {
+                    $match: {
+                        "appliedUsers.status": 'hired',
+                        "appliedUsers.hiredAt": {
+                            $gte: new Date(startDate),
+                            $lte: new Date(endDate)
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: { $month: "$appliedUsers.hiredAt" },
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { _id: 1 as 1 | -1 }
+                }
+            ];
+    
+            const result = await jobApplicantsModel.aggregate(pipeline).exec();
+    
+            const monthlyCountsArray = Array(6).fill(0);
+    
+            result.forEach(item => {
+                const monthIndex = item._id - 1;
+                monthlyCountsArray[monthIndex] = item.count;
+            });
+    
+            return monthlyCountsArray;
+        } catch (error) {
+            console.log(error);
+            throw error;
         }
     }
 

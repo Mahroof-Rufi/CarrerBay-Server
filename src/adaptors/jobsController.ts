@@ -7,6 +7,17 @@ class JobsController {
         private readonly _jobsUseCase: JobsUseCase
     ) { }
 
+    async fetchJobById(req:Request, res:Response) {
+        try {
+            const job_id = req.query.job_id
+            const result = await this._jobsUseCase.fetchJobById(job_id as string)
+            res.status(result.status).json({ message:result.message, job:result.job })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
+        }
+    }
+
     async fetchJobsByUSer(req: Request, res: Response) {
         try {
             const searchQuery = req.query.search
@@ -97,9 +108,9 @@ class JobsController {
                 }
             }
 
-            if (filter.active === undefined) {
-                filter.active = true;
-            }
+            // if (filter.isActive === undefined) {
+            //     filter.isActive = true;
+            // }
 
             if (token) {
                 if (searchQuery && searchQuery != '' && typeof searchQuery == "string") {                    

@@ -5,6 +5,7 @@ import JobApplicantsController from "../adaptors/jobApplicantsController";
 import JobsController from "../adaptors/jobsController";
 import PostsController from "../adaptors/postsController";
 import UserController from "../adaptors/userController";
+import jobApplicantsModel from "../entities_models/jobApplicantsModel";
 import AdminRepository from "../infrastructure/repositories/adminRepository";
 import AppliedJobsRepository from "../infrastructure/repositories/appliedJobsRepository";
 import ChatRepository from "../infrastructure/repositories/chatRepository";
@@ -46,7 +47,7 @@ const savedJobsAndPostsRepository = new SavedJobsAndPostsRepository()
 const chatsRepository = new ChatRepository()
 
 // UseCases
-const adminUseCase = new AdminUseCase(adminRepository,userRepository,employerRepository,jobsRepository,jwt);
+const adminUseCase = new AdminUseCase(adminRepository,userRepository,employerRepository,jobsRepository,appliedJobsRepository,jobApplicantsRepository,jwt);
 const employerUseCase = new EmployerUseCase(employerRepository,employerOTPRepository,OTPGenerator,mailer,jwt);
 const jobApplicantsUseCase = new JobApplicantsUseCase(jobApplicantsRepository,appliedJobsRepository,jwt);
 const jobsUseCase = new JobsUseCase(jwt,jobsRepository,savedJobsAndPostsRepository);

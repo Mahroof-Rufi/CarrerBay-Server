@@ -27,6 +27,15 @@ class JobsUseCase implements IJobsUseCase {
         }
     }
 
+    async fetchJobById(job_id: string): Promise<JobsOutput> {
+        const job = await this._jobRepository.fetchJobById(job_id)
+        return {
+            status: 200,
+            message: 'Job found successfully',
+            job: job,
+        }
+    }
+
     async fetchJobsByEmployerID(employer_id: string, pageNo:string): Promise<JobsOutput> {
         const limit =  6
         const skip = (parseInt(pageNo) - 1) * limit

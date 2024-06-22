@@ -2,10 +2,15 @@ import express from "express";
 import { jobsController } from "../../providers/controllers";
 import employerAuth from "../../middlewares/employerAuth";
 import userAuth from "../../middlewares/userAuth";
+import adminAuth from "../../middlewares/adminAuth";
 
 const router = express.Router()
 
+// ADMIN JOBS ROUTES
+router.route('/admin-job').get( adminAuth, (req, res) => jobsController.fetchJobById(req, res))
+
 // USERS JOBS ROUTES
+router.route('/job').get( userAuth, (req, res) => jobsController.fetchJobById(req, res))
 router.route('/jobs').get( userAuth, (req, res) => jobsController.fetchJobsByUSer(req, res))
 router.route('/user-employer-jobs').get( userAuth, (req, res) => jobsController.fetchJobsByEmployerId(req, res))
 router.route('/save-job').post( userAuth, (req, res) => jobsController.saveJob(req, res));
@@ -15,6 +20,7 @@ router.route('/saved-jobs').get( userAuth, (req, res) => jobsController.loadSave
 
 
 // EMPLOYER JOBS ROUTES
+router.route('/employer-job').get( employerAuth, (req, res) => jobsController.fetchJobById(req, res))
 router.route('/employer-jobs')
     .get( employerAuth, (req, res) => jobsController.fetchJobsByEmployer(req, res))
     .post( employerAuth, (req, res) => jobsController.postNewJob(req, res))

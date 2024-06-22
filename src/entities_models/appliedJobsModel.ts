@@ -13,6 +13,11 @@ const appliedJobSchema: Schema = new Schema({
         type: Boolean,
         required:true,
         default: false
+    },
+    appliedAt: {
+        type: Date,
+        required: true,
+        default: Date.now
     }
 })
 

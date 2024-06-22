@@ -1,5 +1,8 @@
+import jobApplicantsModel from "../entities_models/jobApplicantsModel";
 import adminRepository from "../infrastructure/repositories/adminRepository";
+import AppliedJobsRepository from "../infrastructure/repositories/appliedJobsRepository";
 import employerRepository from "../infrastructure/repositories/employerRepository";
+import JobApplicantsRepository from "../infrastructure/repositories/jobApplicantsRepository";
 import JobsRepository from "../infrastructure/repositories/jobsRepository";
 import userRepository from "../infrastructure/repositories/userRepository";
 import IAdminUseCase from "../interfaces/iUseCases/iAdminUseCase";
@@ -13,6 +16,8 @@ class AdminUseCase implements IAdminUseCase {
         private readonly _userRepo:userRepository,
         private readonly _employerRepo:employerRepository,
         private readonly _jobsRepo:JobsRepository,
+        private readonly _appliedJobsRepo:AppliedJobsRepository,
+        private readonly _jobApplications:JobApplicantsRepository,
         private readonly _jwt:Jwt
         ) {}
 
@@ -61,6 +66,33 @@ class AdminUseCase implements IAdminUseCase {
         }
     }
 
+    async getDashboardStatistics(startDate: string, endDate: string): Promise<AdminOutput> {
+        const userStats = await this._userRepo.getUsersStatistics(startDate ,endDate)
+        const employerStats = await this._employerRepo.getEmployersStatistics(startDate, endDate)
+        const jobStats = await this._jobsRepo.getJobsStatistics(startDate, endDate)
+        const jobApplicationStats = await this._appliedJobsRepo.getAppliedJobsStatistics(startDate, endDate)
+        const hiringStats = await this._jobApplications.getHiringStatistics(startDate, endDate)
+
+        const totalNoOfUsers = await this._userRepo.fetchUsersCount()
+        const totalNoOfEmployers = await this._employerRepo.FetchEmployersCount()
+        const totalNoOfJobs = await this._jobsRepo.FetchJobsCount({ isActive:true, isClosed:false })
+        const totalNoOfAppliedJobs = await this._appliedJobsRepo.getTotalAppliedJobsCount()
+
+        return {
+            status:200,
+            message:'Dashboard statistics found successful',
+            userStats:userStats,
+            employerStats:employerStats,
+            jobsStats:jobStats,
+            appliedJobsStats:jobApplicationStats,
+            hiringStats:hiringStats,
+            totalNoOfUsers:totalNoOfUsers,
+            totalNoOfEmployers:totalNoOfEmployers,
+            totalNoOfJobs:totalNoOfJobs,
+            totalNoOfAppliedJobs:totalNoOfAppliedJobs
+        }
+    }
+
     async fetchAllUsers(pageNo:number, sort:string, search:string, filter:any) {
         const limit = 10
         const skip = (pageNo - 1) * limit;
@@ -104,7 +136,7 @@ class AdminUseCase implements IAdminUseCase {
                 message:'User not found'
             }
         }
-    }
+    }  
 
     async fetchAllEmployers(pageNo:number, sort:string, search:string, filter?:any) {
         const limit = 10

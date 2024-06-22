@@ -78,6 +78,61 @@ class AppliedJobsRepository implements IAppliedJobsRepository {
         }
     }
 
+    async getAppliedJobsStatistics(startDate: string, endDate: string): Promise<number[]> {
+        try {
+            const pipeline = [
+              {
+                $unwind: "$appliedJobs"
+              },
+              {
+                $match: {
+                  "appliedJobs.appliedAt": {
+                    $gte: new Date(startDate),
+                    $lte: new Date(endDate)
+                  }
+                }
+              },
+              {
+                $group: {
+                  _id: { $month: "$appliedJobs.appliedAt" },
+                  count: { $sum: 1 }
+                }
+              },
+              {
+                $sort: { _id: 1 as 1 | -1 }
+              }
+            ];
+        
+            const result = await appliedJobsModel.aggregate(pipeline)
+        
+            const monthlyCountsArray = Array(6).fill(0);
+        
+            result.forEach(item => {
+              const monthIndex = item._id - 1; 
+              monthlyCountsArray[monthIndex] = item.count;
+            });
+        
+            return monthlyCountsArray;
+          } catch (error) {
+            console.log("Error:", error);
+            throw error;
+          }
+    }
+
+    async getTotalAppliedJobsCount(): Promise<number> {
+        try {
+            const result = await appliedJobsModel.aggregate([
+              { $unwind: "$appliedJobs" },  
+              { $count: "totalAppliedJobs" }  
+            ]);
+        
+            return result[0]?.totalAppliedJobs || 0; 
+          } catch (error) {
+            console.error("Error fetching total applied jobs count:", error);
+            throw error;
+          }
+    }
+
 }
 
 export default AppliedJobsRepository

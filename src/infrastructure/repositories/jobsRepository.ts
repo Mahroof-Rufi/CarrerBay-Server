@@ -38,7 +38,7 @@ class JobsRepository implements IJobsRepository {
                 jobs = await jobModel.find(filterQuery).skip(skip).limit(limit).sort(sortQuery);
             } else {
                 jobs = await jobModel.find(filterQuery).skip(skip).limit(limit);
-            }
+            }          
 
             if (jobs) {
                 return jobs;
@@ -49,6 +49,14 @@ class JobsRepository implements IJobsRepository {
             console.log(error);
             throw error
         }
+    }
+
+    async fetchJobById(job_id: string): Promise<Job | null> {
+        const job = await jobModel.findOne(
+            { _id:job_id }
+        ).populate('company_id')
+
+        return job || null
     }
 
     async FetchJobsCount(filterQuery?: any): Promise<number> {
@@ -265,6 +273,44 @@ class JobsRepository implements IJobsRepository {
             )           
             
             return updatedJob || null
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+    }
+
+    async getJobsStatistics(startDate: string, endDate: string): Promise<number[]> {
+        try {
+            const pipeline = [
+                {
+                  $match: {
+                    postedAt: {
+                      $gte: new Date(startDate),
+                      $lte: new Date(endDate)
+                    }
+                  }
+                },
+                {
+                  $group: {
+                    _id: { $month: "$postedAt" },
+                    count: { $sum: 1 }
+                  }
+                },
+                {
+                  $sort: { _id: 1 as 1 | -1 }
+                }
+              ];
+            
+              const result = await jobModel.aggregate(pipeline).exec();
+
+              const monthlyCountsArray = Array(6).fill(0);
+          
+              result.forEach(item => {
+                const monthIndex = item._id - 1; 
+                monthlyCountsArray[monthIndex] = item.count;
+              });
+              
+              return monthlyCountsArray;
         } catch (error) {
             console.log(error);
             throw error

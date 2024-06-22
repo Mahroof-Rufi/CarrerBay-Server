@@ -18,6 +18,9 @@ const appliedUsersSchema: Schema = new Schema({
         type: Boolean,
         required:true,
         default: false
+    },
+    hiredAt: {
+        type: Date
     }
 })
 
