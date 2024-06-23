@@ -108,7 +108,7 @@ class ChatController {
             
             if (token) {
                 const result = await this._chatUseCase.saveMessage(token, receiver_id, content, type)
-                res.status(result.status).json({ message:result.message })
+                res.status(result.status).json({ message:result.message, messageId:result.chat?._id })
             }
         } catch (error) {
             console.log(error);

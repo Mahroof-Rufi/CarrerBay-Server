@@ -20,5 +20,6 @@ router.route('/employer/save-message').post( employerAuth, (req, res) => chatCon
 router.route('/employer/schedule-interview')
     .post( employerAuth, (req, res) => chatController.scheduleInterview(req, res))
     .patch( employerAuth, (req, res) => chatController.cancelScheduleInterview(req, res))
+router.route('/employer/delete-message/:messageId').delete( employerAuth, (req, res) => chatController.deleteMessageById(req, res))
 
 export default router
