@@ -39,7 +39,7 @@ interface Users {
       socket.on("chat:started",({to})=>{
         const user = getUser(to)
         if(user){
-            socketServer.to(user.socketId).emit("chat:started")
+          socketServer.to(user.socketId).emit("chat:started")
         }
       })
     
@@ -79,6 +79,18 @@ interface Users {
             console.error('Error in sendMessage:', error);
         }
     });
+
+    socket.on('delete-message', ({ deletedMessageId , receiverId }) => {
+      try {          
+          const receiverData = getUser(receiverId);
+  
+          if (receiverData) {
+              socketServer.to(receiverData.socketId).emit('deleted-message', deletedMessageId);
+          }
+      } catch (error) {
+          console.error('Error in sendMessage:', error);
+      }
+  });
     
   
       socket.on("end_session",(receiver)=>{

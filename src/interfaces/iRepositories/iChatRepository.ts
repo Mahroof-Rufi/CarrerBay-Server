@@ -9,6 +9,7 @@ interface IChatRepository {
     saveInterviewSchedule(employer_id:string, receiver_id:string, date:Date, time:string, message_id?:string): Promise<Chat | null>
     findScheduledInterviews(user_id:string): Promise<Chat[] | null>
     cancelInterview(message_id:string): Promise<Chat | null>
+    deleteMessageById(messageId:string): Promise<Chat | null>
 
 }
 

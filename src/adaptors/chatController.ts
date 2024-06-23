@@ -55,7 +55,7 @@ class ChatController {
             const { receiver_id, content, type } = req.body
             if (token) {
                 const result = await this._chatUseCase.saveMessage(token, receiver_id, content, type)
-                res.status(result.status).json({ message:result.message })
+                res.status(result.status).json({ message:result.message, messageId:result.chat?._id })
             }
         } catch (error) {
             console.log(error);
@@ -149,6 +149,17 @@ class ChatController {
             const message_id = req.body.message_id
             const result = await this._chatUseCase.cancelScheduledInterview(message_id)
             res.status(result.status).json({ message:result.message, chat:result.chat })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
+        }
+    }
+
+    async deleteMessageById(req:Request, res:Response) {
+        try {
+            const message_id = req.params.messageId
+            const result = await this._chatUseCase.deleteMessageById(message_id)
+            res.status(result.status).json({ message:result.message, deletedMessage:result.chat })
         } catch (error) {
             console.log(error);
             res.status(500).json({ message:'Something went wrong' })

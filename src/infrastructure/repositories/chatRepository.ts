@@ -153,6 +153,19 @@ class ChatRepository implements IChatRepository {
       }
     }
 
+    async deleteMessageById(messageId: string): Promise<Chat | null> {
+      try {
+        const deletedMessage = await chatModel.findOneAndDelete(
+          { _id:messageId },
+        )
+  
+        return deletedMessage || null
+      } catch (error) {
+        console.log(error);
+        throw error
+      }
+    }
+
 }
 
 export default ChatRepository

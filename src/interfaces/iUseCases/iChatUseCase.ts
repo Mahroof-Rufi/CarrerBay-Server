@@ -8,6 +8,8 @@ interface IChatUseCase {
     getUserMessagesByReceiverId(token:string, receiver_id:string): Promise<ChatOutput>
     saveMessage(token:string, receiver_id:string, content:string, type:string): Promise<ChatOutput>
 
+    deleteMessageById(messageId:string): Promise<ChatOutput>
+
     getEmployerConnections(token:string): Promise<ChatOutput>
     fetchUserById(user_id:string): Promise<ChatOutput>
     getEmployerMessagesByReceiverId(token:string, receiver_id:string): Promise<ChatOutput>

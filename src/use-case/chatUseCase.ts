@@ -55,6 +55,7 @@ class ChatUseCase implements IChatUseCase {
             return {
                 status: 200,
                 message: 'message saved successfully',
+                chat: message
             }
         } else {
             return {
@@ -128,6 +129,22 @@ class ChatUseCase implements IChatUseCase {
             return {
                 status:400,
                 message:'Something went wrong'
+            }
+        }
+    }
+
+    async deleteMessageById(messageId: string): Promise<ChatOutput> {
+        const deletedMessage = await this._chatRepo.deleteMessageById(messageId)
+        if (deletedMessage) {
+            return {
+                status:200,
+                message:'Delete message successfully',
+                chat: deletedMessage,
+            } 
+        } else {
+            return {
+                status:400,
+                message:'Message not found'
             }
         }
     }
