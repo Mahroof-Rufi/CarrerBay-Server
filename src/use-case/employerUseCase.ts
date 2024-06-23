@@ -75,10 +75,15 @@ class EmployerUseCase implements IEmployerUseCase{
                     status: 400,
                     message: 'Invalid credentials'
                 }
+            } else if (!employerData.isVerified) {
+                return {
+                    status:400,
+                    message: 'Your account is not yet verified by Admin'
+                }
             } else if (!employerData.isActive) {
                 return {
                     status:400,
-                    message: 'This account blocked by Admin'
+                    message: 'Your account blocked by Admin'
                 }
             }
             

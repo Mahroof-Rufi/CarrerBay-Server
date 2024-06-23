@@ -39,7 +39,7 @@ class PostsUseCase implements IPostsUseCase{
         const skip = (parseInt(pageNo) - 1) * limit
         const post = await this._postsRepository.fetchPostsById(decode?.id, skip, limit, sort as string)
         const noOfPost = await this._postsRepository.fetchTotalNoOfEmployerPosts(decode?.id)
-        if (post ) {
+        if (post) {
             return {
                 status: 200,
                 message:'Posts found successfully',
@@ -48,7 +48,7 @@ class PostsUseCase implements IPostsUseCase{
             }
         }
         return {
-            status: 400,
+            status: 200,
             message: 'Posts not found'
         }
     }

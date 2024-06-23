@@ -204,6 +204,18 @@ class AdminController {
         }
     }
 
+    async verifyEmployer(req:Request, res:Response) {
+        try {
+            const employer_id = req.body.employer_id
+            
+            const result = await this._adminUseCase.verifyEmployer(employer_id)
+            res.status(result.status).json({ message:result.message, verifiedEmployerId:result.employer?._id })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
+        }
+    }
+
     async fetchAllJobs(req:Request, res:Response) {
         try {
             const page = req.query.page || 1

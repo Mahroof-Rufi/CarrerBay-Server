@@ -10,6 +10,7 @@ export interface AdminOutput {
     refreshTokenExpired?:boolean;
     users?: User[];
     updatedUser?: User;
+    employer?: Employer;
     employers?: Employer[];
     updatedEmployer?: Employer;
     updatedJob?: Job;

@@ -12,6 +12,7 @@ interface IEmployerRepository {
     getEmployersStatistics(startDate:string, endDate:string): Promise<number[]>
     FetchEmployersCount(filterQuery?:any): Promise<number>
     changeStatusById(employer_id:string):Promise<employer | null>
+    verifyAccountById(employer_id:string): Promise<employer | null>
 }
 
 export default IEmployerRepository

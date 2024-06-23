@@ -14,6 +14,8 @@ interface Employer {
     instagram_url?: string,
     X_url?: string,
     about?: string,
+    verificationDocument?: string,
+    isVerified: boolean,
     isActive: boolean,
     joinedAt?: Date 
 }

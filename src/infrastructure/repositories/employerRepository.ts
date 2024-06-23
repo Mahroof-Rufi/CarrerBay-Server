@@ -105,6 +105,12 @@ class EmployerRepository implements IEmployerRepository{
                 sortQuery = { companyName: -1 }
             }
 
+            if (typeof filterQuery.isVerified == "undefined") {
+                console.log(' inside if');
+                
+                filterQuery.isVerified = true
+            }
+
             if (search) {
                 const regex = new RegExp(search, 'i'); 
                 filterQuery.$or = [
@@ -148,6 +154,21 @@ class EmployerRepository implements IEmployerRepository{
             } else {
                 return null
             }
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+    }
+
+    async verifyAccountById(employer_id: string): Promise<employer | null> {
+        try {
+            const updatedEmployer = await employerModel.findOneAndUpdate(
+                { _id: employer_id },
+                { isVerified: true },
+                { new:true }
+            )
+            
+            return updatedEmployer || null
         } catch (error) {
             console.log(error);
             throw error

@@ -182,6 +182,21 @@ class AdminUseCase implements IAdminUseCase {
         }
     }
 
+    async verifyEmployer(employer_id: string): Promise<AdminOutput> {
+        const verifiedEmployer = await this._employerRepo.verifyAccountById(employer_id)
+        if (!verifiedEmployer) {
+            return {
+                status:400,
+                message:'Employer not found'
+            }
+        }
+        return {
+            status:200,
+            message:'Employer action successful',
+            employer:verifiedEmployer
+        }
+    }
+
     async fetchAllJobs(pageNo:number, sort:string, search:string, filter?:any) {
         const limit = 10
         const skip = (pageNo - 1) * limit;

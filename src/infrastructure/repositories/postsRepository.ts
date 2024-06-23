@@ -28,11 +28,8 @@ class PostsRepository implements IPostsRepository {
                 }}
             ]);        
 
-            if (posts) {
-                return posts[0].posts
-            } else {
-                return null
-            }
+            
+            return posts[0]?.posts || null
         } catch (error) {
             console.log(error);
             throw error

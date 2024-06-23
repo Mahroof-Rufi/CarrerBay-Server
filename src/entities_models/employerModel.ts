@@ -48,6 +48,14 @@ const employerSchema: Schema<employer> = new Schema({
     about: {
         type: String
     },
+    verificationDocument: {
+        type: String,
+    },
+    isVerified: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     isActive: {
         type: Boolean,
         default:true

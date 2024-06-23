@@ -14,6 +14,7 @@ router.route('/user').get( adminAuth, (req, res) => adminController.fetchUserByI
 router.route('/employers')
     .get( adminAuth, (req, res) => adminController.fetchAllEmployers(req, res))
     .patch( adminAuth, (req, res) => adminController.employerAction(req, res))
+router.route('/verify-employer').patch( adminAuth, (req, res) => adminController.verifyEmployer(req,res))
 
 router.route('/jobs')
     .get( adminAuth, (req,res) => adminController.fetchAllJobs(req, res))

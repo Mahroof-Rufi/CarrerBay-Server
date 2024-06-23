@@ -21,7 +21,17 @@ class EmployerController {
 
     async register(req: Request, res: Response) {
         try {
-            const employerData = req.body            
+            const employerData = req.body 
+            console.log(employerData);
+            
+            console.log(req.file);
+
+            if (req.file) {
+                const resumeUpload = await cloudinary.uploader.upload(req.file.path, { resource_type:'raw' });
+                console.log(resumeUpload.url);
+                employerData.verificationDocument = resumeUpload.url
+            }
+                       
             
             const result = await this._employerUseCase.register(employerData)
             res.status(result.status).json(result.message)

@@ -10,6 +10,7 @@ interface IAdminUseCase {
     fetchUserByUserId(user_id:string): Promise<AdminOutput>
     fetchAllEmployers(pageNo:number, sort:string, filter?:any): Promise<AdminOutput>
     employerAction(employer_id:string): Promise<AdminOutput>
+    verifyEmployer(employer_id:string): Promise<AdminOutput>
     fetchAllJobs(pageNo:number, sort:string, search:string, filter?:any): Promise<AdminOutput>
     jobAction(job_id:string): Promise<AdminOutput>
 }
