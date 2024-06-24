@@ -83,9 +83,10 @@ class ChatRepository implements IChatRepository {
       }
     }
 
-    async saveMessage(user_id: string, receiver_id: string, content: string, type:string): Promise<Chat> {
+    async saveMessage(user_id: string, messageData:Chat): Promise<Chat> {
       try {
-        const message = new chatModel({ sender:user_id, receiver:receiver_id, content:content, type:type })
+        messageData.sender = user_id
+        const message = new chatModel(messageData)
         await message.save()
         return message
       } catch (error) {

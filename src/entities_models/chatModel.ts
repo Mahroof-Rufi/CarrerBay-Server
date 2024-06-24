@@ -10,6 +10,11 @@ const chatSchema: Schema<Chat> = new Schema({
         type: Schema.Types.ObjectId,
         required: true
     },
+    isMediaFile: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     content: {
         type: String,
     },
@@ -17,7 +22,7 @@ const chatSchema: Schema<Chat> = new Schema({
         type: Date,
         default: Date.now
     },
-    type: { type: String, enum: ['text', 'interview', 'URL'], default: 'text' },
+    type: { type: String, enum: ['text', 'video', 'image', 'raw', 'interview', 'URL'], default: 'text' },
     interviewDetails: {
         employer: { type:mongoose.Types.ObjectId, ref:'employer' },
         interviewDate: { type: Date },

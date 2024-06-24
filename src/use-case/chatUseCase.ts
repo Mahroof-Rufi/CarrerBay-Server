@@ -48,9 +48,26 @@ class ChatUseCase implements IChatUseCase {
         }
     }
 
-    async saveMessage(token: string, receiver_id:string, content:string, type:string = 'text'): Promise<ChatOutput> {
+    async saveMessageByUser(token: string, messageData:Chat): Promise<ChatOutput> {
         const decodedToken = await this._jwt.verifyToken(token, "User")
-        const message = await this._chatRepo.saveMessage(decodedToken?.id, receiver_id, content, type)
+        const message = await this._chatRepo.saveMessage(decodedToken?.id, messageData)
+        if (message) {
+            return {
+                status: 200,
+                message: 'message saved successfully',
+                chat: message
+            }
+        } else {
+            return {
+                status: 400,
+                message: 'something went wrong',
+            }
+        }
+    }
+
+    async saveMessageByEmployer(token: string, messageData:Chat): Promise<ChatOutput> {
+        const decodedToken = await this._jwt.verifyToken(token, "Employer")
+        const message = await this._chatRepo.saveMessage(decodedToken?.id, messageData)
         if (message) {
             return {
                 status: 200,

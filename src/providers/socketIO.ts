@@ -43,7 +43,7 @@ interface Users {
         }
       })
     
-      socket.on('sendMessage', ({ _id = '',sender, receiver, text = '', type, employer,interviewDate, interviewTime, status, createdAt }) => {
+      socket.on('sendMessage', ({ _id = '',sender, receiver, text = '', type, isMediaFile, createdAt, employer,interviewDate, interviewTime, status }) => {
         try {
             const receiverData = getUser(receiver);
             const senderData = getUser(sender);
@@ -52,6 +52,7 @@ interface Users {
                 _id,
                 sender,
                 receiver,
+                isMediaFile,
                 content: text,
                 type,
                 interviewDetails: {

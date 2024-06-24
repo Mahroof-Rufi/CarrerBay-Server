@@ -1,3 +1,4 @@
+import cloudinary from "../providers/cloudinary";
 import ChatUseCase from "../use-case/chatUseCase";
 import { Request, Response } from "express";
 
@@ -52,10 +53,41 @@ class ChatController {
     async saveMessageByUser(req:Request, res:Response) {
         try {
             const token = req.header('User-Token');
-            const { receiver_id, content, type } = req.body
+            const messageData = req.body
+            if (typeof messageData.type == 'undefined') messageData.type = 'text'
             if (token) {
-                const result = await this._chatUseCase.saveMessage(token, receiver_id, content, type)
+                const result = await this._chatUseCase.saveMessageByUser(token, messageData)
                 res.status(result.status).json({ message:result.message, messageId:result.chat?._id })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' }) 
+        }
+    }
+
+    async saveMediaFileByUser(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            
+            const messageData = req.body
+
+            if (req.file) {
+                const mediaFileUpload = await cloudinary.uploader.upload(req.file.path, { resource_type:'auto' });
+                messageData.isMediaFile = true
+
+                const { resource_type, format, mime_type, url } = mediaFileUpload;
+                if (resource_type === 'raw' || format == 'pdf') {
+                    messageData.type = 'raw';
+                } else {
+                    messageData.type = mediaFileUpload.resource_type;
+                }
+
+                messageData.content = mediaFileUpload.url
+            }
+            
+            if (token) {
+                const result = await this._chatUseCase.saveMessageByUser(token, messageData)
+                res.status(result.status).json({ message:result.message, mediaFileMessage:result.chat })
             }
         } catch (error) {
             console.log(error);
@@ -104,11 +136,41 @@ class ChatController {
     async saveMessageByEmployer(req:Request, res:Response) {
         try {
             const token = req.header('Employer-Token');
-            const { receiver_id, content, type } = req.body
+            const messageData = req.body
+            if (typeof messageData.type == 'undefined') messageData.type = 'text'
             
             if (token) {
-                const result = await this._chatUseCase.saveMessage(token, receiver_id, content, type)
+                const result = await this._chatUseCase.saveMessageByEmployer(token, messageData)
                 res.status(result.status).json({ message:result.message, messageId:result.chat?._id })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
+        }
+    }
+
+    async saveMediaFileByEmployer(req:Request, res:Response) {
+        try {
+            const token = req.header('Employer-Token');
+            const messageData = req.body
+
+            if (req.file) {
+                const mediaFileUpload = await cloudinary.uploader.upload(req.file.path, { resource_type:'auto' });
+                messageData.isMediaFile = true
+
+                const { resource_type, format, mime_type, url } = mediaFileUpload;
+                if (resource_type === 'raw' || format == 'pdf') {
+                    messageData.type = 'raw';
+                } else {
+                    messageData.type = mediaFileUpload.resource_type;
+                }
+
+                messageData.content = mediaFileUpload.url
+            }
+            
+            if (token) {
+                const result = await this._chatUseCase.saveMessageByEmployer(token, messageData)
+                res.status(result.status).json({ message:result.message, mediaFileMessage:result.chat })
             }
         } catch (error) {
             console.log(error);
