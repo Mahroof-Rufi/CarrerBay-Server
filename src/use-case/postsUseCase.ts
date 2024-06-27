@@ -35,7 +35,7 @@ class PostsUseCase implements IPostsUseCase{
 
     async fetchPostsByEmployerId(token:string, pageNo:string, sort?:string) {
         const decode = this._jwt.verifyToken(token,"Employer")
-        const limit = 5
+        const limit = 4 
         const skip = (parseInt(pageNo) - 1) * limit
         const post = await this._postsRepository.fetchPostsById(decode?.id, skip, limit, sort as string)
         const noOfPost = await this._postsRepository.fetchTotalNoOfEmployerPosts(decode?.id)
@@ -55,7 +55,7 @@ class PostsUseCase implements IPostsUseCase{
 
     async fetchSearchedPosts(token:string, pageNo:string ,sort:string, searchQuery?:string) {
         const decode = this._jwt.verifyToken(token,"Employer")
-        const limit = 5
+        const limit = 4
         const skip = (parseInt(pageNo) - 1) * limit
         const searchedPosts = await this._postsRepository.fetchSearchedPosts(decode?.id, skip, limit, sort ,searchQuery)
         const noOfPost = await this._postsRepository.fetchTotalNoOfEmployerPosts(decode?.id, skip, limit, searchQuery)
@@ -108,10 +108,10 @@ class PostsUseCase implements IPostsUseCase{
 
     async deletePost(token: string, post_id: string): Promise<PostsOutput> {
         const decodedToken = this._jwt.verifyToken(token,"Employer")
-        const res = await this._postsRepository.deletePostById(decodedToken?.id, post_id)
+        await this._postsRepository.deletePostById(decodedToken?.id, post_id)
         return {
             status: 200,
-            message: 'Post deleted successfully'
+            message: 'Post deleted successfully',
         }
     }
     

@@ -1,34 +1,51 @@
-import express from 'express'
-import { adminController, employerController, userController } from '../../providers/controllers'
-import upload from '../../middlewares/multer'
+import express from 'express';
+import { userController, employerController, adminController } from '../../providers/controllers';
+import upload from '../../middlewares/multer';
+import { Request, Response } from 'express-serve-static-core';
 
-const router = express.Router()
+const router = express.Router();
+const verificationDocumentHandler = upload.single('verificationDocument');
 
-const verificationDocumentHandler = upload.single('verificationDocument')
+// User Auth route handlers
+const handleUserSendOTP = (req: Request, res: Response) => userController.sendOTP(req, res);
+const handleUserLogin = (req: Request, res: Response) => userController.logIn(req, res);
+const handleUserRefreshToken = (req: Request, res: Response) => userController.refreshToken(req, res);
+const handleUserRegister = (req: Request, res: Response) => userController.signUp(req, res);
+const handleUserForgotPasswordSendOTP = (req: Request, res: Response) => userController.forgotPasswordSendOTP(req, res);
+const handleUserResetPassword = (req: Request, res: Response) => userController.resetPassword(req, res);
 
-// USER AUTH ROUTES
-router.post('/user/send-otp', (req, res) => userController.sendOTP(req,res))
-router.post('/user/login', (req, res) => userController.logIn(req,res))
-router.post('/user/refresh-token', (req, res) => userController.refreshToken(req, res))
-router.post('/user/register', (req, res) => userController.signUp(req,res))
-router.route('/user/forgot-password',)
-    .post((req, res) => userController.forgotPasswordSendOTP(req, res))
-    .patch((req, res) => userController.resetPassword(req, res))
+// Employer Auth route handlers
+const handleEmployerSendOTP = (req: Request, res: Response) => employerController.sendOTP(req, res);
+const handleEmployerLogin = (req: Request, res: Response) => employerController.logIn(req, res);
+const handleEmployerRefreshToken = (req: Request, res: Response) => employerController.refreshToken(req, res);
+const handleEmployerRegister = (req: Request, res: Response) => employerController.register(req, res);
+const handleEmployerForgotPasswordSendOTP = (req: Request, res: Response) => employerController.forgotPasswordSendOTP(req, res);
+const handleEmployerResetPassword = (req: Request, res: Response) => employerController.resetPassword(req, res);
 
-// EMPLOYER AUTH ROUTES
-router.post('/employer/send-otp', (req, res) => employerController.sendOTP(req,  res))
-router.post('/employer/login', (req, res) => employerController.logIn(req, res))
-router.post('/employer/refresh-token', (req, res) => employerController.refreshToken(req, res))
-router.post('/employer/register', verificationDocumentHandler ,(req, res) => employerController.register(req,res))
+// Admin Auth route handlers
+const handleAdminRefreshToken = (req: Request, res: Response) => adminController.refreshToken(req, res);
+const handleAdminLogin = (req: Request, res: Response) => adminController.login(req, res);
+
+// User Auth Routes
+router.post('/user/send-otp', handleUserSendOTP);
+router.post('/user/login', handleUserLogin);
+router.post('/user/refresh-token', handleUserRefreshToken);
+router.post('/user/register', handleUserRegister);
+router.route('/user/forgot-password')
+    .post(handleUserForgotPasswordSendOTP)
+    .patch(handleUserResetPassword);
+
+// Employer Auth Routes
+router.post('/employer/send-otp', handleEmployerSendOTP);
+router.post('/employer/login', handleEmployerLogin);
+router.post('/employer/refresh-token', handleEmployerRefreshToken);
+router.post('/employer/register', verificationDocumentHandler, handleEmployerRegister);
 router.route('/employer/forgot-password')
-    .post((req, res) => employerController.forgotPasswordSendOTP(req, res))
-    .patch((req, res) => employerController.resetPassword(req, res))
+    .post(handleEmployerForgotPasswordSendOTP)
+    .patch(handleEmployerResetPassword);
 
-// ADMIN AUTH ROUTES
-router.post('/admin/refresh-token', (req, res) => adminController.refreshToken(req, res))
-router.post('/admin/login', (req, res) => adminController.login(req, res))
+// Admin Auth Routes
+router.post('/admin/refresh-token', handleAdminRefreshToken);
+router.post('/admin/login', handleAdminLogin);
 
-
-// router.post('/user/g-auth', (req, res) => userController.gAuth(req, res))
-
-export default router
+export default router;

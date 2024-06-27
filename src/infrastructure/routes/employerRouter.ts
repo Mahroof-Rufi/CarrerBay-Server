@@ -1,13 +1,18 @@
-import express from "express";
-import upload from "../../middlewares/multer";
-import employerAuth from "../../middlewares/employerAuth";
-import { employerController } from "../../providers/controllers";
+import express from 'express';
+import { employerController } from '../../providers/controllers';
+import upload from '../../middlewares/multer';
+import employerAuth from '../../middlewares/employerAuth';
+import { Request, Response } from 'express-serve-static-core';
 
-const router = express.Router()
+const router = express.Router();
+const profileImageUpload = upload.single('profile-img');
 
-router.route('/')
-    .get( employerAuth, (req, res) => employerController.fetchEmployerData(req, res))
-    // .post( employerAuth, (req, res) => employerController.fetchEmployerProfileById(req, res))
-router.route('/update-profile').put( employerAuth, upload.single("profile-img"), (req, res) => employerController.updateProfile(req, res))
+// Route handlers
+const handleFetchEmployerData = (req: Request, res: Response) => employerController.fetchEmployerData(req, res);
+const handleUpdateProfile = (req: Request, res: Response) => employerController.updateProfile(req, res);
 
-export default router
+// Routes
+router.route('/').get(employerAuth, handleFetchEmployerData);
+router.route('/update-profile').put(employerAuth, profileImageUpload, handleUpdateProfile);
+
+export default router;

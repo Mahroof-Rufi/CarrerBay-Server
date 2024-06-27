@@ -80,7 +80,7 @@ class PostsController {
             
             if (token) {
                 const result = await this._postsUseCase.addPost(description, token,urls)
-                res.status(result.status).json({ message:result.message,updatedPosts:result.post })
+                res.status(result.status).json({ message:result.message,updatedPost:result.post })
             }
         } catch (error) {
             console.log(error);
@@ -145,7 +145,9 @@ class PostsController {
             const postId = req.params.post_id
             if (token) {
                 const result = await this._postsUseCase.deletePost(token, postId)
-                res.status(result.status).json({ message:result.message,post_id:postId })
+                console.log('successfully sending back :', result);
+                
+                res.status(result.status).json({ message:result.message, post_id:postId })
             }
         } catch (error) {
             console.log(error);

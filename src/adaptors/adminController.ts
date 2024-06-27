@@ -12,16 +12,9 @@ class AdminController {
             const { email, password } = req.body
             const admin = await this._adminUseCase.login(email,password)
             if (admin && admin.accessToken && admin.refreshToken) {
-                return res.status(200)
-                    .json({
-                        admin,
-                });
+                return res.status(200).json({admin});
             } else {
-                return res
-                    .status(400)
-                    .json({
-                        admin,
-                });
+                return res.status(400).json({admin});
             }
         } catch (error) {
             console.log(error);
@@ -181,17 +174,6 @@ class AdminController {
         }
     }
 
-    async fetchEmployerById(req:Request, res:Response) {
-        try {
-            const employer_id = req.query.employer_id
-            const result = await this._adminUseCase.fetchEmployerById(employer_id as string)
-            res.status(result.status).json({ message:result.message, employerData:result.employerData })
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ message:'Something went wrong' })
-        }
-    }
-
     async employerAction(req:Request, res:Response) {
         try {
             const employer_id = req.body.employer_id
@@ -271,6 +253,17 @@ class AdminController {
         } catch (error) {
             console.log(error);
             res.status(500).json({ message:'Something went wrong' })            
+        }
+    }
+
+    async fetchEmployerById(req:Request, res:Response) {
+        try {
+            const employer_id = req.query.employer_id
+            const result = await this._adminUseCase.fetchEmployerById(employer_id as string)
+            res.status(result.status).json({ message:result.message, employerData:result.employerData })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })
         }
     }
 

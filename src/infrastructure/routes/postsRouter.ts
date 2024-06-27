@@ -1,24 +1,40 @@
-import express from 'express'
-import upload from "../../middlewares/multer";
-import { postsController } from '../../providers/controllers'
+import express from 'express';
+import { postsController } from '../../providers/controllers';
+import upload from '../../middlewares/multer';
 import employerAuth from '../../middlewares/employerAuth';
 import userAuth from '../../middlewares/userAuth';
+import { Request, Response } from 'express-serve-static-core';
 
-const router = express.Router()
+const router = express.Router();
+const handleFiles = upload.fields([
+    { name: 'image1' },
+    { name: 'image2' },
+    { name: 'image3' },
+    { name: 'image4' },
+    { name: 'image5' },
+    { name: 'image6' },
+]);
 
-const handleFiles = upload.fields([ { name:'image1' }, { name:'image2' }, { name:'image3' }, { name:'image4' }, { name:'image5' } ])
+// Route handlers
+const handleFetchPosts = (req: Request, res: Response) => postsController.fetchPosts(req, res);
+const handleTriggerPostLike = (req: Request, res: Response) => postsController.triggerPostLike(req, res);
+const handleFetchPostsByEmployer = (req: Request, res: Response) => postsController.fetchPostsByEmployer(req, res);
+const handleAddPost = (req: Request, res: Response) => postsController.addPost(req, res);
+const handleEditPost = (req: Request, res: Response) => postsController.editPost(req, res);
+const handleDeletePost = (req: Request, res: Response) => postsController.deletePost(req, res);
+
 
 // USER POSTS ROUTES
 router.route('/')
-    .get( userAuth, (req, res) => postsController.fetchPosts(req, res))
-    .post( userAuth, (req, res) => postsController.triggerPostLike(req, res))
+    .get(userAuth, handleFetchPosts)
+    .post(userAuth, handleTriggerPostLike);
 
 // EMPLOYER POSTS ROUTES
 router.route('/employer-posts')
-    .get( employerAuth, (req, res) => postsController.fetchPostsByEmployer(req, res))
-    .post( employerAuth, handleFiles, (req, res) => postsController.addPost(req, res))
-    .put( employerAuth, handleFiles, (req, res) => postsController.editPost(req, res))
-router.route('/delete-post/:post_id')
-    .delete( employerAuth, (req, res) => postsController.deletePost(req, res))
+    .get(employerAuth, handleFetchPostsByEmployer)
+    .post(employerAuth, handleFiles, handleAddPost)
+    .put(employerAuth, handleFiles, handleEditPost);
 
-export default router
+router.delete('/delete-post/:post_id', employerAuth, handleDeletePost);
+
+export default router;

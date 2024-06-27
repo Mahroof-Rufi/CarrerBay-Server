@@ -114,8 +114,8 @@ class PostsRepository implements IPostsRepository {
                 { $push: { posts: { description: description, image_urls: images } } }, 
                 { upsert: true, new: true }
             );
-    
-            return result || null
+            
+            return result.posts[result.posts.length-1] || null
         } catch (error) {
             console.log(error);
             throw error
@@ -226,18 +226,21 @@ class PostsRepository implements IPostsRepository {
         }
     }
 
-    async deletePostById(employer_id: string, post_id: string): Promise<EmployerPosts | null> {
+    async deletePostById(employer_id: string, post_id: string): Promise<EmployerPosts> {
         try {
             const deletePost = await postsModel.findOneAndUpdate(
                 { employer_id: employer_id },
                 { $pull: { posts: { _id: post_id } } }
             ) 
 
-            if (deletePost) {
-                return deletePost
+            if (!deletePost) {
+                throw new Error('Post not exists')
             } else {
-                return deletePost
+                console.log('deletion success');
+                
             }
+
+            return deletePost
         } catch (error) {
             throw error
         }

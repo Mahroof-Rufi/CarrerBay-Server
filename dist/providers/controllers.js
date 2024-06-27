@@ -1,0 +1,66 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.chatController = exports.userController = exports.postsController = exports.jobsController = exports.jobApplicantsController = exports.employerController = exports.adminController = void 0;
+const adminController_1 = __importDefault(require("../adaptors/adminController"));
+const chatController_1 = __importDefault(require("../adaptors/chatController"));
+const employerController_1 = __importDefault(require("../adaptors/employerController"));
+const jobApplicantsController_1 = __importDefault(require("../adaptors/jobApplicantsController"));
+const jobsController_1 = __importDefault(require("../adaptors/jobsController"));
+const postsController_1 = __importDefault(require("../adaptors/postsController"));
+const userController_1 = __importDefault(require("../adaptors/userController"));
+const adminRepository_1 = __importDefault(require("../infrastructure/repositories/adminRepository"));
+const appliedJobsRepository_1 = __importDefault(require("../infrastructure/repositories/appliedJobsRepository"));
+const chatRepository_1 = __importDefault(require("../infrastructure/repositories/chatRepository"));
+const employerOTPRepository_1 = __importDefault(require("../infrastructure/repositories/employerOTPRepository"));
+const employerRepository_1 = __importDefault(require("../infrastructure/repositories/employerRepository"));
+const jobApplicantsRepository_1 = __importDefault(require("../infrastructure/repositories/jobApplicantsRepository"));
+const jobsRepository_1 = __importDefault(require("../infrastructure/repositories/jobsRepository"));
+const postsRepository_1 = __importDefault(require("../infrastructure/repositories/postsRepository"));
+const savedJobsAndPostsRepository_1 = __importDefault(require("../infrastructure/repositories/savedJobsAndPostsRepository"));
+const userOTPRepository_1 = __importDefault(require("../infrastructure/repositories/userOTPRepository"));
+const userRepository_1 = __importDefault(require("../infrastructure/repositories/userRepository"));
+const adminUseCase_1 = __importDefault(require("../use-case/adminUseCase"));
+const chatUseCase_1 = __importDefault(require("../use-case/chatUseCase"));
+const employerUseCase_1 = __importDefault(require("../use-case/employerUseCase"));
+const jobApplicantsUseCase_1 = __importDefault(require("../use-case/jobApplicantsUseCase"));
+const jobsUseCase_1 = __importDefault(require("../use-case/jobsUseCase"));
+const postsUseCase_1 = __importDefault(require("../use-case/postsUseCase"));
+const userUseCase_1 = __importDefault(require("../use-case/userUseCase"));
+const generateOTP_1 = __importDefault(require("./generateOTP"));
+const jwt_1 = __importDefault(require("./jwt"));
+const nodeMailer_1 = __importDefault(require("./nodeMailer"));
+// Providers
+const jwt = new jwt_1.default();
+const OTPGenerator = new generateOTP_1.default();
+const mailer = new nodeMailer_1.default();
+// Repositories
+const adminRepository = new adminRepository_1.default();
+const appliedJobsRepository = new appliedJobsRepository_1.default();
+const employerRepository = new employerRepository_1.default();
+const employerOTPRepository = new employerOTPRepository_1.default();
+const jobApplicantsRepository = new jobApplicantsRepository_1.default();
+const jobsRepository = new jobsRepository_1.default();
+const postsRepository = new postsRepository_1.default();
+const userRepository = new userRepository_1.default();
+const userOTPRepository = new userOTPRepository_1.default();
+const savedJobsAndPostsRepository = new savedJobsAndPostsRepository_1.default();
+const chatsRepository = new chatRepository_1.default();
+// UseCases
+const adminUseCase = new adminUseCase_1.default(adminRepository, userRepository, employerRepository, jobsRepository, appliedJobsRepository, jobApplicantsRepository, jwt);
+const employerUseCase = new employerUseCase_1.default(employerRepository, employerOTPRepository, OTPGenerator, mailer, jwt);
+const jobApplicantsUseCase = new jobApplicantsUseCase_1.default(jobApplicantsRepository, appliedJobsRepository, jwt);
+const jobsUseCase = new jobsUseCase_1.default(jwt, jobsRepository, savedJobsAndPostsRepository);
+const postsUseCase = new postsUseCase_1.default(jwt, postsRepository);
+const userUseCase = new userUseCase_1.default(userRepository, employerRepository, chatsRepository, jwt, OTPGenerator, mailer, userOTPRepository);
+const chatUseCase = new chatUseCase_1.default(chatsRepository, userRepository, jwt);
+// Controllers
+exports.adminController = new adminController_1.default(adminUseCase);
+exports.employerController = new employerController_1.default(employerUseCase);
+exports.jobApplicantsController = new jobApplicantsController_1.default(jobApplicantsUseCase);
+exports.jobsController = new jobsController_1.default(jobsUseCase);
+exports.postsController = new postsController_1.default(postsUseCase);
+exports.userController = new userController_1.default(userUseCase);
+exports.chatController = new chatController_1.default(chatUseCase);

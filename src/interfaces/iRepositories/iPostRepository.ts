@@ -8,7 +8,7 @@ interface IPostsRepository {
     addPost(description:string,employerid:string, images?:string[]):Promise<EmployerPosts[] | null>
     fetchAPerticularPost(employer_id:string, post_id:string): Promise<EmployerPosts | null>
     editPost(employer_id:string, post_id:string, description:string, images?:string[]): Promise<EmployerPosts | null>
-    deletePostById(employer_id:string,post_id:string):Promise<EmployerPosts | null>
+    deletePostById(employer_id:string,post_id:string):Promise<EmployerPosts>
     fetchAllPosts(skip:number, limit:number):Promise<EmployerPosts | null>
     fetchTotalNoOfPosts(): Promise<number>
     fetchSearchedPosts(company_id:string, skip:number, limit:number,query:string, sort?:string):Promise<EmployerPosts | null>

@@ -34,4 +34,4 @@ class AdminRepository implements IAdminRepository {
 
 }
 
-export default AdminRepository
+export default AdminRepository 
