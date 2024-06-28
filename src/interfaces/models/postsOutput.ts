@@ -5,5 +5,6 @@ export interface PostsOutput {
     message:string,
     post?:EmployerPosts,
     posts?:EmployerPosts[] | null,
-    oldURLs?:string[]
+    oldURLs?:string[],
+    comment?:any
 }

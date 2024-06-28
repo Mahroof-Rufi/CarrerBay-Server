@@ -11,7 +11,7 @@ class PostsUseCase implements IPostsUseCase{
     ) {}
 
     async fetchPosts(pageNo:string) {
-        const limit = 5
+        const limit = 6
         const skip = (parseInt(pageNo) - 1) * limit
         const posts = await this._postsRepository.fetchAllPosts(skip,limit)
         const noOfPosts = await this._postsRepository.fetchTotalNoOfPosts()
@@ -30,6 +30,16 @@ class PostsUseCase implements IPostsUseCase{
             status:200,
             message:'Like updated successfully',
             posts: res[0],
+        }
+    }
+
+    async addComment(token:string, employer_Id: string, post_Id: string, comment: string): Promise<PostsOutput> {
+        const decodedToken = this._jwt.verifyToken(token,'User')
+        const res = await this._postsRepository.addCommentByPostId(decodedToken?.id,employer_Id, post_Id, comment)
+        return {
+            status:200,
+            message:'Comment added successfully',
+            comment:res
         }
     }
 

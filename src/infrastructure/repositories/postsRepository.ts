@@ -106,6 +106,70 @@ class PostsRepository implements IPostsRepository {
             throw error
         }
     }
+
+    async addCommentByPostId(user_Id: string, employer_Id: string, post_Id: string, comment: string): Promise<any> {
+        try {
+
+            const updateResult = await postsModel.updateOne(
+                { employer_id: new mongoose.Types.ObjectId(employer_Id), 
+                  "posts._id": new mongoose.Types.ObjectId(post_Id) },
+                {  $push: { "posts.$.comments": { user_id: new mongoose.Types.ObjectId(user_Id), comment: comment } } }
+            );
+            
+            if (updateResult.modifiedCount === 0) {
+                throw new Error('No matching document found or update failed');
+            }
+            
+            const result = await postsModel.aggregate([
+                {  $match: { employer_id: new mongoose.Types.ObjectId(employer_Id), "posts._id": new mongoose.Types.ObjectId(post_Id) } },
+                {  $unwind: "$posts" },
+                {  $match: { "posts._id": new mongoose.Types.ObjectId(post_Id) } },
+                {  $unwind: "$posts.comments" },
+                {  $lookup: {
+                        from: "users", 
+                        localField: "posts.comments.user_id",
+                        foreignField: "_id",
+                        as: "posts.comments.user"
+                    }
+                },
+                {  $unwind: {
+                        path: "$posts.comments.user",
+                        preserveNullAndEmptyArrays: true 
+                    }
+                },
+                {
+                    $group: { _id: {
+                            postId: "$posts._id",
+                            commentId: "$posts.comments._id" 
+                        },
+                        post: { $first: "$posts" },
+                        comment: { $first: "$posts.comments" }
+                    }
+                },
+                {   $sort: { "comment.createdAt": -1 } },
+                {   $group: {
+                        _id: "$_id.postId",
+                        post: { $first: "$post" },
+                        comments: { $push: "$comment" }
+                    }
+                },
+                {   $addFields: { "post.comments": "$comments" } },
+                {   $replaceRoot: { newRoot: "$post" } }
+            ]);
+            
+            if (!result || result.length === 0 || !result[0].comments || result[0].comments.length === 0) {
+                console.log('Failed to fetch updated document', result);
+                throw new Error('Failed to fetch updated document');
+            }
+            
+            const updatedPost = result[0];
+            const newComment = updatedPost.comments[0];
+            return newComment;
+        } catch (error) {
+            console.error('Error in addCommentByPostId:', error);
+            throw error;
+        }
+    }
  
     async addPost(description: string,employer_id:string, images?: string[] | undefined): Promise<EmployerPosts[] | any> {
         try {
@@ -161,14 +225,55 @@ class PostsRepository implements IPostsRepository {
 
     async fetchAllPosts(skip: number, limit: number): Promise<any> {
         try {
+            console.log(`skip :${skip} limit:${limit}`);
+            
             const result = await postsModel.aggregate([
-                { $project: { employer_id: 1, posts: 1, _id: 0 } },
                 { $unwind: '$posts' },
-                { $addFields: { 'posts.employer_id': '$employer_id' } },
-                { $replaceRoot: { newRoot: '$posts' } },
+                {
+                  $lookup: {
+                    from: 'users',
+                    localField: 'posts.comments.user_id',
+                    foreignField: '_id',
+                    as: 'userDetails'
+                  }
+                },
+                {
+                  $project: {
+                    _id: '$posts._id',
+                    employer_id: '$employer_id',
+                    image_urls: '$posts.image_urls',
+                    description: '$posts.description',
+                    likes: '$posts.likes',
+                    saved: '$posts.saved',
+                    postedAt: '$posts.postedAt',
+                    comments: {
+                      $map: {
+                        input: '$posts.comments',
+                        as: 'comment',
+                        in: {
+                          _id: '$$comment._id',
+                          comment: '$$comment.comment',
+                          createdAt: '$$comment.createdAt',
+                          user: {
+                            $arrayElemAt: [
+                              {
+                                $filter: {
+                                  input: '$userDetails',
+                                  cond: { $eq: ['$$this._id', '$$comment.user_id'] }
+                                }
+                              },
+                              0
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                { $sort: { postedAt: -1 } },
                 { $skip: skip },
                 { $limit: limit }
-              ]);
+              ]);            
         
             if (result) {            
                 return result;

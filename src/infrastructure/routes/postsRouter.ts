@@ -18,6 +18,7 @@ const handleFiles = upload.fields([
 // Route handlers
 const handleFetchPosts = (req: Request, res: Response) => postsController.fetchPosts(req, res);
 const handleTriggerPostLike = (req: Request, res: Response) => postsController.triggerPostLike(req, res);
+const handleAddComment = (req:Request, res:Response) => postsController.addComment(req, res);
 const handleFetchPostsByEmployer = (req: Request, res: Response) => postsController.fetchPostsByEmployer(req, res);
 const handleAddPost = (req: Request, res: Response) => postsController.addPost(req, res);
 const handleEditPost = (req: Request, res: Response) => postsController.editPost(req, res);
@@ -28,6 +29,7 @@ const handleDeletePost = (req: Request, res: Response) => postsController.delete
 router.route('/')
     .get(userAuth, handleFetchPosts)
     .post(userAuth, handleTriggerPostLike);
+router.route('/add-comment').post(userAuth, handleAddComment)
 
 // EMPLOYER POSTS ROUTES
 router.route('/employer-posts')

@@ -32,6 +32,20 @@ class PostsController {
         }
     }
 
+    async addComment(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            const { employer_id, post_Id, comment } = req.body
+            if (token) {
+                const result = await this._postsUseCase.addComment(token, employer_id, post_Id, comment)  
+                res.status(result.status).json({ message:result.message, newComment:result.comment })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
+        }
+    }
+
     async fetchPostsByEmployer(req:Request, res:Response) {
         try {    
                    
