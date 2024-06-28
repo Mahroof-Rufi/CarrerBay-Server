@@ -104,10 +104,10 @@ class PostsRepository implements IPostsRepository {
         }
     }
 
-    async triggerPostLike(employer_id: string, post_id: string, user_id: string): Promise<EmployerPosts | any> {
+    async triggerPostLike(employer_Id: string, post_Id: string, user_Id: string): Promise<EmployerPosts | any> {
         try {
             const post:any = await postsModel.findOne(
-                { employer_id: employer_id, 'posts._id': post_id  },
+                { employer_id: employer_Id, 'posts._id': post_Id },
                 { 'posts.$': 1 }
             );
     
@@ -115,32 +115,159 @@ class PostsRepository implements IPostsRepository {
                 throw new Error('Post not found');
             }
     
-            const userLiked = post.posts[0].likes.includes(user_id);
+            const userLiked = post.posts[0].likes.includes(user_Id);
     
-            const updateQuery = userLiked ? { $pull: { 'posts.$.likes': user_id } } : { $addToSet: { 'posts.$.likes': user_id } };
-            
+            const updateQuery = userLiked ? { $pull: { 'posts.$.likes': user_Id } } : { $addToSet: { 'posts.$.likes': user_Id } };
+    
             await postsModel.updateOne(
-                { 'employer_id': employer_id, 'posts._id': post_id },
+                { 'employer_id': employer_Id, 'posts._id': post_Id },
                 updateQuery
-            );   
-            
+            );
+    
             const updatedEmployer = await postsModel.aggregate([
-                { $match: { 'employer_id': { $in: [new mongoose.Types.ObjectId(employer_id)] } } },
+                { $match: { 'employer_id': new mongoose.Types.ObjectId(employer_Id) } },
                 { $unwind: '$posts' },
-                { $match: { 'posts._id': { $in: [new mongoose.Types.ObjectId(post_id)] } } },
+                { $match: { 'posts._id': new mongoose.Types.ObjectId(post_Id) } },
                 {
-                  $addFields: {
-                    'posts.employer_id': '$employer_id'
-                  }
+                    $lookup: {
+                        from: "users",
+                        localField: "posts.comments.user_id",
+                        foreignField: "_id",
+                        as: "posts.comments.user"
+                    }
                 },
                 {
-                  $replaceRoot: {
-                    newRoot: '$posts'
-                  }
+                    $addFields: {
+                        'posts.employer_id': '$employer_id'
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$_id",
+                        post: { $first: "$posts" }
+                    }
+                },
+                {
+                    $replaceRoot: {
+                        newRoot: "$post"
+                    }
                 }
-              ]);
-          
-              return updatedEmployer;
+            ]);
+    
+            if (!updatedEmployer || updatedEmployer.length === 0) {
+                throw new Error('Failed to fetch updated post');
+            }
+    
+            return updatedEmployer[0];
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+    }
+
+    async triggerPostSave(employer_Id: string, post_Id: string, user_Id: string): Promise<EmployerPosts> {
+        try {
+            
+            const userObjectId = new mongoose.Types.ObjectId(user_Id);
+
+            const post = await postsModel.findOne(
+                { employer_id: new mongoose.Types.ObjectId(employer_Id), "posts._id": new mongoose.Types.ObjectId(post_Id) },
+                { "posts.$": 1 }
+            );
+
+            if (!post) {
+                throw new Error('Post not found');
+            }
+
+            const isSaved = post.posts[0].saved.includes(user_Id);
+
+            let update;
+            if (isSaved) {
+                update = {
+                    $pull: { "posts.$.saved": userObjectId }
+                };
+            } else {
+                update = {
+                    $addToSet: { "posts.$.saved": userObjectId }
+                };
+            }
+
+            const updateResult = await postsModel.updateOne(
+                { employer_id: new mongoose.Types.ObjectId(employer_Id), "posts._id": new mongoose.Types.ObjectId(post_Id) },
+                update
+            );
+
+            if (updateResult.modifiedCount === 0) {
+                throw new Error('Failed to update the post');
+            }
+
+            const result = await postsModel.aggregate([
+                { $match: { employer_id: new mongoose.Types.ObjectId(employer_Id) } },
+                { $unwind: "$posts" },
+                { $match: { "posts._id": new mongoose.Types.ObjectId(post_Id) } },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "posts.comments.user_id",
+                        foreignField: "_id",
+                        as: "posts.comments.user"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$posts.comments",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$posts.comments.user",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            postId: "$posts._id",
+                            commentId: "$posts.comments._id"
+                        },
+                        post: { $first: "$posts" },
+                        comment: { $first: "$posts.comments" }
+                    }
+                },
+                {
+                    $sort: {
+                        "comment.createdAt": -1
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$_id.postId",
+                        post: { $first: "$post" },
+                        comments: { $push: "$comment" }
+                    }
+                },
+                {
+                    $addFields: {
+                        "post.comments": "$comments"
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$_id",
+                        posts: { $push: "$post" }
+                    }
+                }
+            ]);
+
+            if (!result || result.length === 0 || !result[0].posts || result[0].posts.length === 0) {
+                console.log('Failed to fetch updated document', result);
+                throw new Error('Failed to fetch updated document');
+            }
+
+            const updatedPost = result[0].posts[0];
+
+            return updatedPost;
         } catch (error) {
             console.log(error);
             throw error

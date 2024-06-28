@@ -46,6 +46,21 @@ class PostsController {
         }
     }
 
+    async savePost(req:Request, res:Response) {
+        try {
+            const token = req.header('User-Token');
+            const { employer_Id, post_Id } = req.body
+            
+            if (token) {
+                const result = await this._postsUseCase.triggerPostSave(token, employer_Id, post_Id)  
+                res.status(result.status).json({ message:result.message, updatedPost:result.post })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message:'Something went wrong' })            
+        }
+    }
+
     async fetchPostsByEmployer(req:Request, res:Response) {
         try {    
                    

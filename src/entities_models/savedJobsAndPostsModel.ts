@@ -8,7 +8,7 @@ const jobs: Schema = new Schema({
 });
 
 const posts: Schema = new Schema({
-    job_id: {
+    post_id: {
         type: mongoose.Types.ObjectId,
         ref: 'posts'
     }

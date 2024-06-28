@@ -29,7 +29,7 @@ class PostsUseCase implements IPostsUseCase{
         return {
             status:200,
             message:'Like updated successfully',
-            posts: res[0],
+            posts: res,
         }
     }
 
@@ -40,6 +40,16 @@ class PostsUseCase implements IPostsUseCase{
             status:200,
             message:'Comment added successfully',
             comment:res
+        }
+    }
+
+    async triggerPostSave(token: string, employer_Id: string, post_Id: string): Promise<PostsOutput> {
+        const decodedToken = this._jwt.verifyToken(token, 'User')
+        const res = await this._postsRepository.triggerPostSave(employer_Id, post_Id, decodedToken?.id)
+        return {
+            status:200,
+            message:'Post saved successfully',
+            post: res
         }
     }
 
