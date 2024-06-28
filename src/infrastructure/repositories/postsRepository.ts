@@ -1,8 +1,7 @@
-import { EmployerPosts, Post } from "../../interfaces/models/employerPosts";
+import { EmployerPosts } from "../../interfaces/models/employerPosts";
 import IPostsRepository from "../../interfaces/iRepositories/iPostRepository";
 import postsModel from "../../entities_models/postModel";
 import mongoose from "mongoose";
-import e from "express";
 
 class PostsRepository implements IPostsRepository {
 
@@ -25,11 +24,52 @@ class PostsRepository implements IPostsRepository {
                 { $group: {
                     _id: '$_id',
                     posts: { $push: '$posts' }
-                }}
-            ]);        
-
+                }},
+                { $unwind: '$posts' },
+                {
+                  $lookup: {
+                    from: 'users',
+                    localField: 'posts.comments.user_id',
+                    foreignField: '_id',
+                    as: 'userDetails'
+                  }
+                },
+                {
+                  $project: {
+                    _id: '$posts._id',
+                    employer_id: '$employer_id',
+                    image_urls: '$posts.image_urls',
+                    description: '$posts.description',
+                    likes: '$posts.likes',
+                    saved: '$posts.saved',
+                    postedAt: '$posts.postedAt',
+                    comments: {
+                      $map: {
+                        input: '$posts.comments',
+                        as: 'comment',
+                        in: {
+                          _id: '$$comment._id',
+                          comment: '$$comment.comment',
+                          createdAt: '$$comment.createdAt',
+                          user: {
+                            $arrayElemAt: [
+                              {
+                                $filter: {
+                                  input: '$userDetails',
+                                  cond: { $eq: ['$$this._id', '$$comment.user_id'] }
+                                }
+                              },
+                              0
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+            ]);  
             
-            return posts[0]?.posts || null
+            return posts || null
         } catch (error) {
             console.log(error);
             throw error
