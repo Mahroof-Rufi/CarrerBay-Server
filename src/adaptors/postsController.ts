@@ -61,6 +61,14 @@ class PostsController {
         }
     }
 
+    async loadSavedPosts(req: Request, res: Response) {
+        const token = req.header('User-Token');
+        if (token) {
+            const result = await this._postsUseCase.loadUserSavedPosts(token);
+            res.status(result.status).json({ message: result.message, posts: result.savedPosts })
+        }
+    }
+
     async fetchPostsByEmployer(req:Request, res:Response) {
         try {    
                    

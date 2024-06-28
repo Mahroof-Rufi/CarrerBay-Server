@@ -51,7 +51,7 @@ const adminUseCase = new AdminUseCase(adminRepository,userRepository,employerRep
 const employerUseCase = new EmployerUseCase(employerRepository,employerOTPRepository,OTPGenerator,mailer,jwt);
 const jobApplicantsUseCase = new JobApplicantsUseCase(jobApplicantsRepository,appliedJobsRepository,jwt);
 const jobsUseCase = new JobsUseCase(jwt,jobsRepository,savedJobsAndPostsRepository);
-const postsUseCase = new PostsUseCase(jwt,postsRepository);
+const postsUseCase = new PostsUseCase(jwt,postsRepository,savedJobsAndPostsRepository);
 const userUseCase = new UserUseCase(userRepository,employerRepository,chatsRepository,jwt,OTPGenerator,mailer,userOTPRepository);
 const chatUseCase = new ChatUseCase(chatsRepository,userRepository,jwt);
 

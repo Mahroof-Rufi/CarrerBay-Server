@@ -1,4 +1,5 @@
 import PostsRepository from "../infrastructure/repositories/postsRepository"
+import SavedJobsAndPostsRepository from "../infrastructure/repositories/savedJobsAndPostsRepository"
 import IPostsUseCase from "../interfaces/iUseCases/iPostsUseCase"
 import { PostsOutput } from "../interfaces/models/postsOutput"
 import Jwt from "../providers/jwt"
@@ -7,7 +8,8 @@ class PostsUseCase implements IPostsUseCase{
 
     constructor(
         private readonly _jwt:Jwt,
-        private readonly _postsRepository:PostsRepository
+        private readonly _postsRepository:PostsRepository,
+        private readonly _savedJobsAndPostsRepository:SavedJobsAndPostsRepository,
     ) {}
 
     async fetchPosts(pageNo:string) {
@@ -46,10 +48,21 @@ class PostsUseCase implements IPostsUseCase{
     async triggerPostSave(token: string, employer_Id: string, post_Id: string): Promise<PostsOutput> {
         const decodedToken = this._jwt.verifyToken(token, 'User')
         const res = await this._postsRepository.triggerPostSave(employer_Id, post_Id, decodedToken?.id)
+        await this._savedJobsAndPostsRepository.triggerInsertPost(decodedToken?.id, post_Id)
         return {
             status:200,
             message:'Post saved successfully',
             post: res
+        }
+    }
+
+    async loadUserSavedPosts(token: string): Promise<PostsOutput> {
+        const decodedToken = this._jwt.verifyToken(token, "User")
+        const res = await this._savedJobsAndPostsRepository.findSavedPosts(decodedToken?.id);
+        return {
+            status: 200,
+            message: 'Posts found successfully',
+            savedPosts: res
         }
     }
 

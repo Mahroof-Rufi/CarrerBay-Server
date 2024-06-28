@@ -51,6 +51,6 @@ const postsSchema: Schema = new Schema({
     }
 });
 
-const postsModel = model<EmployerPosts>('posts', postsSchema);
+const postsModel = model<EmployerPosts>('post', postsSchema);
 
 export default postsModel;

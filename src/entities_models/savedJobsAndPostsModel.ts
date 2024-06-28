@@ -10,7 +10,7 @@ const jobs: Schema = new Schema({
 const posts: Schema = new Schema({
     post_id: {
         type: mongoose.Types.ObjectId,
-        ref: 'posts'
+        ref: 'post'
     }
 });
 

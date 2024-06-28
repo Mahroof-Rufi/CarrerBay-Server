@@ -7,4 +7,5 @@ export interface PostsOutput {
     posts?:EmployerPosts[] | null,
     oldURLs?:string[],
     comment?:any
+    savedPosts?:Post[],
 }

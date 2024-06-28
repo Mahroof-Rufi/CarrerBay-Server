@@ -24,6 +24,7 @@ const handleFetchPostsByEmployer = (req: Request, res: Response) => postsControl
 const handleAddPost = (req: Request, res: Response) => postsController.addPost(req, res);
 const handleEditPost = (req: Request, res: Response) => postsController.editPost(req, res);
 const handleDeletePost = (req: Request, res: Response) => postsController.deletePost(req, res);
+const handleSavedPosts = (req: Request, res: Response) => postsController.loadSavedPosts(req, res);
 
 
 // USER POSTS ROUTES
@@ -31,7 +32,9 @@ router.route('/')
     .get(userAuth, handleFetchPosts)
     .post(userAuth, handleTriggerPostLike);
 router.route('/add-comment').post(userAuth, handleAddComment)
-router.route('/save-post').post(userAuth, handleTriggerPostSave)
+router.route('/saved-posts')
+    .get(userAuth, handleSavedPosts)
+    .post(userAuth, handleTriggerPostSave)
 
 // EMPLOYER POSTS ROUTES
 router.route('/employer-posts')
