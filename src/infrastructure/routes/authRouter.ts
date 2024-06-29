@@ -13,6 +13,7 @@ const handleUserRefreshToken = (req: Request, res: Response) => userController.r
 const handleUserRegister = (req: Request, res: Response) => userController.signUp(req, res);
 const handleUserForgotPasswordSendOTP = (req: Request, res: Response) => userController.forgotPasswordSendOTP(req, res);
 const handleUserResetPassword = (req: Request, res: Response) => userController.resetPassword(req, res);
+const handleUserGoogleAuthRegister = (req: Request, res: Response) => userController.googleRegister(req, res);
 
 // Employer Auth route handlers
 const handleEmployerSendOTP = (req: Request, res: Response) => employerController.sendOTP(req, res);
@@ -34,6 +35,7 @@ router.post('/user/register', handleUserRegister);
 router.route('/user/forgot-password')
     .post(handleUserForgotPasswordSendOTP)
     .patch(handleUserResetPassword);
+router.route('/user/g-auth/register').post(handleUserGoogleAuthRegister)
 
 // Employer Auth Routes
 router.post('/employer/send-otp', handleEmployerSendOTP);

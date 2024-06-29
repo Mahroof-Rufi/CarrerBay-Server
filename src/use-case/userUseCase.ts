@@ -131,34 +131,37 @@ class UserUseCase implements IUserUseCase{
         }
     }
 
-    // async gAuth(fullName:string, email: string, password: string, google_id:string) {
-    //     const user = await this._userRepository.findByEmail(email)
-    //     if (user) {
-    //         const token = this._jwt.createAccessToken(user._id, 'Normal-User')
-    //         return {
-    //             status: 200,
-    //             token: token,
-    //             userDate: user,
-    //             message: 'Login successfully'
-    //         }
-    //     } else {
-    //         const res:User = await this._userRepository.insertOne({firstName:fullName,email:email})
-    //         if (res) {
-    //             const token = this._jwt.createAccessToken(res._id, 'Normal-User')
-    //             return {
-    //                 status: 200,
-    //                 token: token,
-    //                 userDate: user,
-    //                 message: 'Login successfully'
-    //             }
-    //         }
-    //         return {
-    //             status: 400,
-    //             message: 'Something went wrong'
-    //         }
+    async googleRegister(firstName:string, lastName:string, email: string, password: string, profile_url:string) {
+        const user = await this._userRepository.findByEmail(email)
+        if (user) {
+            const accessToken = this._jwt.createAccessToken(user._id, 'Normal-User')
+            const refreshToken = this._jwt.createRefreshToken(user._id, 'Normal-User')
+            return {
+                status: 200,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                message: 'Login successfully'
+            }
+        } else {
+            const res:User = await this._userRepository.insertOne({firstName, lastName, email, password, profile_url})
+            if (res) {
+                const token = this._jwt.createAccessToken(res._id, 'Normal-User')
+                const accessToken = this._jwt.createAccessToken(res._id, 'Normal-User')
+                const refreshToken = this._jwt.createRefreshToken(res._id, 'Normal-User')
+                return {
+                    status: 200,
+                    accessToken: accessToken,
+                    refreshToken: refreshToken,
+                    message: 'Login successfully'
+                }
+            }
+            return {
+                status: 400,
+                message: 'Something went wrong'
+            }
             
-    //     }
-    // }
+        }
+    }
 
     async forgotPasswordSendOTP(email:string) {
         const user = await this._userRepository.findByEmail(email)       

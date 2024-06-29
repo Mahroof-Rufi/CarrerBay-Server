@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 
 class UserRepository implements IUserRepository {
 
-    async insertOne(user: User ): Promise<User> {
+    async insertOne(user:any): Promise<User> {
         try {
             const salt = await bcrypt.genSalt(10);                                       
             user.password = await bcrypt.hash(user.password, salt);
