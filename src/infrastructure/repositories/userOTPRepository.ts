@@ -6,11 +6,11 @@ class UserOTPRepository implements IOTPRepository{
 
     async insertOTP(email: string, otp: number): Promise<boolean> {
         try {
-            await otpModel.create({
-                email: email,
-                OTP: otp,
-                createdAt: Date.now()
-            })
+            await otpModel.findOneAndUpdate(
+                { email:email },
+                { OTP:otp, createdAt: Date.now() },
+                { upsert:true }
+            )
             return true
         } catch (error) {
             console.error(error);
