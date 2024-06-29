@@ -2,11 +2,14 @@ import employer from "../../interfaces/models/employer";
 import IEmployerRepository from "../../interfaces/iRepositories/iEmployerRepository";
 import employerModel from "../../entities_models/employerModel";
 import { SortOrder } from "mongoose";
+import bcrypt from "bcrypt";
 
 class EmployerRepository implements IEmployerRepository{
 
     async insertOne(employer: employer): Promise<employer> { 
         try {
+            const salt = await bcrypt.genSalt(10);
+            employer.password = await bcrypt.hash(employer.password, salt);
             const newEmployer = new employerModel(employer)
             await newEmployer.save()
             return newEmployer
@@ -42,9 +45,12 @@ class EmployerRepository implements IEmployerRepository{
 
     async updatePassword(email: string, newPassword: string): Promise<employer | null> {
         try {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
+
             const newData = await employerModel.findOneAndUpdate(
                 { email:email },
-                { password: newPassword },
+                { password: hashedPassword },
                 { new: true }
             )
             if (newData) {

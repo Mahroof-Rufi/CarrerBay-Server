@@ -4,14 +4,17 @@ import { EditUser, G_AuthUser, User } from "../../interfaces/models/user";
 import IUserRepository from "../../interfaces/iRepositories/iUserRepository";
 import userModel from "../../entities_models/userModel";
 import { SortOrder } from "mongoose";
+import bcrypt from "bcrypt";
 
 class UserRepository implements IUserRepository {
 
-    async insertOne(user: User | G_AuthUser): Promise<User> {
+    async insertOne(user: User ): Promise<User> {
         try {
-            const newUser = new userModel(user)
-            await newUser.save()
-            return newUser
+            const salt = await bcrypt.genSalt(10);                                       
+            user.password = await bcrypt.hash(user.password, salt);
+            const newUser = new userModel(user);
+            await newUser.save();
+            return newUser;
         } catch (error) {
             console.log(error);            
             throw error
@@ -35,15 +38,19 @@ class UserRepository implements IUserRepository {
 
     async updatePassword(email: string, newPassword:string): Promise<User | null> {
         try {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
+
             const newData = await userModel.findOneAndUpdate(
-                { email:email },
-                { password: newPassword },
+                { email: email },
+                { password: hashedPassword },
                 { new: true }
-            )
+            );
+
             if (newData) {
-                return newData
+                return newData;
             } else {
-                return null
+                return null;
             }
         } catch (error) {
             console.log(error);

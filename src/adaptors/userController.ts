@@ -74,28 +74,28 @@ class UserController {
         }
     }
 
-    async gAuth(req:Request, res:Response) {
-        try {
-            const { fullName, email, password, google_id } = req.body
-            const user = await this._userUseCase.gAuth(fullName,email,password,google_id)
-            if (user && user.token) {
-                return res
-                    .status(200)
-                    .json({
-                        user,
-                });
-            } else {
-                return res
-                    .status(400)
-                    .json({
-                        user,
-                });
-            }
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ message:'Something went wrong' })
-        }
-    }
+    // async gAuth(req:Request, res:Response) {
+    //     try {
+    //         const { fullName, email, password, google_id } = req.body
+    //         const user = await this._userUseCase.gAuth(fullName,email,password,google_id)
+    //         if (user && user.token) {
+    //             return res
+    //                 .status(200)
+    //                 .json({
+    //                     user,
+    //             });
+    //         } else {
+    //             return res
+    //                 .status(400)
+    //                 .json({
+    //                     user,
+    //             });
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.status(500).json({ message:'Something went wrong' })
+    //     }
+    // }
 
     async forgotPasswordSendOTP(req:Request, res:Response) {
         try {

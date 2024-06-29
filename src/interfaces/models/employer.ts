@@ -4,7 +4,7 @@ interface Employer {
     profile_url: string,
     email: string,
     phone: string
-    password?: string,
+    password: string,
     industry: string,
     city: string,
     state: string,

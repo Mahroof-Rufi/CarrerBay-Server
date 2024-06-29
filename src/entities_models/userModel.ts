@@ -116,9 +116,6 @@ const userSchema: Schema<User> = new Schema({
     about: {
         type: String,
     },
-    google_id: {
-        type:String
-    },
     city: {
         type: String
     },

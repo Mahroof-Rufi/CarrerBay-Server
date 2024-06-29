@@ -4,7 +4,6 @@ import { Experience } from "./subModels/experience";
 export interface User {
     password: string;
     _id: string,
-    google_id: string,
     firstName: string,
     lastName?: string,
     profile_url?: string,

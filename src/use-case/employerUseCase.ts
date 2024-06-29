@@ -6,6 +6,7 @@ import NodeMailer from "../providers/nodeMailer";
 import Jwt from "../providers/jwt";
 import IEmployerUseCase from "../interfaces/iUseCases/iEmployerUseCase";
 import { EmployerOutput } from "../interfaces/models/employerOutput";
+import bcrypt from "bcrypt";
 
 class EmployerUseCase implements IEmployerUseCase{
 
@@ -66,43 +67,44 @@ class EmployerUseCase implements IEmployerUseCase{
         }
     }
 
-    async login(email:string, employerPassword:string) {
-        const employerData = await this._employerRepository.findByEmail(email)
+    async login(email:string, employerPassword:string): Promise<EmployerOutput> {
+        const employerData = await this._employerRepository.findByEmail(email);
 
-        if (employerData) {    
-            if (employerPassword !== employerData.password) {
+        if (employerData) {
+            const isPasswordValid = await bcrypt.compare(employerPassword, employerData.password);
+
+            if (!isPasswordValid) {
                 return {
                     status: 400,
                     message: 'Invalid credentials'
-                }
+                };
             } else if (!employerData.isVerified) {
                 return {
-                    status:400,
+                    status: 400,
                     message: 'Your account is not yet verified by Admin'
-                }
+                };
             } else if (!employerData.isActive) {
                 return {
-                    status:400,
-                    message: 'Your account blocked by Admin'
-                }
+                    status: 400,
+                    message: 'Your account is blocked by Admin'
+                };
             }
-            
-            
-            const accessToken = this._jwt.createAccessToken(employerData._id, 'Normal-employer')
-            const refreshToken = this._jwt.createRefreshToken(employerData._id, 'Normal-employer')
-            const { password, ...employerDataWithoutPassword } = employerData;
+
+            const accessToken = this._jwt.createAccessToken(employerData._id, 'Normal-employer');
+            const refreshToken = this._jwt.createRefreshToken(employerData._id, 'Normal-employer');
+
             return {
                 status: 200,
                 accessToken: accessToken,
                 refreshToken: refreshToken,
-                employerData: employerDataWithoutPassword,
+                employerData: employerData,
                 message: 'Login successfully'
-            }
+            };
         } else {
             return {
                 status: 400,
                 message: 'Data not found'
-            }
+            };
         }
     }
 

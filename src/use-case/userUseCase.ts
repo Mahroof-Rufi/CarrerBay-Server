@@ -11,6 +11,7 @@ import IUserUseCase from "../interfaces/iUseCases/iUserUseCase";
 import { UserOutput } from "../interfaces/models/userOutput";
 import EmployerRepository from "../infrastructure/repositories/employerRepository";
 import ChatRepository from "../infrastructure/repositories/chatRepository";
+import bcrypt from "bcrypt";
 
 
 class UserUseCase implements IUserUseCase{
@@ -77,33 +78,36 @@ class UserUseCase implements IUserUseCase{
     }
 
     async logIn(email: string, password: string) {
-        const userData = await this._userRepository.findByEmail(email)
-
+        const userData = await this._userRepository.findByEmail(email);
+        
         if (userData) {
-            if (password !== userData.password) {
+            const isPasswordValid = await bcrypt.compare(password, userData.password);
+            if (!isPasswordValid) {
                 return {
                     status: 400,
                     message: 'Invalid credentials'
-                }
+                };
             } else if (!userData.isActive) {
-                return{
-                    status:400,
-                    message: 'This account blocked by Admin'
-                }
+                return {
+                    status: 400,
+                    message: 'This account is blocked by Admin'
+                };
             }
-            const accessToken = this._jwt.createAccessToken(userData._id, 'Normal-User')
-            const refreshToken = this._jwt.createRefreshToken(userData._id, 'Normal-User')
+            
+            const accessToken = this._jwt.createAccessToken(userData._id, 'Normal-User');
+            const refreshToken = this._jwt.createRefreshToken(userData._id, 'Normal-User');
+            
             return {
                 status: 200,
                 accessToken: accessToken,
                 refreshToken: refreshToken,
                 message: 'Login successfully'
-            }
+            };
         } else {
             return {
                 status: 400,
                 message: 'User not found'
-            }
+            };
         }
     }
 
@@ -127,34 +131,34 @@ class UserUseCase implements IUserUseCase{
         }
     }
 
-    async gAuth(fullName:string, email: string, password: string, google_id:string) {
-        const user = await this._userRepository.findByEmail(email)
-        if (user) {
-            const token = this._jwt.createAccessToken(user._id, 'Normal-User')
-            return {
-                status: 200,
-                token: token,
-                userDate: user,
-                message: 'Login successfully'
-            }
-        } else {
-            const res:User = await this._userRepository.insertOne({firstName:fullName,email:email,g_id:google_id})
-            if (res) {
-                const token = this._jwt.createAccessToken(res._id, 'Normal-User')
-                return {
-                    status: 200,
-                    token: token,
-                    userDate: user,
-                    message: 'Login successfully'
-                }
-            }
-            return {
-                status: 400,
-                message: 'Something went wrong'
-            }
+    // async gAuth(fullName:string, email: string, password: string, google_id:string) {
+    //     const user = await this._userRepository.findByEmail(email)
+    //     if (user) {
+    //         const token = this._jwt.createAccessToken(user._id, 'Normal-User')
+    //         return {
+    //             status: 200,
+    //             token: token,
+    //             userDate: user,
+    //             message: 'Login successfully'
+    //         }
+    //     } else {
+    //         const res:User = await this._userRepository.insertOne({firstName:fullName,email:email})
+    //         if (res) {
+    //             const token = this._jwt.createAccessToken(res._id, 'Normal-User')
+    //             return {
+    //                 status: 200,
+    //                 token: token,
+    //                 userDate: user,
+    //                 message: 'Login successfully'
+    //             }
+    //         }
+    //         return {
+    //             status: 400,
+    //             message: 'Something went wrong'
+    //         }
             
-        }
-    }
+    //     }
+    // }
 
     async forgotPasswordSendOTP(email:string) {
         const user = await this._userRepository.findByEmail(email)       
